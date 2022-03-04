@@ -1,0 +1,447 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+        Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+.logo {
+    display: flex;
+}
+
+.main {
+    top: 66px;
+    left: 75px;
+    right: 0px;
+    padding: 66px 10px 25px 75px;
+}
+
+//-----------------------------start header----------------------
+$primary-color: #113685;
+$white-color: #fff;
+$black-color: #000;
+.header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 66px;
+    background-color: $white-color;
+    border-bottom: 1px solid #f0f0f0;
+    box-shadow: 0px 4px 12px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    z-index: 99;
+
+    &__logo {
+        display: flex;
+        align-items: center;
+        flex: 1 1;
+
+        img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 0 16px;
+            color: #333;
+        }
+    }
+
+    &__body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1;
+    }
+
+    &__search {
+        display: flex;
+        align-items: center;
+        width: 420px;
+        border: 1px solid #dce0e3;
+        height: 40px;
+        border-radius: 20px;
+        padding: 0 16px;
+
+        &:focus-within {
+            border-color: #f05123;
+        }
+
+        ion-icon {
+            width: 1em;
+            color: #a8b2b8;
+        }
+
+        input {
+            font-size: 14px;
+            outline: none;
+            border: none;
+            padding: 0 10px;
+            flex: 1 1;
+            height: 100%;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex: 1 1;
+
+        &__noti {
+            padding: 8px;
+
+            ion-icon {
+                vertical-align: -0.125em;
+                width: 0.875em;
+                color: #707070;
+                font-size: 1.5rem;
+            }
+        }
+
+        &__avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            border-radius: 50%;
+            border: 2px solid $primary-color;
+
+            img {
+                width: 24px;
+                height: 24px;
+                border-radius: inherit;
+                object-fit: cover;
+                cursor: pointer;
+            }
+        }
+
+        &__userMenu {
+            background: #ffffff;
+            border: solid #d8d7d7 2px;
+            position: absolute;
+            inset: 0px 0px auto auto;
+            min-width: 265px;
+            padding: 8px 24px;
+            border-radius: 10px;
+            transform: translate(-28px, 45px);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 10;
+
+            &.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-28px, 55px);
+            }
+
+            .user {
+                display: flex;
+                align-items: center;
+
+                &__avatar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    border: 2px solid $primary-color;
+
+                    img {
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        margin-left: 0;
+                    }
+                }
+
+                &__info {
+                    margin-left: 12px;
+
+                    .name {
+                        font-weight: 600;
+                    }
+
+                    .username {
+                        font-size: 14px;
+                        color: #757575;
+                        margin-top: 4px;
+                    }
+                }
+            }
+
+            .list {
+                padding-left: 0;
+                margin: 0;
+                list-style: none;
+                &__item {
+                    &:hover .list__link {
+                        color: #111;
+                    }
+                }
+
+                &__link {
+                    color: #666;
+                    display: block;
+                    padding: 10px 0;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+}
+
+//--------------------------end header-------------------------------
+
+//---------------------------start sidebar ------------------------
+.sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(240, 241, 241);
+    border-radius: 10px;
+    filter: blur(8px);
+    opacity: 0.5;
+    transition: 0.5s;
+}
+.sidebar {
+    z-index: -1;
+    position: fixed;
+    inset: 66px auto 0 0;
+    background-color: rgb(248, 252, 255);
+    width: 75px;
+    padding: 8px 8px 0 8px;
+    z-index: 8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    .menuToggle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 20px;
+    }
+    .menuToggle::before {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 2px;
+        background-color: #333;
+        transform: translateY(-8px);
+        transition: 0.5s;
+    }
+
+    .menuToggle::after {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 2px;
+        background-color: #333;
+        transform: translateY(8px);
+        transition: 0.5s;
+        box-shadow: 0 -8px 0 #333;
+    }
+
+    ul {
+        display: flex;
+        flex-direction: column;
+        padding-left: 0px;
+        // khoản cách
+        gap: 10px;
+        width: 100%;
+        position: relative;
+        top: 60px;
+    }
+
+    li {
+        list-style: none;
+        position: relative;
+        width: 100%;
+        height: 60px;
+        padding: 0 10px;
+        transition: 0.5s;
+        left: -15px;
+        a {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+
+            .sidebarText {
+                position: relative;
+                font-weight: 700;
+                padding: 0 5px;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                color: #333;
+                opacity: 0;
+                visibility: hidden;
+                transition: 0.5s;
+            }
+
+            .icon {
+                position: relative;
+                min-width: 55px;
+                height: 55px;
+                line-height: 60px;
+                transition: 0.5s;
+                color: #333;
+                ion-icon {
+                    font-size: 25px;
+                }
+            }
+            .icon::before {
+                content: "";
+                position: absolute;
+                top: -3px;
+                left: -3px;
+                width: 100%;
+                height: 100%;
+                background-color: var(--clr);
+                border-radius: 10px;
+                filter: blur(3px);
+                opacity: 0;
+                transition: 0.5s;
+            }
+        }
+    }
+    li.active {
+        transform: translateX(10px);
+        a {
+            .icon {
+                color: #fff;
+                background-color: var(--clr);
+                border-radius: 10px;
+            }
+            .icon::before {
+                opacity: 1;
+            }
+            .sidebarText {
+                color: var(--clr);
+            }
+        }
+    }
+
+    &__link {
+        color: #404040;
+        width: 72px;
+        height: 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        margin-top: 4px;
+
+        &:hover {
+            background: #f5f5f5;
+        }
+
+        &.active {
+            background: #e8ebed;
+        }
+
+        ion-icon {
+            font-size: 20px;
+        }
+
+        span {
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    }
+}
+.sidebar:hover {
+    width: 15%;
+    .sidebarText {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+//--------------------------end sidebar ---------------------------
+// start content
+.main-content {
+    position: absolute;
+    top: 66px;
+    left: 75px;
+    right: 0px;
+    bottom: 25px;
+}
+// end content
+
+//start footer
+.footer {
+    position: fixed;
+    bottom: 0px;
+    background-color: #fafafa;
+    display: flex;
+    width: 100%;
+    height: 30px;
+    flex: 1;
+    border-top: 1px solid #919191;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.footer {
+    a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+    }
+}
+//end footer
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+.child-page {
+    background-color: #9999;
+    width: 500px;
+    height: 500px;
+}
+.list-student-name:hover {
+    color: #555;
+    background-color: yellow;
+}
+ul.navbar-home {
+    li {
+        &:hover {
+            background: #fb5533;
+        }
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
