@@ -14,21 +14,14 @@ const Navbar = () => {
         sidebarRef.current.classList.toggle('open');
     }
     useEffect (() => {
-        console.log('useEffect');
         const listSidebar = document.querySelectorAll('.sidebar__item');
-        console.log("sidebar: ",listSidebar);
         const activeItem = (itemClick) => {
-            console.log("handle activeItem");
             listSidebar.forEach((item) => {
                 item.classList.remove('active');
-                console.log('remove');
             })
-            console.log("itemClick: ", itemClick);
             itemClick.classList.add('active');
-            console.log('add active');
         }
         listSidebar.forEach((item) => {
-            console.log('add event click');
             item.addEventListener('click', function(){
                 activeItem(item);
             });
@@ -53,7 +46,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li className="sidebar__item " style={{"--clr": "#ffa117;"}}>
-                        <Link href="/about" class="sidebar__link">
+                        <Link href="/Subjects" class="sidebar__link">
                             <a>
                                 <span className="icon">
                                     <ion-icon name="book"></ion-icon>
@@ -68,17 +61,17 @@ const Navbar = () => {
                                 <span className="icon">
                                     <ion-icon name="bulb"></ion-icon>
                                 </span> 
-                                <span className="sidebarText">Luyện Tập</span>
+                                <span className="sidebarText">Học sinh</span>
                            </a>
                         </Link>
                     </li>
                     <li className="sidebar__item " style={{"--clr": "#0fc70f;"}}>
-                        <Link href="/" className="sidebar__link">
+                        <Link href="/Flashcards" className="sidebar__link">
                            <a>
                                 <span className="icon">
-                                    <ion-icon name="game-controller-outline"></ion-icon>
+                                        <ion-icon name="rocket-outline"></ion-icon>
                                 </span> 
-                                <span className="sidebarText">Giải trí</span>
+                                <span className="sidebarText">Flash Card</span>
                            </a>
                         </Link>
                     </li>
@@ -93,7 +86,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li className="sidebar__item " style={{"--clr": "#446eb6;"}}>
-                        <Link href="/" className="sidebar__link">
+                        <Link href="/Exams" className="sidebar__link">
                            <a>
                                 <span className="icon">
                                     <ion-icon name="newspaper"></ion-icon>
@@ -103,7 +96,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li className="sidebar__item " style={{"--clr": "#b145e9;"}}>
-                        <Link href="/" className="sidebar__link">
+                        <Link href="/Forum" className="sidebar__link">
                            <a>
                                 <span className="icon">
                                     <ion-icon name="people-outline"></ion-icon>

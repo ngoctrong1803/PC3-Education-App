@@ -1,10 +1,41 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import Footer from '../comps/Footer'
-import Navbar from '../comps/Navbar'
-import styles from '../styles/Home.module.scss'
+import { useState } from 'react'
+import { useEffect } from 'react'
+import Banner from '../comps/Banner'
+import SubjectList from '../comps/SubjectList'
+import styles  from '../styles/Home.module.scss';
+// import Swiper core and required modules
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+import Rank from '../comps/Rank'
+import { Button } from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Question from '../comps/Questions'
+import Event from '../comps/Events'
+import BlogList from '../comps/BlogList'
+
 
 export default function Home() {
+
+
+  const [grade, setGrade] = useState(10);
+
+  const changeGrade = (grade) => {
+    setGrade(grade);
+  }
+
+  useEffect(() => {
+    console.log("khối đã chọn: ", grade);
+  }, [grade]) 
+
   return (
     <>
     <Head>
@@ -17,46 +48,52 @@ export default function Home() {
     <div className={styles.home_wrapper}>
         <div className={styles.banner_wrapper}>
           <div className={styles.banner}>
-            <div className={styles.slides}>
-              {/* radio button start */}
-                <input type="radio" name='radio-btn' className={styles.r} id='radio1'></input>
-                <input type="radio" name='radio-btn' className={styles.r} id='radio2'></input>
-                <input type="radio" name='radio-btn' className={styles.r} id='radio3'></input>
-                <input type="radio" name='radio-btn' className={styles.r} id='radio4'></input>
-              {/* radio button end */}
                {/* image of slider start */}
-                  <div className={styles.slide} id="s1">
-                      <img src='https://minhduongads.com/wp-content/uploads/2019/03/truyen-thong-minh-duong.jpg'></img>
-                  </div>
-                  <div className={styles.slide} id="s2">
-                    <img src='https://minhduongads.com/wp-content/uploads/2019/03/truyen-thong-minh-duong.jpg'></img>
-                  </div>
-                  <div className={styles.slide} id="s3">
-                    <img src='https://minhduongads.com/wp-content/uploads/2019/03/truyen-thong-minh-duong.jpg'></img>
-                  </div>
-                  <div className={styles.slide} id="s4">
-                    <img src='https://minhduongads.com/wp-content/uploads/2019/03/truyen-thong-minh-duong.jpg'></img>
-                  </div>
+                  <Banner></Banner>
                 {/* image of slider end */}
-                {/* navigation start */}
-                <div className={styles.navigation}>
-                  <label htmlFor='radio1' className={styles.bar} ></label>
-                  <label htmlFor='radio2' className={styles.bar} ></label>
-                  <label htmlFor='radio3' className={styles.bar} ></label>
-                  <label htmlFor='radio4' className={styles.bar} ></label>
-                </div>
-                {/* navigation end */}
-            </div>
           </div>
 
         </div>
         <div className={styles.content_wrapper}>
             <div className={styles.content}>
-              this is content
-              
+                <div className='selection_list'>
+                  <ul className='nav-grades'>
+                      <li className='nav-item' id='grade-10'>
+                         <Button variant="outline-secondary" onClick={() =>{changeGrade(10)}}>Khối 10</Button>
+                      </li>
+                      <li className='nav-item' id='grade-11'>
+                          <Button variant="outline-secondary" onClick={() =>{changeGrade(11)}}>Khối 11</Button>  
+                      </li>
+                      <li className='nav-item' id='grade-12'>
+                          <Button variant="outline-secondary" onClick={() =>{changeGrade(12)}}>Khối 12</Button>
+                      </li>
+                  </ul>
+                  {/* start swiper */}
+                  <div className='selection_list_title'>
+                      <h4>môn học khối {grade}</h4>
+                      <a href='#'>xem tất cả</a>
+                  </div>
+                  {grade==10 ?  <SubjectList grade="10"></SubjectList> : null}
+                  {grade==11 ?  <SubjectList grade="11"></SubjectList> : null}
+                  {grade==12 ?  <SubjectList grade="12"></SubjectList> : null}
+                  {/* end swiper */}
+                </div>
+                <div className='selection_list'>
+                  <div className='selection_list_title'>
+                    <h4>Các bài viết nổi bậc</h4>
+                      <a href='#'>xem tất cả</a>
+                  </div>
+                  <BlogList></BlogList>
+                </div> 
             </div>
             <div className={styles.sidebar_right}>
-              sidebar right
+              <Rank></Rank>
+              <div className='mt-4'>
+                <Question></Question>
+              </div>
+              <div className='mt-4'>
+                <Event></Event>
+              </div>
             </div>
         </div>
     </div>
