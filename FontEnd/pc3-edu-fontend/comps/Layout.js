@@ -4,8 +4,6 @@ import Navbar from "./Navbar";
 import Header from "./Header";
 import style from '../styles/Home.module.scss';
 
-
-
 const Layout = ({ children }) => {
     return ( 
         <>

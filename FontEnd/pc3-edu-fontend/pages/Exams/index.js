@@ -52,4 +52,5 @@ const Exam = () => {
     ) 
 
 }
+Exam.layout = "userLayout";
 export default Exam

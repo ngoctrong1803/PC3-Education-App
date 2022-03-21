@@ -34,5 +34,5 @@ const Detail = ({ student }) => {
         </div>
      );
 }
- 
+Detail.layout = "userLayout";
 export default Detail;

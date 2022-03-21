@@ -154,4 +154,5 @@ const Detail = () => {
         </div>
     )
 }
+Detail.layout = "userLayout";
 export default Detail

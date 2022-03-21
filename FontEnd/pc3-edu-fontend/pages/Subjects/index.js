@@ -104,4 +104,5 @@ const Subject = () => {
       </div>
     );
 }
+Subject.layout = "userLayout";
 export default Subject

@@ -1,10 +1,18 @@
 import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import Layout from '../comps/Layout'
+import userlayout from '../comps/Layout'
+import NoLayout from '../comps/NoLayout'
 import '../styles/globals.scss'
+
+const layouts = {
+  userLayout : userlayout,
+  noLayout : NoLayout
+}
 
 function MyApp({ Component, pageProps }) {
 
+
+  const Layout = layouts[Component.layout] || ((children) => <>{children}</>);
   return (
     <Layout>
         {/* this component is render content */}

@@ -119,4 +119,5 @@ const Forum = () => {
         </>
     ) 
 }
+Forum.layout = "userLayout";
 export default Forum 

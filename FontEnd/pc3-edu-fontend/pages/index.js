@@ -23,7 +23,7 @@ import Event from '../comps/Events'
 import BlogList from '../comps/BlogList'
 
 
-export default function Home() {
+const Home = () => {
 
 
   const [grade, setGrade] = useState(10);
@@ -101,3 +101,5 @@ export default function Home() {
    
   )
 }
+Home.layout = "userLayout";
+export default Home

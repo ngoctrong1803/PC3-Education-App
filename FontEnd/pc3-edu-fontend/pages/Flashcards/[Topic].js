@@ -138,4 +138,5 @@ const Topic = () =>{
         </div>
     )
 }
+Topic.layout = "userLayout";
 export default Topic

@@ -60,4 +60,5 @@ const Learning = () => {
     )
 
 }
+Learning.layout = "userLayout";
 export default Learning

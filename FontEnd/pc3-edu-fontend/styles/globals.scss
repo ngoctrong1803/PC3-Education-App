@@ -15,6 +15,19 @@ body {
     right: 0px;
     padding: 66px 10px 25px 75px;
 }
+//-----------------------start error page ------------------------
+
+.error-wrap {
+    width: 100%;
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .error-content {
+    }
+}
+
+//-----------------------end error page -------------------------
 
 //-----------------------------start header----------------------
 $primary-color: #113685;
@@ -1583,7 +1596,7 @@ ul.navbar-home {
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
             transition: 0.5s;
         }
-        
+
         .flashcard-front,
         .flashcard-back {
             position: absolute;
@@ -1612,3 +1625,260 @@ ul.navbar-home {
     }
 }
 // ------------------------------- end flash card detail page ---------------------------
+//-------------------------------- start match page -------------------------------------
+
+.match-page {
+    margin: 15px;
+    box-shadow: 0rem 0.1rem 0.1rem rgba(5, 7, 20, 0.44) !important;
+    min-height: 600px;
+    .match-page-nav {
+        margin: 15px;
+        border-bottom: #757575 solid 1px;
+        display: flex;
+        .select-grade-match {
+            width: 15%;
+        }
+        .select-subject-match {
+            width: 15%;
+        }
+        .select-unit-match {
+            width: 30%;
+            margin-right: 5px;
+        }
+        .btn-create-room {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
+        }
+    }
+    .match-page-list-match {
+        margin: 15px;
+
+        .join-room-wrap {
+            //width: 20%;
+            display: flex;
+            justify-content: center;
+        }
+    }
+    .match-page-slidebar-wrap {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        .match-page-slidebar {
+        }
+    }
+}
+
+//-------------------------------- end match page -------------------------------------
+//-------------------------------- start match detail page -----------------------------------
+.match-detail-page {
+    margin: 15px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    min-height: 600px;
+    .match-detail-room-master {
+        margin: 35px 15px 0 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: #111 solid 1px;
+        .room-master-infor {
+            img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+            span {
+                font-size: 18px;
+                font-weight: 500;
+            }
+        }
+        .room-master-func {
+            button {
+                margin: 3px;
+            }
+        }
+    }
+    .match-detail-nemmbers {
+        .player-item {
+            margin: 15px;
+            height: 230px;
+            width: 200px;
+            background-color: #dbe7f05d;
+            border-radius: 10px;
+            .player-item-avatar {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                img {
+                    margin-top: 5px;
+                    border-radius: 10px;
+                    width: 180px;
+                    height: 180px;
+                }
+            }
+            .player-item-name {
+                margin-top: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                span {
+                    font-size: 18px;
+                    font-weight: 500;
+                }
+            }
+        }
+    }
+    .match-page-slidebar-wrap {
+        min-height: 600px;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        .match-page-slidebar {
+            margin-right: 5px;
+            width: 70%;
+            height: 350px;
+            border-radius: 7px;
+            background-color: #eceef0;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            .chat-box {
+                .chat-box-haeder {
+                    border-radius: 5px 5px 0px 0px;
+                    width: 100%;
+                    height: 45px;
+                    background-color: #2196f3;
+                    font-size: 18px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    span {
+                        margin-left: 5px;
+                        margin-right: 5px;
+                        color: #fff;
+                        font-weight: 500;
+                    }
+                }
+                .chat-box-content {
+                    width: 100%;
+                    height: 250px;
+                    .user-chat {
+                        display: flex;
+                        justify-content: end;
+                        span {
+                            background-color: #fff;
+                            padding: 5px;
+                            font-size: 16px;
+                            border-radius: 15px;
+                        }
+                        margin: 5px;
+                    }
+                    .orther-player-chat {
+                        display: flex;
+                        justify-content: start;
+                        img {
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 50%;
+                            margin-right: 5px;
+                        }
+                        span {
+                            background-color: #fff;
+                            padding: 5px;
+                            font-size: 16px;
+                            border-radius: 15px;
+                        }
+                        margin: 5px;
+                    }
+                }
+                .chat-box-input {
+                    padding: 5px;
+                }
+            }
+        }
+        .chat-box-min {
+            background-color: #404040;
+            margin-right: 5px;
+            width: 70%;
+            height: 40px;
+            border-radius: 7px;
+            background-color: #2196f3;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            span {
+                margin-left: 5px;
+                margin-right: 5px;
+                color: #fff;
+                font-weight: 500;
+            }
+        }
+    }
+}
+//-------------------------------- end match detail page -------------------------------------
+//-------------------------------- start login page ---------------------------------------------
+.login-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+.background {
+    background: url("/background/background-login.jpg") no-repeat;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .row-container {
+        width: 500px;
+        height: 500px;
+        border: 2px solid #fff;
+        border-radius: 8px;
+        padding: 30px;
+        background: $white-color;
+        background-color: rgba(255, 255, 255, 0.445);
+        .text-center {
+            display: flex;
+            justify-content: center;
+        }
+    }
+
+    .form-field {
+        position: relative;
+        margin-bottom: 18px;
+
+        .form-input {
+            outline: none;
+            border: 1px solid rgb(211, 208, 208);
+            border-radius: 8px;
+            width: 100%;
+            height: 50px;
+            padding: 0 20px;
+            transition: 0.3s ease;
+            font-weight: 500;
+
+            &:focus,
+            &:hover {
+                border-color: #f95a5a;
+            }
+        }
+
+        .form-label {
+            position: absolute;
+            top: 50%;
+            left: 21px;
+            transform: translateY(-50%);
+            user-select: none;
+            color: #999;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+    }
+}
+
+//-------------------------------- end login page ---------------------------------------------

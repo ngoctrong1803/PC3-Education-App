@@ -119,4 +119,5 @@ const Exercise = () => {
         </>
     ) 
 }
+Exercise.layout = "userLayout";
 export default Exercise 

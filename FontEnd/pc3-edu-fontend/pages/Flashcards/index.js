@@ -54,4 +54,5 @@ const Flashcard = () => {
         </div>
     )
 }
+Flashcard.layout = "userLayout";
 export default Flashcard

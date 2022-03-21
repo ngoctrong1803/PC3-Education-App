@@ -26,5 +26,5 @@ const Students = ({ students }) => {
         </div>
      );
 }
- 
+Students.layout = "userLayout";
 export default Students;

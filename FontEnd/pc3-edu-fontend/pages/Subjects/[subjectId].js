@@ -71,4 +71,5 @@ const Detail = () => {
         </>
     )
 }
+Detail.layout = "userLayout";
 export default Detail

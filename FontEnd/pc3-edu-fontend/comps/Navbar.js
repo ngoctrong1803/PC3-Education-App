@@ -76,7 +76,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li className="sidebar__item " style={{"--clr": "#2196f3;"}}>
-                        <Link href="/" className="sidebar__link">
+                        <Link href="/Matches" className="sidebar__link">
                            <a>
                                 <span className="icon">
                                     <ion-icon name="trophy-outline"></ion-icon>
