@@ -1,0 +1,27 @@
+GET http://localhost:8000/test
+
+
+###
+GET http://localhost:8000/test/623a852b6e3a60128c67774b
+
+###
+POST http://localhost:8000/test
+Content-Type: application/json
+
+ {
+     "title": "test title third",
+     "description": "this is second description" 
+ }
+
+###
+DELETE  http://localhost:8000/test/623a852b6e3a60128c67774b
+
+###
+PATCH http://localhost:8000/test/623a853a6e3a60128c67774e
+Content-Type: application/json
+
+ {
+     "title": "update title",
+     "description": "this is second description" 
+ }
+    

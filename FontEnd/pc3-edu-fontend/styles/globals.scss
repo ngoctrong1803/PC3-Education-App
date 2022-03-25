@@ -1882,3 +1882,516 @@ ul.navbar-home {
 }
 
 //-------------------------------- end login page ---------------------------------------------
+
+//-----------------------------------------------ADMIN PAGE--------------------------------------------------------------
+.admin-page {
+    margin: 15px;
+    background-color: #fafbfc;
+}
+.admin-slidebar {
+    height: 700px;
+    padding: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    .admin-slidebar-header {
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        span {
+            font-size: 22px;
+            font-weight: 800;
+            margin-left: 5px;
+            color: #2196f3;
+        }
+    }
+    .admin-slidebar-content {
+        height: 650px;
+        border: #ffffff solid 1px;
+        .admin-slidebar-user {
+            margin-top: 15px;
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+            .admin-slidebar-user-infor {
+                span {
+                    font-weight: 500;
+                }
+            }
+        }
+        .admin-slidebar-functions {
+            ul {
+                padding-left: 0px;
+                li {
+                    box-shadow: 0.1rem 0.1rem 0.1rem rgba(60, 78, 156, 0.438) !important;
+                    border-radius: 5px;
+                    display: flex;
+                    margin-top: 5px;
+                    list-style: none;
+                    border: rgb(192, 192, 192) solid 1px;
+                    padding: 10px;
+                    align-items: center;
+                    justify-content: start;
+                    span {
+                        margin-right: 5px;
+                        font-size: 16px;
+                        font-weight: 500;
+                        color: rgb(100, 100, 100);
+                    }
+                }
+                li:hover {
+                    background-color: #e7e7e7;
+                }
+                li.show {
+                    background-color: #027ee4d3;
+                    span {
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
+.admin-header {
+    height: 50px;
+    .admin-header-nav {
+        background-color: #027ee4d3 !important;
+        box-shadow: 0 0.5rem 1rem rgba(60, 77, 156, 0.15) !important;
+    }
+    .admin-navbar-user {
+        margin-left: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        span {
+            font-size: 28px;
+            margin-right: 5px;
+            color: #fff;
+        }
+        span:hover {
+            color: #ffffff;
+        }
+        img {
+            border: #ffffff solid 2px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+    }
+}
+.admin-content {
+    background-color: #ffffff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    margin-top: 15px;
+    height: 650px;
+}
+.admin-home-page {
+    .statistical-table {
+        padding-top: 35px;
+        padding-left: 15px;
+        .statistical-table-title {
+            span {
+                font-size: 18px;
+                font-weight: 600;
+            }
+        }
+        .statistical-table-content {
+            border-radius: 5px;
+            margin-right: 15px;
+            padding-left: 8%;
+            box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
+            .statistical-list-item {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .statistical-item {
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                    border-radius: 10px;
+                    width: 150px;
+                    height: 150px;
+                    background-color: rgba(246, 244, 247, 0.452);
+                    box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    .statistical-item-content {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-top: 45px;
+                        align-items: center;
+                        span {
+                            font-size: 22px;
+                            font-weight: 600;
+                        }
+                    }
+                    .statistical-item-title {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        span {
+                            font-size: 22px;
+                            font-weight: 600;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .students-top {
+        padding-top: 35px;
+        padding-left: 15px;
+        padding-right: 15px;
+        .students-top-title {
+            span {
+                font-size: 18px;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+//========================================Admin user page===============================================
+.admin-users-page {
+    margin: 0 15px 0 15px;
+    .admin-users-title {
+        padding-top: 35px;
+        span {
+            font-size: 24px;
+            font-weight: 600;
+        }
+    }
+    .admin-users-header {
+        display: flex;
+        .admin-users-header-find {
+            width: 300px;
+            margin-right: 10px;
+        }
+        .admin-users-header-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-users-header-list-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-users-header-export-excel {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+        .admin-users-header-add-user {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+    }
+    .admin-users-list {
+        .main-users-list-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
+// ===================================== admin create user page =======================================
+.create-user-page {
+    margin: 0 35px 0 35px;
+    padding-top: 35px;
+    .create-user-page-header {
+        display: flex;
+        justify-content: space-between;
+        .create-user-page-header-title {
+            span {
+                font-size: 22px;
+                font-weight: 600;
+            }
+        }
+        .create-user-page-header-button {
+        }
+    }
+    .create-user-page-content {
+        .create-user-page-content-add-file {
+            width: 500px;
+        }
+    }
+}
+
+//========================================Admin subject page===============================================
+.admin-subjects-page {
+    margin: 0 15px 0 15px;
+    .admin-subjects-title {
+        padding-top: 35px;
+        span {
+            font-size: 24px;
+            font-weight: 600;
+        }
+    }
+    .admin-subjects-header {
+        display: flex;
+        .admin-subjects-header-find {
+            width: 300px;
+            margin-right: 10px;
+        }
+        .admin-subjects-header-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-subjects-header-list-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-subjects-header-export-excel {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+        .admin-subjects-header-add-user {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+    }
+    .admin-subjects-list {
+        .main-subjects-list-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-subjects-list-table {
+            align-items: center;
+            tr {
+                th {
+                    text-align: center;
+                }
+                td {
+                    text-align: center;
+                    vertical-align: middle;
+                    button {
+                        margin: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
+//========================================= admin content subject page ============================================
+.subject-content-page {
+    padding: 15px;
+    .subject-content-title {
+        font-size: 22px;
+        font-weight: 600;
+    }
+    .subject-content-content {
+        .subject-content-item {
+            .subject-content-item-unit {
+                .subject-content-item-unit-title-wrap {
+                    display: flex;
+                    align-items: center;
+                }
+                ul {
+                    li {
+                        list-style: none;
+                        padding: 5px;
+                        margin-right: 65px;
+                        box-shadow: 0.05rem 0.05rem 0.1rem
+                            rgba(60, 78, 156, 0.438) !important;
+                    }
+                }
+                .subject-content-item-lession {
+                    vertical-align: middle;
+                    list-style: none;
+
+                    .subject-content-item-lession-title {
+                        display: flex;
+                        align-items: center;
+                    }
+                    button {
+                        margin-right: 5px;
+                    }
+                }
+                .subject-content-item-unit-edit {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: #2196f3 solid 1px;
+                    border-radius: 3px;
+                    width: 25px;
+                    height: 25px;
+                    color: #fff;
+                    background-color: #2196f3;
+                    margin-left: 5px;
+                    box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
+                }
+                .subject-content-item-unit-edit:hover {
+                    background-color: #61aeec;
+                }
+                .subject-content-item-unit-delete {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: #f32821 solid 1px;
+                    border-radius: 3px;
+                    width: 25px;
+                    height: 25px;
+                    color: #fff;
+                    background-color: #f32821;
+                    margin-left: 5px;
+                    box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
+                }
+                .subject-content-item-unit-delete:hover {
+                    background-color: #ee716d;
+                }
+                .btn-add-new-unit-wrap {
+                    display: flex;
+                    justify-content: end;
+                    margin-right: 85px;
+                }
+            }
+            .subject-content-item-unit-title {
+                font-size: 20px;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// ================================================ admin create subject page ===========================================
+.create-subject-page {
+    margin: 0 35px 0 35px;
+    padding-top: 35px;
+    .create-subject-page-header {
+        display: flex;
+        justify-content: space-between;
+        .create-subject-page-header-title {
+            span {
+                font-size: 22px;
+                font-weight: 600;
+            }
+        }
+        .create-subject-page-header-button {
+        }
+    }
+    .create-subject-page-content {
+        .create-subject-page-content-add-file {
+            width: 500px;
+        }
+    }
+}
+// ================================================ admin update subject page ===========================================
+.update-subject-page {
+    margin: 0 35px 0 35px;
+    padding-top: 35px;
+    .update-subject-page-header {
+        display: flex;
+        justify-content: space-between;
+        .update-subject-page-header-title {
+            span {
+                font-size: 22px;
+                font-weight: 600;
+            }
+        }
+        .update-subject-page-header-button {
+        }
+    }
+    .update-subject-page-content {
+        .update-subject-page-content-add-file {
+            width: 500px;
+        }
+    }
+}
+
+// ============================================ admin subject statistical page =========================================
+.admin-statistical-page {
+    margin: 0 15px 0 15px;
+    .admin-statistical-title {
+        padding-top: 35px;
+        span {
+            font-size: 24px;
+            font-weight: 600;
+        }
+    }
+    .admin-statistical-header {
+        display: flex;
+        .admin-statistical-header-find {
+            width: 300px;
+            margin-right: 10px;
+        }
+        .admin-statistical-header-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-statistical-header-list-role {
+            padding: 0px;
+            height: 40px;
+            width: 180px;
+            margin-right: 10px;
+        }
+        .admin-statistical-header-export-excel {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+        .admin-statistical-header-add-user {
+            padding: 0px;
+            height: 40px;
+            width: 130px;
+            margin-right: 10px;
+        }
+    }
+    .admin-statistical-list {
+        .main-statistical-list-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
+//============================================= admin subject theory =========================================
+.admin-aubject-theory-page {
+    padding: 15px;
+    .admin-aubject-theory-header {
+        span {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        border-bottom: #555 solid 1px;
+        margin-bottom: 5px;
+    }
+    .admin-aubject-theory-title {
+        span {
+            font-size: 22px;
+            font-weight: 600;
+        }
+    }
+    .admin-aubject-theory-content {
+        font-size: 18px;
+        font-weight: 400;
+    }
+}

@@ -2,11 +2,13 @@ import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import userlayout from '../comps/Layout'
 import NoLayout from '../comps/NoLayout'
+import AdminLayout from '../comps/AdminLayout'
 import '../styles/globals.scss'
 
 const layouts = {
   userLayout : userlayout,
-  noLayout : NoLayout
+  noLayout : NoLayout,
+  adminLayout : AdminLayout
 }
 
 function MyApp({ Component, pageProps }) {

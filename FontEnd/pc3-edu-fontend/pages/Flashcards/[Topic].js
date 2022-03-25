@@ -12,19 +12,10 @@ import { Pagination, Navigation } from "swiper";
 import { useEffect } from "react";
 
 const Topic = () =>{
-
-
     useEffect (() => {
         const listSidebar = document.querySelectorAll('.flashcard-item');
-        // const activeItem = (itemClick) => {
-        //     listSidebar.forEach((item) => {
-        //         item.classList.remove('show');
-        //     })
-        //     itemClick.classList.add('show');
-        // }
         listSidebar.forEach((item) => {
             item.addEventListener('click', function(){
-                // activeItem(item);
                 item.classList.toggle('show');
             });
         })
@@ -41,7 +32,7 @@ const Topic = () =>{
                         <div className="flashcard-detail-function">
                             <ul>
                                 <li>Thẻ ghi nhớ</li>
-                                <li>trắc nghiệm</li>
+                                <li>Trắc nghiệm</li>
                                 <li>Viết từ</li>
                                 <li>Ghép thẻ</li>
                                 <li>Thiên thạch</li>
