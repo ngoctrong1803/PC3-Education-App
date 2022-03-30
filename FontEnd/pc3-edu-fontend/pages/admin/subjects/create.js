@@ -21,11 +21,11 @@ const create = () => {
                         </Row>
                         <Row className="mb-3" >
                             <Form.Group as={Col} controlId="formGridState">
-                                <Form.Label>Chức vụ</Form.Label>
+                                <Form.Label>Khối</Form.Label>
                                 <Form.Select defaultValue="Choose...">
-                                    <option>Quản trị viên</option>
-                                    <option>Giáo viên</option>
-                                    <option>Học sinh</option>
+                                    <option>Khối 10</option>
+                                    <option>Khối 11</option>
+                                    <option>Khối 12</option>
                                 </Form.Select>
                             </Form.Group>
                         </Row>

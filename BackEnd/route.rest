@@ -1,11 +1,11 @@
-GET http://localhost:8000/test
+GET http://localhost:8000/api/test
 
 
 ###
-GET http://localhost:8000/test/623a852b6e3a60128c67774b
+GET http://localhost:8000/api/test/623a852b6e3a60128c67774b
 
 ###
-POST http://localhost:8000/test
+POST http://localhost:8000/api/test
 Content-Type: application/json
 
  {
@@ -14,10 +14,10 @@ Content-Type: application/json
  }
 
 ###
-DELETE  http://localhost:8000/test/623a852b6e3a60128c67774b
+DELETE  http://localhost:8000/api/test/623a852b6e3a60128c67774b
 
 ###
-PATCH http://localhost:8000/test/623a853a6e3a60128c67774e
+PATCH http://localhost:8000/api/test/623a853a6e3a60128c67774e
 Content-Type: application/json
 
  {
@@ -25,3 +25,16 @@ Content-Type: application/json
      "description": "this is second description" 
  }
     
+###
+POST http://localhost:8000/api/user/create
+Content-Type: application/json
+
+ {
+    "email": "test@gmail.com",
+    "password": "123456",
+    "role": "student",
+    "address": "199 Hoàng Diệu 2",
+    "birthday": "2000/01/01",
+    "phone": "0958489850",
+    "class": "12A1"
+ }
