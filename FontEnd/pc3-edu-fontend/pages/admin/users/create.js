@@ -1,7 +1,7 @@
 import { Form, Row, Button, Col, Toast } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 const EMAIL_REGEX = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 const PASS_REGEX = /[a-z0-9]/;
@@ -17,21 +17,30 @@ const Create = () => {
   const studentClassRef = useRef();
 
   // message error
+  const [fullnameErr, setFullnameErr] = useState("");
   const [emailErr, setEmailErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
+  const [roleErr, setRoleErr] = useState("");
   const [matchPasswordErr, setMatchPasswordErr] = useState("");
   const [addressErr, setAddressErr] = useState("");
   const [birthdayErr, setBirthdayErr] = useState("");
   const [phoneErr, setPhoneErr] = useState("");
   const [studentClassErr, setStudentClassErr] = useState("");
 
-  const [errorMsg, setErrorMsg] = useState("");
-  const [show, setShow] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
+  const [showMessageSuccess, setShowMessageSuccess] = useState(false);
+  const [showMessageError, setShowMessageError] = useState(false);
 
   // validate user
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailForcus] = useState(false);
+
+  // validate user
+  const [fullname, setFullname] = useState("");
+  const [validFullname, setValidFullname] = useState(false);
+  const [fullnameFocus, setFullnameForcus] = useState(false);
 
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState(false);
@@ -58,6 +67,18 @@ const Create = () => {
   const [studentClass, setStudentClass] = useState("");
   const [validStudentClass, setValidStudentClass] = useState(false);
   const [studentClassFocus, setStudentClassForcus] = useState(false);
+
+  // init userRegister
+  const [userRegister, setUserRegister] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    role: "",
+    address: "",
+    birthday: "",
+    phone: "",
+    class: "",
+  });
 
   useEffect(() => {
     emailRef.current.focus();
@@ -99,14 +120,11 @@ const Create = () => {
     }
   }, [password, matchPassword]);
 
-  // hanle show error
+  // check and set data for register
   useEffect(() => {
-    setErrorMsg("");
-  }, [email, password, matchPassword]);
-
-  // log data
-  useEffect(() => {
+    // data for register
     const data = {
+      fullname: fullname,
       email: email,
       password: password,
       role: role,
@@ -115,59 +133,102 @@ const Create = () => {
       phone: phone,
       class: studentClass,
     };
+    console.log("data for register:", data);
+    // check data
     if (
-      data.email != "" &&
-      data.password != "" &&
-      data.matchPassword != "" &&
+      data.fullname != "" &&
+      validEmail == true &&
+      validPassword == true &&
       data.role != "" &&
+      data.role != "none" &&
       data.birthday != "" &&
       data.address != "" &&
       data.studentClass != "" &&
-      data.phone != ""
+      data.phone != "" &&
+      data.password == matchPassword
     ) {
+      //set data
       setUserRegister(data);
+      console.log("data register is valid");
     }
-    console.log("data:", data);
   }, [
+    fullname,
     email,
     password,
-    matchPassword,
     role,
     birthday,
     address,
     studentClass,
     phone,
+    matchPassword,
   ]);
 
-  const [userRegister, setUserRegister] = useState({
-    email: "",
-    password: "",
-    role: "",
-    address: "",
-    birthday: "",
-    phone: "",
-    class: "",
-  });
   function handleRegister(e) {
     e.preventDefault();
     e.stopPropagation();
-    // console.log(e);
-    // const formData = new FormData(e.target);
-    // const formDataObj = Object.fromEntries(formData.entries());
-    // console.log("submit form", formDataObj);
+    // show errer message
+    if (fullname == "") {
+      console.log("1");
+      setFullnameErr("Vui lòng nhập Họ và tên");
+    } else {
+      setFullnameErr("");
+    }
+    if (email == "") {
+      setEmailErr("Vui lòng nhập email");
+      console.log("2");
+    } else if (validEmail == false) {
+      setEmailErr("Email không hợp lệ");
+    } else {
+      setEmailErr("");
+    }
+    if (password == "") {
+      setPasswordErr("Vui lòng nhập mật khẩu");
+    } else {
+      setPasswordErr("");
+    }
+    if (role == "" || role == "none") {
+      setRoleErr("Vui lòng chọn chức vụ");
+    } else {
+      setRoleErr("");
+    }
+    if (address == "") {
+      setAddressErr("Vui lòng nhập địa chỉ");
+    } else {
+      setAddressErr("");
+    }
+    if (birthday == "") {
+      setBirthdayErr("Vui lòng nhập ngày tháng năm sinh");
+    } else {
+      setBirthdayErr("");
+    }
+    if (phone == "") {
+      setPhoneErr("Vui lòng nhập số điện thoại");
+    } else {
+      setPhoneErr("");
+    }
+    if (password !== matchPassword) {
+      setMatchPasswordErr("Mật khẩu không khớp");
+    } else {
+      setMatchPasswordErr("");
+    }
+
     console.log("handle submit");
     if (userRegister.email != "") {
+      console.log("user register:", userRegister);
       axios
-        .post("http://localhost:8000/api/user/create", userRegister)
-        .then((data) => {
-          console.log("data off user register: ", data);
+        .post("http://localhost:8000/api/auth/create", userRegister)
+        .then((res) => {
+          // setMessageSuccess("Thêm mới thành công");
+          // setShowMessageSuccess(true);
+          toast.success("Thêm mới thành công");
         })
-        .catch((err) => console.log("err", err));
+        .catch((err) => {
+          const errMsg = err.response.data.message;
+          setMessageError(errMsg);
+          setShowMessageError(true);
+          console.log("err: ", err.response.data.message);
+        });
     }
-    // fetch("http://localhost:8000/test")
-    //   .then((response) => response.json())
-    //   .then((data) => console.log(data))
-    //   .catch((err) => console.log("err", err));
   }
   return (
     <div className="create-user-page">
@@ -188,6 +249,28 @@ const Create = () => {
         </div>
         <div className="create-user-page-content-add-form">
           <Form noValidate onSubmit={handleRegister}>
+            <Row className="mb-3" xs={2} md={2} lg={2}>
+              <Form.Group as={Col} controlId="formGridFullName">
+                <Form.Label
+                  style={{
+                    display: "flex",
+                    "align-items": "center",
+                  }}
+                >
+                  Họ và tên
+                </Form.Label>
+                <Form.Control
+                  ref={emailRef}
+                  type="text"
+                  placeholder="VD: Nguyễn Văn A"
+                  value={fullname}
+                  onChange={(e) => {
+                    setFullname(e.target.value);
+                  }}
+                />
+                {fullnameErr !== "" ? <span>{fullnameErr}</span> : null}
+              </Form.Group>
+            </Row>
             <Row className="mb-3" xs={2} md={2} lg={2}>
               <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label
@@ -240,6 +323,7 @@ const Create = () => {
                     setPassword(e.target.value);
                   }}
                 />
+                {passwordErr !== "" ? <span>{passwordErr}</span> : null}
               </Form.Group>
             </Row>
             <Row className="mb-3" xs={2} md={2} lg={2}>
@@ -255,6 +339,7 @@ const Create = () => {
                   <option value={"teacher"}>Giáo viên</option>
                   <option value={"student"}>Học sinh</option>
                 </Form.Select>
+                {roleErr !== "" ? <span>{roleErr}</span> : null}
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMatchPassword">
                 <Form.Label
@@ -279,6 +364,9 @@ const Create = () => {
                     setMatchPassword(e.target.value);
                   }}
                 />
+                {matchPasswordErr !== "" ? (
+                  <span>{matchPasswordErr}</span>
+                ) : null}
               </Form.Group>
             </Row>
             <Row className="mb-3" xs={2} md={2} lg={2}>
@@ -291,6 +379,7 @@ const Create = () => {
                   }}
                   placeholder="VD: 191 Hoàng diệu 2"
                 />
+                {addressErr !== "" ? <span>{addressErr}</span> : null}
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="formGridBirthday">
@@ -303,6 +392,7 @@ const Create = () => {
                     setBirthday(e.target.value);
                   }}
                 />
+                {birthdayErr !== "" ? <span>{birthdayErr}</span> : null}
               </Form.Group>
             </Row>
             <Row className="mb-3" xs={2} md={2} lg={2}>
@@ -315,6 +405,7 @@ const Create = () => {
                     setPhone(e.target.value);
                   }}
                 />
+                {phoneErr !== "" ? <span>{phoneErr}</span> : null}
               </Form.Group>
               <Form.Group className="mb-3" controlId="formGridStudentClass">
                 <Form.Label>Lớp học hiện tại</Form.Label>
@@ -331,18 +422,47 @@ const Create = () => {
             <Button variant="primary" type="submit">
               Thêm mới
             </Button>
-            <Button onClick={() => setShow(true)}>Show Toast</Button>
+            {/* <Button onClick={() => setShow(true)}>Show Toast</Button> */}
           </Form>
         </div>
       </div>
       <div className="toast-message">
-        <Toast onClose={() => setShow(false)} show={show} delay={3000} autohide>
-          <Toast.Header style={{ backgroundColor: "red", color: "#fff" }}>
+        <Toast
+          onClose={() => setShowMessageSuccess(false)}
+          show={showMessageSuccess}
+          delay={3000}
+          autohide
+        >
+          <Toast.Header
+            style={{
+              backgroundColor: "rgba(100, 212, 25, 0.75)",
+              color: "#fff",
+            }}
+          >
             <strong className="me-auto">Thông báo!</strong>
-            <small>0 phút</small>
           </Toast.Header>
           <Toast.Body style={{ backgroundColor: "#fff", minHeight: "50px" }}>
-            Lỗi ở chỗ nào đó rồi!
+            {messageSuccess ? messageSuccess : null}
+          </Toast.Body>
+        </Toast>
+      </div>
+      <div className="toast-message">
+        <Toast
+          onClose={() => setShowMessageError(false)}
+          show={showMessageError}
+          delay={3000}
+          autohide
+        >
+          <Toast.Header
+            style={{
+              backgroundColor: "rgba(225, 15, 15, 0.75)",
+              color: "#fff",
+            }}
+          >
+            <strong className="me-auto">Thông báo!</strong>
+          </Toast.Header>
+          <Toast.Body style={{ backgroundColor: "#fff", minHeight: "50px" }}>
+            {messageError ? messageError : null}
           </Toast.Body>
         </Toast>
       </div>

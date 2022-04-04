@@ -1,11 +1,15 @@
 const express = require("express");
 const BodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 var app = express();
+var cors = require("cors");
 
 app.use(BodyParser.json());
 //app.use(BodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(express.json());
+app.use(cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
