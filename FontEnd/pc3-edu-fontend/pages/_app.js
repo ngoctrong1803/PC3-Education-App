@@ -9,7 +9,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
-import store from "../redux/store";
+import { store, persistor } from "../redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 const layouts = {
   userLayout: userlayout,
@@ -21,25 +22,27 @@ function MyApp({ Component, pageProps }) {
   const Layout = layouts[Component.layout] || ((children) => <>{children}</>);
   return (
     <Provider store={store}>
-      <ToastContainer />
-      <Layout>
-        {/* this component is render content */}
-        <Component {...pageProps}></Component>
+      <PersistGate loading={null} persistor={persistor}>
+        <ToastContainer />
+        <Layout>
+          {/* this component is render content */}
+          <Component {...pageProps}></Component>
 
-        {/* Helmet to link script file */}
-        <Helmet>
-          <script
-            type="module"
-            src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-            async
-          ></script>
-          <script
-            nomodule
-            src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-            async
-          ></script>
-        </Helmet>
-      </Layout>
+          {/* Helmet to link script file */}
+          <Helmet>
+            <script
+              type="module"
+              src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+              async
+            ></script>
+            <script
+              nomodule
+              src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+              async
+            ></script>
+          </Helmet>
+        </Layout>
+      </PersistGate>
     </Provider>
   );
 }

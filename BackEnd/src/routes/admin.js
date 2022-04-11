@@ -3,7 +3,7 @@ const authController = require("../app/controller/authController");
 const router = express.Router();
 const authMiddleware = require("../app/middlewares/authMiddleware");
 
-router.get("/", authMiddleware.verifyToken, (req, res) => {
+router.get("/", authMiddleware.checkAdmin, (req, res) => {
   const userInfo = {
     email: req.data.email,
     fullname: req.data.fullname,

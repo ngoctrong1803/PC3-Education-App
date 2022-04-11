@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 
 const authMiddleware = {
   verifyToken: (req, res, next) => {
-    console.log(req);
     const token = req.headers.accesstoken;
     console.log(token);
     if (token) {
@@ -25,7 +24,8 @@ const authMiddleware = {
   },
   checkAdmin: (req, res, next) => {
     authMiddleware.verifyToken(req, res, () => {
-      if (req.payload.role == "admin") {
+      console.log("affter verifyToken: ", req.data);
+      if (req.data.role == "admin") {
         next();
       } else {
         res.status(403).json("bạn không được phép truy cập");

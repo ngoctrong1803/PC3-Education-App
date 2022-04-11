@@ -1,13 +1,19 @@
-import axios from "axios";
-import { loginFailed, loginStart, loginSuccess } from "./authSlice";
+// this file is handle all Call Api
 
-export const loginUser = async (user, dispatch, navigate) => {
+import axios from "axios";
+import { loginFailed, loginStart, loginSuccess, loginReset } from "./authSlice";
+
+export const loginUser = async (user, dispatch, router) => {
   dispatch(loginStart());
   try {
-    const res = axios.post("http://localhost:8000/api/auth/login", user);
+    const res = await axios.post("http://localhost:8000/api/auth/login", user);
     dispatch(loginSuccess(res.data));
-    navigate("http://localhost:8000/");
+    router.push("/");
   } catch (err) {
-    dispatch(loginFailed());
+    const errMessage = err.response.data.message;
+    dispatch(loginFailed(errMessage));
   }
+};
+export const loginResetFunc = async (dispatch) => {
+  dispatch(loginReset());
 };

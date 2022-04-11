@@ -53,13 +53,13 @@ const authController = {
   // create access token
   createAccessToken: (payload) => {
     return jwt.sign(payload, process.env.JWT_KEY_ACCESSTOKEN, {
-      expiresIn: "60s",
+      expiresIn: "9000s",
     });
   },
   // create refresh token
   createRefreshToken: (payload) => {
     return jwt.sign(payload, process.env.JWT_KEY_REFRESHTOKEN, {
-      expiresIn: "3600s",
+      expiresIn: "36000s",
     });
   },
 
@@ -96,18 +96,15 @@ const authController = {
                 authController.createAccessToken(dataSendToClient);
               const refreshToken =
                 authController.createRefreshToken(dataSendToClient);
-              const tokenInModel = new Token({
-                refreshtoken: refreshToken,
-              });
-              tokenInModel.save();
-              //   res.cookie("refreshtoken", refreshToken, {
-              //     httpOnly: true,
-              //     secure: false,
-              //     path: "/",
-              //     sameSite: "strict",
-              //   });
+              //------------------ save token in server --------------------
+              // const tokenInModel = new Token({
+              //   refreshtoken: refreshToken,
+              // });
+              // tokenInModel.save();
+              // ------------------------------------------------------------
               res.status(200).json({
                 message: "đăng nhập thành công",
+                userInfor: dataSendToClient,
                 accesstoken: accesstoken,
                 refreshtoken: refreshToken,
               });
@@ -126,22 +123,17 @@ const authController = {
       });
   },
   requestRefreshToken: async (req, res) => {
-    //take refresh token from browser
-    //const refreshtoken = req.cookies.refreshtoken;
-    console.log(
-      "-------------------------refresh token--------------------------"
-    );
-    const refreshtoken = req.headers.cookies;
-    console.log(refreshtoken);
+    let refreshtoken = req.headers.refreshtoken;
+    refreshtoken = refreshtoken.split(" ")[1];
     if (!refreshtoken) {
       res.status(401).json({
         message: "bạn chưa đăng nhập",
       });
     }
-    const checkToken = await Token.findOne({ refreshtoken: refreshtoken });
-    if (!checkToken) {
-      return res.status(403).json("refresh token không hợp lệ");
-    }
+    // const checkToken = await Token.findOne({ refreshtoken: refreshtoken });
+    // if (!checkToken) {
+    //   return res.status(403).json("refresh token không hợp lệ");
+    // }
     jwt.verify(
       refreshtoken,
       process.env.JWT_KEY_REFRESHTOKEN,
@@ -151,19 +143,15 @@ const authController = {
         }
         const { iat, exp, ...others } = payload;
         const user = others;
-        await Token.deleteOne({ refreshtoken: refreshtoken });
+        // await Token.deleteOne({ refreshtoken: refreshtoken });
         const newAccessToken = authController.createAccessToken(user);
         const newResfreshToken = authController.createRefreshToken(user);
-        const newTokenInModel = new Token({
-          refreshtoken: newResfreshToken,
-        });
-        newTokenInModel.save();
-        //   res.cookie("refreshtoken", refreshToken, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     path: "/",
-        //     sameSite: "strict",
-        //   });
+        // ----------------- save token in server -----------------------
+        // const newTokenInModel = new Token({
+        //   refreshtoken: newResfreshToken,
+        // });
+        // newTokenInModel.save();
+        // ---------------------------------------------------------------
         res.status(200).json({
           accesstoken: newAccessToken,
           refreshtoken: newResfreshToken,
