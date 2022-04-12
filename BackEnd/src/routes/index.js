@@ -11,7 +11,8 @@ const lessionRouter = require("./lession");
 const theoryRouter = require("./theory");
 const cateExerRouter = require("./categoryexercise");
 const mcExerciseRouter = require("./mcexercise");
-
+const statisticalOfExerciseRouter = require("./statisticalofexercise");
+const resultOfExerciseRouter = require("./resultofexercise");
 function route(app) {
   app.use("/api/user", userRouter);
   app.use("/api/login", loginRouter);
@@ -25,6 +26,8 @@ function route(app) {
   app.use("/api/theory", theoryRouter);
   app.use("/api/category-exercise", cateExerRouter);
   app.use("/api/mcexercise", mcExerciseRouter);
+  app.use("/api/statistical-of-exercise", statisticalOfExerciseRouter);
+  app.use("/api/result-of-exercise", resultOfExerciseRouter);
 }
 
 module.exports = route;
