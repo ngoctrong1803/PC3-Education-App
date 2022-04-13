@@ -1,15 +1,15 @@
-const MCExercise = require("../models/MCExercise");
-const mcExerciseController = {
-  //[get]/api/mcexercise/list-mcexercise
-  getMCExercise: async (req, res) => {
-    const listMCExercise = await MCExercise.find({});
+const ExamQuestion = require("../models/ExamQuestion");
+const examQuestionController = {
+  //[get]/api/exam-question/list
+  getExamQuestion: async (req, res) => {
+    const listExamQuestion = await ExamQuestion.find({});
     res.status(200).json({
-      message: "thành công truy cập get list exercise",
-      listMCExercise: listMCExercise,
+      message: "lấy thành công danh sách câu hỏi",
+      listExamQuestion: listExamQuestion,
     });
   },
-  //[post]/api/mcexercise/list-mcexercise
-  createMCExercise: async (req, res) => {
+  //[post]/api/exam-question/create
+  createExamQuestion: async (req, res) => {
     const {
       question,
       option1,
@@ -19,10 +19,10 @@ const mcExerciseController = {
       answer,
       explain,
       recommend,
-      lessionID,
+      examID,
       catExeID,
     } = req.body;
-    const checkMCExercise = await MCExercise.findOne({
+    const checkExamQuestion = await ExamQuestion.findOne({
       question: question,
       option1: option1,
       option2: option2,
@@ -31,15 +31,15 @@ const mcExerciseController = {
       answer: answer,
       explain: explain,
       recommend: recommend,
-      lessionID: lessionID,
+      examID: examID,
       catExeID: catExeID,
     });
-    if (checkMCExercise) {
+    if (checkExamQuestion) {
       res.status(400).json({
         message: "đã tồn tại câu hỏi này",
       });
     } else {
-      const newMCExercise = new MCExercise({
+      const newExamQuestion = new ExamQuestion({
         question: question,
         option1: option1,
         option2: option2,
@@ -48,17 +48,17 @@ const mcExerciseController = {
         answer: answer,
         explain: explain,
         recommend: recommend,
-        lessionID: lessionID,
+        examID: examID,
         catExeID: catExeID,
       });
-      newMCExercise.save();
+      newExamQuestion.save();
       res.status(200).json({
         message: "tạo mới câu hỏi thành công",
       });
     }
   },
-  //[put]/api/mcexercise/list-mcexercise
-  updateMCExercise: async (req, res) => {
+  //[put]/api/ExamQuestion/list-ExamQuestion
+  updateExamQuestion: async (req, res) => {
     const {
       question,
       option1,
@@ -68,10 +68,10 @@ const mcExerciseController = {
       answer,
       explain,
       recommend,
-      lessionID,
+      examID,
       catExeID,
     } = req.body;
-    const checkMCExercise = await MCExercise.findOne({
+    const checkExamQuestion = await ExamQuestion.findOne({
       question: question,
       option1: option1,
       option2: option2,
@@ -80,22 +80,22 @@ const mcExerciseController = {
       answer: answer,
       explain: explain,
       recommend: recommend,
-      lessionID: lessionID,
+      examID: examID,
       catExeID: catExeID,
     });
-    if (checkMCExercise) {
+    if (checkExamQuestion) {
       res.status(400).json({
         message: "đã tồn tại câu hỏi này",
       });
     } else {
-      let mcExerciseID = req.params.id;
+      let ExamQuestionID = req.params.id;
       try {
-        const checkUpdate = await MCExercise.findOne({
-          _id: mcExerciseID,
+        const checkUpdate = await ExamQuestion.findOne({
+          _id: ExamQuestionID,
         });
         if (checkUpdate) {
-          await MCExercise.updateOne(
-            { _id: mcExerciseID },
+          await ExamQuestion.updateOne(
+            { _id: ExamQuestionID },
             {
               question: question,
               option1: option1,
@@ -105,7 +105,7 @@ const mcExerciseController = {
               answer: answer,
               explain: explain,
               recommend: recommend,
-              lessionID: lessionID,
+              examID: examID,
               catExeID: catExeID,
             }
           );
@@ -124,16 +124,16 @@ const mcExerciseController = {
       }
     }
   },
-  //[delete]/api/mcexercise/list-mcexercise
-  deleteMCExercise: async (req, res) => {
-    let mcExerciseID = req.params.id;
+  //[delete]/api/ExamQuestion/list-ExamQuestion
+  deleteExamQuestion: async (req, res) => {
+    let examQuestionID = req.params.id;
     try {
-      const checkDelete = await MCExercise.findOne({
-        _id: mcExerciseID,
+      const checkDelete = await ExamQuestion.findOne({
+        _id: examQuestionID,
       });
       if (checkDelete) {
-        await MCExercise.deleteOne({
-          _id: mcExerciseID,
+        await ExamQuestion.deleteOne({
+          _id: examQuestionID,
         });
         res.status(200).json({
           message: "xóa câu hỏi thành công",
@@ -150,4 +150,4 @@ const mcExerciseController = {
     }
   },
 };
-module.exports = mcExerciseController;
+module.exports = examQuestionController;
