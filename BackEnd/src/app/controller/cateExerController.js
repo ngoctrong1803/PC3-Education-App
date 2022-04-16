@@ -1,8 +1,8 @@
-const CategorryExercise = require("../models/CategoryExercise");
+const CategoryExercise = require("../models/CategoryExercise");
 const cateExerController = {
   //[get]/api/category-exercise/list
   getCateExer: async (req, res) => {
-    const listCateExer = await CategorryExercise.find({});
+    const listCateExer = await CategoryExercise.find({});
     res.status(200).json({
       message: "lấy thể loại bài tập thành công",
       listCateExer: listCateExer,
@@ -11,7 +11,7 @@ const cateExerController = {
   //[post]/api/category-exercise/create
   createCateExer: async (req, res) => {
     const { typeName, description } = req.body;
-    const checkCateExer = await CategorryExercise.findOne({
+    const checkCateExer = await CategoryExercise.findOne({
       typeName: typeName,
       description: description,
     });
@@ -20,7 +20,7 @@ const cateExerController = {
         message: "thể loại bài tập này đã tồn tại",
       });
     } else {
-      const newCateExer = new CategorryExercise({
+      const newCateExer = new CategoryExercise({
         typeName: typeName,
         description: description,
       });
@@ -33,7 +33,7 @@ const cateExerController = {
   //[put]/api/category-exercise/update/:id
   updateCateExer: async (req, res) => {
     const { typeName, description } = req.body;
-    const checkCateExer = await CategorryExercise.findOne({
+    const checkCateExer = await CategoryExercise.findOne({
       typeName: typeName,
       description: description,
     });
@@ -43,9 +43,9 @@ const cateExerController = {
       });
     } else {
       try {
-        const checkId = await CategorryExercise.findOne({ _id: req.params.id });
+        const checkId = await CategoryExercise.findOne({ _id: req.params.id });
         if (checkId) {
-          await CategorryExercise.updateOne(
+          await CategoryExercise.updateOne(
             { _id: req.params.id },
             { typeName: typeName, description: description }
           );
@@ -68,9 +68,9 @@ const cateExerController = {
   deleteCateExer: async (req, res) => {
     let cateExerId = req.params.id;
     try {
-      let checkId = await CategorryExercise.findById(req.params.id);
+      let checkId = await CategoryExercise.findById(req.params.id);
       if (checkId) {
-        await CategorryExercise.deleteOne({ _id: cateExerId });
+        await CategoryExercise.deleteOne({ _id: cateExerId });
         res.status(200).json({
           message: "đã xóa thành công",
         });
