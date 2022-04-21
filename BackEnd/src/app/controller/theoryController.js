@@ -1,4 +1,7 @@
 const Theory = require("../models/Theory");
+const Lession = require("../models/Lession");
+const Unit = require("../models/Unit");
+const Subject = require("../models/Subject");
 const theoryController = {
   //[get]/api/theory/list-theory
   getTheory: async (req, res) => {
@@ -8,16 +11,31 @@ const theoryController = {
       listTheory: listTheory,
     });
   },
+  //[get]/api/lession/:id
+  getContentOfTheory: async (req, res) => {
+    const theory = await TheoryfindOne({ _id: req.params.id });
+    const lession = await Lession.findOne({ _id: theory.lessionID });
+    const unitOfLession = await Unit.findOne({ _id: lession.unitID });
+    const subejctOfUnit = await Subject.findOne({
+      _id: unitOfLession.subjectID,
+    });
+    res.status(200).json({
+      message: "đã lấy nội dung môn học thành công",
+      theory,
+      lession,
+      unitOfLession,
+      subejctOfUnit,
+    });
+  },
   //[post]/api/theory/create
   createTheory: async (req, res) => {
     const { content, lessionID } = req.body;
     const checkTheory = await Theory.findOne({
-      content: content,
       lessionID: lessionID,
     });
     if (checkTheory) {
       res.status(400).json({
-        message: "nội dung này đã tồn tại",
+        message: "nội dung của bài học này đã tồn tại",
       });
     } else {
       let newTheory = new Theory({

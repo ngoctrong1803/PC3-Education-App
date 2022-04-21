@@ -40,6 +40,11 @@ function MyApp({ Component, pageProps }) {
               src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
               async
             ></script>
+            <script
+              async
+              type="text/javascript"
+              src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            ></script>
           </Helmet>
         </Layout>
       </PersistGate>

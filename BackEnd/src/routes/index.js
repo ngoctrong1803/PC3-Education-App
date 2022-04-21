@@ -33,6 +33,7 @@ const queInForumRouter = require("./queinforum");
 const commentRouter = require("./comment");
 const questionLikeRouter = require("./questionlike");
 const commentLikeRouter = require("./commentlike");
+const gradeRouter = require("./grade");
 function route(app) {
   app.use("/api/user", userRouter);
   app.use("/api/login", loginRouter);
@@ -68,6 +69,7 @@ function route(app) {
   app.use("/api/comment", commentRouter);
   app.use("/api/question-like", questionLikeRouter);
   app.use("/api/comment-like", commentLikeRouter);
+  app.use("/api/grade", gradeRouter);
 }
 
 module.exports = route;

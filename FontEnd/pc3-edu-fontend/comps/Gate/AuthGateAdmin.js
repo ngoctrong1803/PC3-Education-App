@@ -9,7 +9,7 @@ const AuthGateAdmin = ({ children }) => {
   const user = useSelector((state) => state.auth.login?.currentUser);
   const dispatch = useDispatch();
 
-  let axiosJWT = createAxios(user, dispatch, loginSuccess);
+  let axiosJWT = createAxios(user, dispatch, loginSuccess); // các biến truyền vào nhằm trước hợp token hết hạn sẽ refresh token
   useEffect(() => {
     //call api xác thực nếu xác thực thất bại sẽ redirect về home và thông báo lỗi
     // call api admim

@@ -5,27 +5,32 @@ const authMiddleware = require("../app/middlewares/authMiddleware");
 
 router.get(
   "/get-list-subject",
-  authMiddleware.checkAdmin,
+  //authMiddleware.checkAdmin,
   subjectController.getListSubject
 );
 router.get(
   "/get-list-subject/:page",
-  authMiddleware.checkAdmin,
+  //authMiddleware.checkAdmin,
   subjectController.getListSubjectPagination
+);
+router.get(
+  "/content/:slug",
+  //authMiddleware.checkAdmin,
+  subjectController.getContentOfSubject
 );
 router.post(
   "/create",
-  authMiddleware.checkAdmin,
+  //authMiddleware.checkAdmin,
   subjectController.createSucject
 );
 router.put(
   "/update/:id",
-  authMiddleware.checkAdmin,
+  //authMiddleware.checkAdmin,
   subjectController.updateSubject
 );
 router.delete(
   "/delete/:id",
-  authMiddleware.checkAdmin,
+  //authMiddleware.checkAdmin,
   subjectController.deleteSubject
 );
 

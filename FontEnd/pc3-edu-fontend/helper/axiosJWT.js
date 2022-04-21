@@ -1,8 +1,7 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { loginSuccess } from "../redux/authSlice";
 
-export const createAxios = (user, dispatch, action) => {
+export const createAxios = (user, dispatch, loginSuccess) => {
   const newInstance = axios.create();
 
   function getLocalAccessToken() {
@@ -52,7 +51,7 @@ export const createAxios = (user, dispatch, action) => {
           accesstoken: data.accesstoken,
           refreshtoken: data.refreshtoken,
         };
-        dispatch(action(refreshUser));
+        dispatch(loginSuccess(refreshUser));
         window.localStorage.setItem("accesstoken", data.accesstoken);
         window.localStorage.setItem("refreshtoken", data.refreshtoken);
         config.headers["accesstoken"] = "Bearer " + data.accesstoken;

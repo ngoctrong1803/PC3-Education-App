@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../app/middlewares/authMiddleware");
 const lessionController = require("../app/controller/lessionController");
 
+router.get("/:id", lessionController.getContentLession);
 router.get("/list-lession", lessionController.getLession);
 router.post("/create", lessionController.createLession);
 router.put("/update/:id", lessionController.updateLession);

@@ -1,5 +1,7 @@
 const Subject = require("../models/Subject");
 const Grade = require("../models/Grade");
+const Unit = require("../models/Unit");
+const Lession = require("../models/Lession");
 const slugify = require("slugify");
 
 const subjectController = {
@@ -8,11 +10,10 @@ const subjectController = {
   //[get]/api/subejct/get-list-subject
   getListSubject: async (req, res) => {
     let subjectInPage = 3;
-    const listSubject = await Subject.find({})
-      .sort({
-        gradeID: -1,
-      })
-      .limit(subjectInPage);
+    const listSubject = await Subject.find({}).sort({
+      gradeID: -1,
+    });
+
     let totalSubject = await Subject.countDocuments();
     res.status(200).json({
       message: "lấy danh sách môn học thành công",
@@ -40,7 +41,24 @@ const subjectController = {
       currentPage: currentPage,
     });
   },
-
+  //[get]/api/subjects/content
+  getContentOfSubject: async (req, res) => {
+    const slug = req.params.slug;
+    const subject = await Subject.findOne({ slug: slug });
+    const subejctID = subject._id;
+    const units = await Unit.find({ subjectID: subejctID });
+    const unitIdArray = units.map(({ _id }) => _id); // chức các id của unit
+    const lessions = await Lession.find({
+      unitID: { $in: unitIdArray },
+    }).sort({ lessionNumber: 1 });
+    res.status(201).json({
+      message: "lấy nội dung môn học thành công",
+      subject: subject,
+      units: units,
+      lessions: lessions,
+    });
+    // const lessionIdArray = lessions.map(({ _id }) => _id);
+  },
   //[post]/api/subject/create
   createSucject: async (req, res) => {
     console.log("data when create subject:", req.body);
@@ -58,7 +76,9 @@ const subjectController = {
         gradeID: req.body.gradeID,
       });
       newsubject.save();
-      res.status(201).json(newsubject);
+      res
+        .status(201)
+        .json({ message: "tạo mới thành công", subject: newsubject });
     }
   },
   //[put]/api/subject/update/:id

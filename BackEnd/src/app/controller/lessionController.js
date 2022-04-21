@@ -1,4 +1,7 @@
 const Lession = require("../models/Lession");
+const Subject = require("../models/Subject");
+const Theory = require("../models/Theory");
+const Unit = require("../models/Unit");
 
 const lessionController = {
   //[get]/api/lession/list-lession
@@ -9,12 +12,29 @@ const lessionController = {
       listLession: listLession,
     });
   },
+  //[get]/api/lession/:id
+  getContentLession: async (req, res) => {
+    const lession = await Lession.findOne({ _id: req.params.id });
+    const theory = await Theory.findOne({ lessionID: lession._id });
+    const unitOfLession = await Unit.findOne({ _id: lession.unitID });
+    const subjectOfUnit = await Subject.findOne({
+      _id: unitOfLession.subjectID,
+    });
+    res.status(200).json({
+      message: "đã lấy nội dung môn học thành công",
+      lession,
+      unitOfLession,
+      subjectOfUnit,
+      theory,
+    });
+  },
   //[post]/api/lession/create
   createLession: async (req, res) => {
-    const { lessionName, initID } = req.body;
+    const { lessionName, unitID, lessionNumber } = req.body;
     const checkLession = await Lession.findOne({
       lessionName: lessionName,
-      initID: initID,
+      unitID: unitID,
+      lessionNumber: lessionNumber,
     });
     if (checkLession) {
       res.status(400).json({
@@ -23,7 +43,8 @@ const lessionController = {
     } else {
       let newLession = new Lession({
         lessionName: lessionName,
-        initID: initID,
+        unitID: unitID,
+        lessionNumber: lessionNumber,
       });
       newLession.save();
       res.status(200).json({
@@ -34,10 +55,11 @@ const lessionController = {
   },
   //[put]/api/lession/update/:id
   updateLession: async (req, res) => {
-    const { lessionName, unitID } = req.body;
+    const { lessionName, unitID, lessionNumber } = req.body;
     const checkLession = await Lession.findOne({
       lessionName: lessionName,
       unitID: unitID,
+      lessionNumber: lessionNumber,
     });
     if (checkLession) {
       res.status(400).json({
@@ -52,6 +74,7 @@ const lessionController = {
             {
               lessionName: lessionName,
               unitID: unitID,
+              lessionNumber: lessionNumber,
             }
           );
           res.status(200).json({
@@ -59,7 +82,7 @@ const lessionController = {
           });
         } else {
           res.status(400).json({
-            message: "không tồn tại bài học cần xóa",
+            message: "không tồn tại bài học cần update",
           });
         }
       } catch (err) {
@@ -74,7 +97,7 @@ const lessionController = {
     try {
       const checkId = await Lession.findOne({ _id: req.params.id });
       if (checkId) {
-        Lession.deleteOne({ _id: req.params.id });
+        await Lession.deleteOne({ _id: req.params.id });
         res.status(200).json({
           message: "đã xóa bài học thành công",
         });

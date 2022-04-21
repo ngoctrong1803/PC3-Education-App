@@ -1,4 +1,5 @@
 const Unit = require("../models/Unit");
+const Subject = require("../models/Subject");
 
 const unitController = {
   //[get]/api/unit/list-unit
@@ -11,7 +12,9 @@ const unitController = {
   },
   //[post]/api/unit/create
   createUnit: async (req, res) => {
-    const { unitName, subjectID } = req.body;
+    const { unitName, slug } = req.body;
+    const subejctOfUnit = await Subject.findOne({ slug: slug });
+    const subjectID = subejctOfUnit._id;
     const checkUnit = await Unit.findOne({
       unitName: unitName,
       subjectID: subjectID,
