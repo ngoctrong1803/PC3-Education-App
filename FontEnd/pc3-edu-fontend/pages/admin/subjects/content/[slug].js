@@ -148,9 +148,21 @@ const Content = () => {
   return (
     <div className="subject-content-page">
       <div className="subject-content-title">
-        <span>Nội dung nôn học</span>
-        <br></br>
-        <h6>7 chương - 32 bài học</h6>
+        <div>
+          <span>Nội dung nôn học</span>
+          <br></br>
+          <h6>7 chương - 32 bài học</h6>
+        </div>
+        <Button
+          style={{ "margin-right": "65px", height: "40px" }}
+          className="admin-subjects-header-add-user"
+          variant="outline-warning"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          quay lại
+        </Button>
       </div>
       <div className="subject-content-content">
         <div className="subject-content-item">

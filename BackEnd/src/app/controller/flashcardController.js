@@ -1,4 +1,5 @@
 const Flashcard = require("../models/Flashcard");
+const Topic = require("../models/Topic");
 const flashcardController = {
   //[get]/api/flashcard/list
   getFlashcard: async (req, res) => {
@@ -8,11 +9,26 @@ const flashcardController = {
       listFlashcard: listFlashcard,
     });
   },
+  //[get]/api/flashcard/list
+  getFlashcardByTopicID: async (req, res) => {
+    const topicID = req.params.id;
+    const listFlashcard = await Flashcard.find({
+      topicID: topicID,
+    });
+    const topic = await Topic.findOne({
+      _id: topicID,
+    });
+    res.status(200).json({
+      message: "lấy Flashcard thành công",
+      listFlashcard: listFlashcard,
+      topic: topic,
+    });
+  },
   //[post]/api/flashcard/create
   createFlashcard: async (req, res) => {
     const {
       meaningInEnglish,
-      meaninfInVietnamese,
+      meaningInVietnamese,
       star,
       forgetfulness,
       explain,
@@ -23,7 +39,7 @@ const flashcardController = {
     } = req.body;
     const checkFlashcard = await Flashcard.findOne({
       meaningInEnglish: meaningInEnglish,
-      meaninfInVietnamese: meaninfInVietnamese,
+      meaningInVietnamese: meaningInVietnamese,
       star: star,
       forgetfulness: forgetfulness,
       explain: explain,
@@ -39,7 +55,7 @@ const flashcardController = {
     } else {
       const newFlashcard = new Flashcard({
         meaningInEnglish: meaningInEnglish,
-        meaninfInVietnamese: meaninfInVietnamese,
+        meaningInVietnamese: meaningInVietnamese,
         star: star,
         forgetfulness: forgetfulness,
         explain: explain,
@@ -58,7 +74,7 @@ const flashcardController = {
   updateFlashcard: async (req, res) => {
     const {
       meaningInEnglish,
-      meaninfInVietnamese,
+      meaningInVietnamese,
       star,
       forgetfulness,
       explain,
@@ -69,7 +85,7 @@ const flashcardController = {
     } = req.body;
     const checkFlashcard = await Flashcard.findOne({
       meaningInEnglish: meaningInEnglish,
-      meaninfInVietnamese: meaninfInVietnamese,
+      meaningInVietnamese: meaningInVietnamese,
       star: star,
       forgetfulness: forgetfulness,
       explain: explain,
@@ -90,7 +106,7 @@ const flashcardController = {
             { _id: req.params.id },
             {
               meaningInEnglish: meaningInEnglish,
-              meaninfInVietnamese: meaninfInVietnamese,
+              meaningInVietnamese: meaningInVietnamese,
               star: star,
               forgetfulness: forgetfulness,
               explain: explain,

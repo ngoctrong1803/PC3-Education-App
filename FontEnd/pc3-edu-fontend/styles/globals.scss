@@ -2168,6 +2168,7 @@ ul.navbar-home {
   }
   .admin-subjects-header {
     display: flex;
+    justify-content: space-between;
     .admin-subjects-header-find {
       width: 300px;
       margin-right: 10px;
@@ -2224,6 +2225,8 @@ ul.navbar-home {
 .subject-content-page {
   padding: 15px;
   .subject-content-title {
+    display: flex;
+    justify-content: space-between;
     font-size: 22px;
     font-weight: 600;
   }
@@ -2399,6 +2402,8 @@ ul.navbar-home {
 .admin-subject-theory-page {
   padding: 15px;
   .admin-subject-theory-header {
+    display: flex;
+    justify-content: space-between;
     span {
       font-size: 20px;
       font-weight: 600;

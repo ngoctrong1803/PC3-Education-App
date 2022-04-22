@@ -92,6 +92,14 @@ const Theory = () => {
     <div className="admin-subject-theory-page">
       <div className="admin-subject-theory-header">
         <span>Thêm mới lý thuyết</span>
+        <Button
+          variant="outline-warning"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          quay lại
+        </Button>
       </div>
       <div className="admin-subject-theory-title">
         <span>

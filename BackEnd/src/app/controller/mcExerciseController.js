@@ -28,6 +28,23 @@ const mcExerciseController = {
       categoryOfExercise,
     });
   },
+  //[get]/api/mcexercise/detail/:id
+  getMCExerciseByID: async (req, res) => {
+    const mcExerciseID = req.params.id;
+    const mcExercise = await MCExercise.findOne({
+      _id: mcExerciseID,
+    });
+    if (mcExercise) {
+      res.status(200).json({
+        message: "thành công truy cập getb exercise",
+        mcExercise,
+      });
+    } else {
+      res.status(400).json({
+        message: "không tìm thấy bài tập",
+      });
+    }
+  },
   //[post]/api/mcexercise/list-mcexercise
   createMCExercise: async (req, res) => {
     const {
@@ -147,10 +164,12 @@ const mcExerciseController = {
   //[delete]/api/mcexercise/list-mcexercise
   deleteMCExercise: async (req, res) => {
     let mcExerciseID = req.params.id;
+    console.log("exercise:", mcExerciseID);
     try {
       const checkDelete = await MCExercise.findOne({
         _id: mcExerciseID,
       });
+      console.log("check exercise:", checkDelete);
       if (checkDelete) {
         await MCExercise.deleteOne({
           _id: mcExerciseID,

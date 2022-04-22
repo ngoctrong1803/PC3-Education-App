@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import { store, persistor } from "../redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import Script from "next/script";
 
 const layouts = {
   userLayout: userlayout,
@@ -29,6 +30,10 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps}></Component>
 
           {/* Helmet to link script file */}
+          {/* <Script
+            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            strategy="beforeInteractive"
+          /> */}
           <Helmet>
             <script
               type="module"
@@ -40,11 +45,11 @@ function MyApp({ Component, pageProps }) {
               src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
               async
             ></script>
-            <script
+            {/* <script
               async
               type="text/javascript"
               src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-            ></script>
+            ></script> */}
           </Helmet>
         </Layout>
       </PersistGate>

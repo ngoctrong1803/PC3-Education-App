@@ -11,12 +11,16 @@ const CreateExercise = () => {
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
-  const lessionID = arrayTemp[position];
+  const exerciseID = arrayTemp[position];
 
-  const [lession, setLession] = useState();
-  const [unit, setUnit] = useState();
-  const [subject, setSubject] = useState();
+  const [exercise, setExercise] = useState();
+
   const [categoryOfExercise, setCategoryOfExercise] = useState();
+
+  const option1Ref = useRef();
+  const option2Ref = useRef();
+  const option3Ref = useRef();
+  const option4Ref = useRef();
 
   // data to create exercise
   const [contentOfExercise, setContentOfExercise] = useState("");
@@ -29,19 +33,36 @@ const CreateExercise = () => {
   const [recommend, setRecommend] = useState("");
   const [explain, setExplain] = useState("");
 
-  // handel get content
-  async function getInforOfLession() {
+  async function getInforExercise() {
     try {
-      const url = "http://localhost:8000/api/lession/" + lessionID;
+      const url = "http://localhost:8000/api/mcexercise/detail/" + exerciseID;
       const res = await axios.get(url);
-      setSubject(res.data.subjectOfUnit);
-      setUnit(res.data.unitOfLession);
-      setLession(res.data.lession);
+      setExercise(res.data.mcExercise);
+      console.log("bài tập lấy được:", res.data.mcExercise);
+      setContentOfExercise(res.data.mcExercise.question);
+      setOption1(res.data.mcExercise.option1);
+      setOption2(res.data.mcExercise.option2);
+      setOption3(res.data.mcExercise.option3);
+      setOption4(res.data.mcExercise.option4);
+      setAnswer(res.data.mcExercise.answer);
+      if (res.data.mcExercise.answer == "option1") {
+        option1Ref.current.checked = true;
+      } else if (res.data.mcExercise.answer == "option2") {
+        option2Ref.current.checked = true;
+      } else if (res.data.mcExercise.answer == "option3") {
+        option3Ref.current.checked = true;
+      } else if (res.data.mcExercise.answer == "option4") {
+        option4Ref.current.checked = true;
+      }
+      setCateExerID(res.data.mcExercise.catExeID);
+      setRecommend(res.data.mcExercise.recommend);
+      setExplain(res.data.mcExercise.explain);
     } catch (err) {
       const errMessage = err.response?.data.message;
       toast.error(errMessage);
     }
   }
+
   async function getCategoryOfExercise() {
     try {
       const url = "http://localhost:8000/api/category-exercise/list";
@@ -53,7 +74,7 @@ const CreateExercise = () => {
       toast.error(errMessage);
     }
   }
-  async function handleAddMCExercise() {
+  async function handleUpdateMCExercise() {
     if (
       contentOfExercise == "" ||
       option1 == "" ||
@@ -74,14 +95,14 @@ const CreateExercise = () => {
         catExeID: cateExerID,
         recommend,
         explain,
-        lessionID,
       };
+      console.log("update exercise:", newExercise);
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/mcexercise/create",
+        const res = await axios.put(
+          "http://localhost:8000/api/mcexercise/update/" + exerciseID,
           newExercise
         );
-        toast.message("thêm mới bài tập thành công");
+        toast.success("cập nhật bài tập thành công");
       } catch (err) {
         const errMessage = err.response?.data.message;
         toast.error(errMessage);
@@ -100,6 +121,7 @@ const CreateExercise = () => {
       recommend,
       explain,
     };
+    console.log("new exercise:", newExercise);
   }, [
     contentOfExercise,
     option1,
@@ -113,7 +135,7 @@ const CreateExercise = () => {
   ]);
 
   useEffect(() => {
-    getInforOfLession();
+    getInforExercise();
     getCategoryOfExercise();
     setEditorLoaded(true);
   }, []);
@@ -123,15 +145,9 @@ const CreateExercise = () => {
     <div className="admin-subject-exercise-page">
       <div className="admin-subject-exercise-header">
         <div className="admin-subject-exercise-input-file">
-          <span>Thêm mới câu hỏi bằng excel</span>
-          <Form.Group controlId="formFile" className="import-excel">
-            <Form.Control type="file" />
-          </Form.Group>
+          <h4>Chi tiết câu hỏi</h4>
         </div>
         <div>
-          <Button variant="outline-success" style={{ "margin-right": "5px" }}>
-            Excel mẫu
-          </Button>
           <Button
             variant="outline-warning"
             onClick={() => {
@@ -143,15 +159,8 @@ const CreateExercise = () => {
         </div>
       </div>
       <div className="admin-subject-exercise-content-wrap">
-        <div className="admin-subject-exercise-content-title">
-          <span>
-            {subject?.name} lớp {subject?.gradeID} - {unit?.unitName}
-          </span>
-          <br></br>
-          <span>{lession?.lessionName}</span>
-        </div>
         <div className="admin-subject-exercise-content-question-wrap">
-          <span>Nhập thông tin của câu hỏi mới</span>
+          <h5>Cập nhật nội dung câu hỏi</h5>
           <div className="admin-subject-exercise-content-question">
             <span>Nội dung câu hỏi</span>
             <Editor
@@ -169,6 +178,7 @@ const CreateExercise = () => {
             <Row xs={2} md={4} lg={4}>
               <Col>
                 <Form.Check
+                  ref={option1Ref}
                   label="A"
                   inline
                   name="group1"
@@ -189,6 +199,7 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
+                  ref={option2Ref}
                   label="B"
                   inline
                   name="group1"
@@ -209,6 +220,7 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
+                  ref={option3Ref}
                   label="C"
                   inline
                   name="group1"
@@ -229,6 +241,7 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
+                  ref={option4Ref}
                   label="D"
                   inline
                   name="group1"
@@ -299,8 +312,8 @@ const CreateExercise = () => {
             />
           </div>
           <div className="admin-subject-exercise-footer">
-            <Button variant="primary" onClick={handleAddMCExercise}>
-              Lưu lại
+            <Button variant="primary" onClick={handleUpdateMCExercise}>
+              Cập nhật
             </Button>
             <Button
               variant="primary"

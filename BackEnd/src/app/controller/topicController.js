@@ -8,7 +8,7 @@ const topicController = {
       listTopic: listTopic,
     });
   },
-  //[post]/api/Topic/create
+  //[post]/api/topic/create
   createTopic: async (req, res) => {
     const { topicName, description, image } = req.body;
     const checkTopic = await Topic.findOne({

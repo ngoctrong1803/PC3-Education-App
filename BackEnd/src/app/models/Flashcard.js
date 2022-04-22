@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const Flashcard = new Schema(
   {
     meaningInEnglish: { type: String, require: true },
-    meaninfInVietnamese: { type: String, require: true },
+    meaningInVietnamese: { type: String, require: true },
     star: { type: Boolean, require: true, default: false },
     forgetfulness: { type: Boolean, require: true, default: false },
     explain: { type: String },
