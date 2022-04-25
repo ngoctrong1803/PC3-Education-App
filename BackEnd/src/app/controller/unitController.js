@@ -37,10 +37,9 @@ const unitController = {
   },
   //[put]/api/unit/update/:id
   updateUnit: async (req, res) => {
-    const { unitName, subjectID } = req.body;
+    const { unitName } = req.body;
     const checkUnit = await Unit.findOne({
       unitName: unitName,
-      subjectID: subjectID,
     });
     if (checkUnit) {
       res.status(400).json({
@@ -54,7 +53,6 @@ const unitController = {
             { _id: req.params.id },
             {
               unitName: unitName,
-              subjectID: subjectID,
             }
           );
 

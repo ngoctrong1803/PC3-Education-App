@@ -20,11 +20,18 @@ const Flashcard = () => {
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const topicID = arrayTemp[position];
+
   const [listFlashcard, setListFlashcard] = useState([]);
   const [topic, setTopic] = useState({});
+  const [listUser, setListUser] = useState([]);
   const curentAdmin = useSelector((state) => state.auth.login.currentUser);
 
   const [showAddFlashcard, setShowAddFlashcard] = useState(false);
+  const [showUpdateFlashcard, setShowUpdateFlashcard] = useState(false);
+  const [showConfirmDeleteFlashcard, setShowConfirmDeleteFlashcard] =
+    useState(false);
+
+  const [flashcardID, setFlashcardID] = useState("");
   const [meaningInEnglish, setMeaningInEnglish] = useState("");
   const [meaningInVietnamese, setMeaningInVietnamese] = useState("");
   const [explain, setExplain] = useState("");
@@ -36,6 +43,46 @@ const Flashcard = () => {
   function handleShowAddFlashcard() {
     setShowAddFlashcard(true);
   }
+  function handleCloseUpdateFlashcard() {
+    setShowUpdateFlashcard(false);
+  }
+  function handleShowUpdateFlashcard(
+    flashcardID,
+    meaningInVietnamese,
+    meaningInEnglish,
+    example,
+    explain
+  ) {
+    setShowUpdateFlashcard(true);
+    setFlashcardID(flashcardID);
+    setMeaningInVietnamese(meaningInVietnamese);
+    setMeaningInEnglish(meaningInEnglish);
+    setExample(example);
+    setExplain(explain);
+  }
+  function handleCloseConfirmDeleteFlashcard() {
+    setShowConfirmDeleteFlashcard(false);
+  }
+  function handleShowConfirmDeleteFlashcard(flashcardID) {
+    setShowConfirmDeleteFlashcard(true);
+    setFlashcardID(flashcardID);
+  }
+
+  async function getFlashcard() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/flashcard/list/" + topicID
+      );
+      setListFlashcard(res.data.listFlashcard);
+      console.log("list flash card:", res.data.listFlashcard);
+      setTopic(res.data.topic);
+      setListUser(res.data.users);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+
   async function handleAddFlashcard() {
     const newFlashcard = {
       meaningInVietnamese,
@@ -48,7 +95,6 @@ const Flashcard = () => {
       topicID: topicID,
       userID: curentAdmin.userInfor._id,
     };
-    console.log("flashcard to add:", newFlashcard, "| user:", curentAdmin);
     if (meaningInVietnamese == "" || meaningInEnglish == "") {
       toast.error("thông tin chưa đầy đủ để tạo Flashcard");
     } else {
@@ -61,21 +107,44 @@ const Flashcard = () => {
         handleCloseAddFlashcard();
         getFlashcard();
       } catch (err) {
-        console.log("err:", { err });
         const errMessage = err.response.data.message;
         toast.error(errMessage);
       }
     }
   }
-
-  async function getFlashcard() {
+  async function handleUpdateFlashcard() {
+    const updateFlashcard = {
+      meaningInVietnamese,
+      meaningInEnglish,
+      explain,
+      example,
+      userID: curentAdmin.userInfor._id,
+    };
+    if (meaningInVietnamese == "" || meaningInEnglish == "") {
+      toast.error("vui lòng nhập đầy đủ thông tin Flashcard");
+    } else {
+      try {
+        const res = await axios.put(
+          "http://localhost:8000/api/flashcard/update/" + flashcardID,
+          updateFlashcard
+        );
+        toast.success("cập nhật flashcard thành công");
+        handleCloseUpdateFlashcard();
+        getFlashcard();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
+  async function handleDeleteFlashcard() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/flashcard/list/" + topicID
+      const res = await axios.delete(
+        "http://localhost:8000/api/flashcard/delete/" + flashcardID
       );
-      console.log("res", res.data);
-      setListFlashcard(res.data.listFlashcard);
-      setTopic(res.data.topic);
+      toast.success("đã xóa flashcard");
+      handleCloseConfirmDeleteFlashcard();
+      getFlashcard();
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -128,6 +197,7 @@ const Flashcard = () => {
           <thead>
             <tr>
               <th>#</th>
+              <th>Tác giả</th>
               <th>Nghĩa anh</th>
               <th>Nghĩa tiếng việt</th>
               <th>Ví dụ</th>
@@ -140,21 +210,39 @@ const Flashcard = () => {
                 <>
                   <tr>
                     <td>{index + 1}</td>
+                    <td>
+                      {listUser.map((userItem) => {
+                        if (userItem._id == item.userID) {
+                          return userItem.fullname;
+                        }
+                      })}
+                    </td>
                     <td>{item.meaningInEnglish}</td>
                     <td>{item.meaningInVietnamese}</td>
                     <td>{item.example}</td>
                     <td>
-                      <Link href={``}>
-                        <Button
-                          className="admin-subjects-header-add-user"
-                          variant="primary"
-                        >
-                          Chi tiết
-                        </Button>
-                      </Link>
+                      <Button
+                        className="admin-subjects-header-add-user"
+                        variant="primary"
+                        onClick={() => {
+                          handleShowUpdateFlashcard(
+                            item._id,
+                            item.meaningInVietnamese,
+                            item.meaningInEnglish,
+                            item.example,
+                            item.explain
+                          );
+                        }}
+                      >
+                        Chi tiết
+                      </Button>
+
                       <Button
                         className="admin-subjects-header-add-user"
                         variant="danger"
+                        onClick={() => {
+                          handleShowConfirmDeleteFlashcard(item._id);
+                        }}
                       >
                         Xóa
                       </Button>
@@ -241,7 +329,104 @@ const Flashcard = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-        {/* end modal add Topic */}
+        {/* end modal add flash card */}
+        {/* start modal update flash card */}
+        <Modal show={showUpdateFlashcard} onHide={handleCloseUpdateFlashcard}>
+          <Modal.Header closeButton>
+            <Modal.Title>Cập nhật Flashcard</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group
+                className="mb-3"
+                controlId="exampleForm.ControlInput1"
+              >
+                <Form.Label>Nghĩa tiếng việt</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="con cá"
+                  autoFocus
+                  value={meaningInVietnamese}
+                  onChange={(e) => {
+                    setMeaningInVietnamese(e.target.value);
+                  }}
+                />
+                <Form.Label>Nghĩa tiếng anh</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="fish"
+                  autoFocus
+                  value={meaningInEnglish}
+                  onChange={(e) => {
+                    setMeaningInEnglish(e.target.value);
+                  }}
+                />
+                <Form.Label>Giải thích</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="the fish is in the river"
+                  autoFocus
+                  value={explain}
+                  onChange={(e) => {
+                    setExplain(e.target.value);
+                  }}
+                />
+                <Form.Label>Ví dụ</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="I'm eating fish"
+                  autoFocus
+                  value={example}
+                  onChange={(e) => {
+                    setExample(e.target.value);
+                  }}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseUpdateFlashcard}>
+              Hủy bỏ
+            </Button>
+            <Button variant="primary" onClick={handleUpdateFlashcard}>
+              Cập nhật
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* end modal update flash card */}
+        {/* start modal delete flash card */}
+        <Modal
+          show={showConfirmDeleteFlashcard}
+          onHide={handleCloseConfirmDeleteFlashcard}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title style={{ color: "red" }}>
+              Xác nhận xóa Flashcard
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group
+                className="mb-3"
+                controlId="exampleForm.ControlInput1"
+              >
+                <Form.Label>Bạn có chắc chắn muốn xóa flashcard</Form.Label>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={handleCloseConfirmDeleteFlashcard}
+            >
+              Hủy bỏ
+            </Button>
+            <Button variant="primary" onClick={handleDeleteFlashcard}>
+              Xóa
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* end modal delete flash card */}
       </div>
     </div>
   );

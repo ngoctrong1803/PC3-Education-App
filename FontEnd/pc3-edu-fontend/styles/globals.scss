@@ -792,7 +792,7 @@ ul.navbar-home {
     align-items: center;
 
     .learning-detail-content {
-      height: 800px;
+      min-height: 800px;
       width: 100%;
       border-bottom: #919191 solid 1px;
     }
@@ -810,6 +810,7 @@ ul.navbar-home {
   margin-top: 25px;
   border-radius: 20px;
   padding: 15px;
+  min-height: 300px;
   .lession-item {
     display: block;
     line-height: 1.5;

@@ -1,4 +1,5 @@
 const ExamQuestion = require("../models/ExamQuestion");
+const Exam = require("../models/Exam");
 const examQuestionController = {
   //[get]/api/exam-question/list
   getExamQuestion: async (req, res) => {
@@ -7,6 +8,39 @@ const examQuestionController = {
       message: "lấy thành công danh sách câu hỏi",
       listExamQuestion: listExamQuestion,
     });
+  },
+  //[get]/api/exam-question/list
+  getExamQuestionByExamID: async (req, res) => {
+    const examID = req.params.id;
+    const exam = await Exam.findOne({ _id: examID });
+    if (exam) {
+      const listExamQuestion = await ExamQuestion.find({ examID: examID });
+      res.status(200).json({
+        message: "lấy thành công danh sách câu hỏi",
+        listExamQuestion: listExamQuestion,
+      });
+    } else {
+      res.status(400).json({
+        message: "không tồn tại bài kiểm tra",
+      });
+    }
+  },
+  //[get]/api/exam-question/list
+  getExamQuestionByQuestionID: async (req, res) => {
+    const quesionID = req.params.id;
+    const question = await ExamQuestion.findOne({ _id: quesionID });
+    if (question) {
+      const exam = await Exam.findOne({ _id: question.examID });
+      res.status(200).json({
+        message: "lấy thành nội dung câu hỏi",
+        question: question,
+        exam: exam,
+      });
+    } else {
+      res.status(400).json({
+        message: "không tồn tại câu hỏi",
+      });
+    }
   },
   //[post]/api/exam-question/create
   createExamQuestion: async (req, res) => {

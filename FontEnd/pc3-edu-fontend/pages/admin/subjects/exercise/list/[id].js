@@ -16,8 +16,6 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Script from "next/script";
-import { convertMathType } from "../../../../../helper/convertMathType";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 
 const ListMCExercise = () => {

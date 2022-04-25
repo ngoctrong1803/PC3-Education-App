@@ -2,7 +2,18 @@ const Subject = require("../models/Subject");
 const Grade = require("../models/Grade");
 const Unit = require("../models/Unit");
 const Lession = require("../models/Lession");
+const MCExercise = require("../models/MCExercise");
+const ListenExercise = require("../models/ListenExercise");
+const RewriteSentencesExercise = require("../models/RewriteSentencesExercise");
 const slugify = require("slugify");
+const GapFillingExercise = require("../models/GapFillingExercise");
+const StatisticalOfExercise = require("../models/StatisticalOfExercise");
+const ResultOfExercise = require("../models/ResultOfExercise");
+const Exam = require("../models/Exam");
+const Theory = require("../models/Theory");
+const ExamQuestion = require("../models/ExamQuestion");
+const StatisticalOfExam = require("../models/StatisticalOfExam");
+const ResultOfExam = require("../models/ResultOfExam");
 
 const subjectController = {
   //[get]/api/subject/:slug (here is subject detail)
@@ -58,6 +69,23 @@ const subjectController = {
       lessions: lessions,
     });
     // const lessionIdArray = lessions.map(({ _id }) => _id);
+  },
+  getSubjectByGradeID: async (req, res) => {
+    const gradeID = req.params.id;
+    console.log("id khối đã lấy được", gradeID);
+    if (gradeID) {
+      const listSubject = await Subject.find({
+        gradeID: gradeID,
+      });
+      res.status(200).json({
+        message: "lấy môn học thành công",
+        listSubject: listSubject,
+      });
+    } else {
+      res.status(400).json({
+        message: "lấy môn học thất bại",
+      });
+    }
   },
   //[post]/api/subject/create
   createSucject: async (req, res) => {
@@ -122,8 +150,82 @@ const subjectController = {
   deleteSubject: async (req, res) => {
     try {
       const subject = await Subject.findOne({ _id: req.params.id });
-      if (subject) {
-        await Subject.deleteOne({ _id: req.params.id });
+      if (subject?._id) {
+        console.log(
+          "====================================handle delete====================================="
+        );
+        const subjectID = subject._id;
+        console.log("subject:", subject);
+        const units = await Unit.find({ subjectID: subjectID });
+        console.log("units:", units);
+        const unitIDArray = units.map(({ _id }) => _id);
+        console.log("unitArray:", unitIDArray);
+        const lessions = await Lession.find({ unitID: { $in: unitIDArray } });
+        console.log("lessions:", lessions);
+        const lessionIdArray = lessions.map(({ _id }) => _id);
+        console.log("lessionArray:", lessionIdArray);
+        const theory = await Theory.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("theory:", theory);
+        const mcExercise = await MCExercise.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("mcExercise:", mcExercise);
+        const listenExercise = await ListenExercise.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("listenExercise:", listenExercise);
+        const rewriteSentencesExercise = await RewriteSentencesExercise.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("rewriteSentencesExercise:", rewriteSentencesExercise);
+        const gapFillingExercise = await GapFillingExercise.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("gapFillingExercise:", gapFillingExercise);
+
+        const statisticalOfExercise = await StatisticalOfExercise.find({
+          lessionID: { $in: lessionIdArray },
+        });
+        console.log("statisticalOfExercise:", statisticalOfExercise);
+        const statisticalOfExerciseIDArray = statisticalOfExercise.map(
+          ({ _id }) => _id
+        );
+        console.log(
+          "statisticalOfExerciseIDArray:",
+          statisticalOfExerciseIDArray
+        );
+        const resultOfExercise = await ResultOfExercise.find({
+          statisticalID: { $in: statisticalOfExerciseIDArray },
+        });
+        console.log("resultOfExercise:", resultOfExercise);
+
+        const exams = await Exam.find({
+          subjectID: subjectID,
+        });
+        console.log("exams:", exams);
+        const examIDArray = exams.map(({ _id }) => _id);
+        console.log("examIDArray:", examIDArray);
+        const examQuestion = await ExamQuestion.find({
+          examID: { $in: examIDArray },
+        });
+        console.log("examQuestion", examQuestion);
+        const statisticalOfExam = await StatisticalOfExam.find({
+          examID: { $in: examIDArray },
+        });
+        console.log("statisticalOfExam", statisticalOfExam);
+        const statisticalOfExamIDArray = statisticalOfExam.map(
+          ({ _id }) => _id
+        );
+        const resultOfExam = await ResultOfExam.find({
+          statisticalID: { $in: statisticalOfExamIDArray },
+        });
+        console.log("result of exam:", resultOfExam);
+
+        console.log(
+          "====================================end handle delete====================================="
+        );
         res.status(200).json({
           message: "xóa môn học thành công",
         });
@@ -134,7 +236,7 @@ const subjectController = {
       }
     } catch (err) {
       res.status(400).json({
-        message: "không tìm thấy môn học cần xóa",
+        message: "đã xảy ra ngoại lệ. không tìm thấy môn học cần xóa",
       });
     }
   },

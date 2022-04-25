@@ -88,12 +88,24 @@ const Subjects = () => {
   async function handleUpdateSubject(e) {
     e.preventDefault(); // ngăn chặn hành động mặc định
     e.stopPropagation(); // ngăn chặn lang rộng
-    console.log("data update:", subjectName, ":", gradeID, ":", subjectID);
     const gradeIDOfSubject = parseInt(gradeID);
     const updateSubject = {
       name: subjectName,
       gradeID: gradeIDOfSubject,
     };
+    try {
+      const res = await axios.put(
+        "http://localhost:8000/api/subjects/update/" + subjectID,
+        updateSubject
+      );
+      console.log("updateSubject:", updateSubject);
+      toast.success("Cật nhật môn học thành công");
+      handleCloseAddSubject();
+      getSubject();
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
   }
 
   useEffect(() => {

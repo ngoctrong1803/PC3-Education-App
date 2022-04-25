@@ -21,15 +21,18 @@ const Content = () => {
   const slug = arrayTemp[position];
 
   // property for function
+  const [unitID, setUnitID] = useState();
   const [unitName, setUnitName] = useState();
+  const [lessionID, setLessionID] = useState();
   const [lessionName, setLessionName] = useState();
   const [lessionNumber, setLessionNumber] = useState();
-  const [unitID, setUnitID] = useState();
-  const [lessionID, setLessionID] = useState();
 
   // modal show
   const [showAddUnit, setShowAddUnit] = useState(false);
+  const [showUpdateUnit, setShowUpdateUnit] = useState(false);
+
   const [showAddLession, setShowAddLession] = useState(false);
+  const [showUpdateLession, setShowUpdateLession] = useState(false);
   const [comfirmDeleteLession, setConfirmDeleteLesssion] = useState(false);
 
   // get data from server
@@ -42,8 +45,25 @@ const Content = () => {
   const handleShowAddUnit = () => setShowAddUnit(true);
 
   // hadle modal on off
+  const handleCloseUpdateUnit = () => setShowUpdateUnit(false);
+  const handleShowUpdateUnit = (uintID, unitName) => {
+    setShowUpdateUnit(true);
+    setUnitID(uintID);
+    setUnitName(unitName);
+  };
+
+  // hadle modal on off
   const handleCloseAddLession = () => setShowAddLession(false);
   const handleShowAddLession = () => setShowAddLession(true);
+
+  // hadle modal on off
+  const handleCloseUpdateLession = () => setShowUpdateLession(false);
+  const handleShowUpdateLession = (lessionID, lessionName, lessionNumber) => {
+    setShowUpdateLession(true);
+    setLessionID(lessionID);
+    setLessionName(lessionName);
+    setLessionNumber(lessionNumber);
+  };
 
   // hadle modal on off
   const handleCloseComfirmDeleteLession = () => setConfirmDeleteLesssion(false);
@@ -72,7 +92,6 @@ const Content = () => {
       toast.error("tên chương không được để trống");
     } else {
       try {
-        console.log("chạy vào try");
         const newUnit = {
           unitName,
           slug,
@@ -85,12 +104,33 @@ const Content = () => {
         handleCloseAddUnit();
         getConentOfSubject();
       } catch (err) {
-        console.log("chạy vào catch");
         const errMessage = err.response.data.message;
         toast.error(errMessage);
       }
     }
   }
+  async function handleUpdateUnit() {
+    const updateUnit = {
+      unitName: unitName,
+    };
+    if (unitName == "") {
+      toast.errror("vui lòng nhập tên chương");
+    } else {
+      try {
+        const res = await axios.put(
+          "http://localhost:8000/api/units/update/" + unitID,
+          updateUnit
+        );
+        toast.success("cập nhật chương thành công");
+        handleCloseUpdateUnit();
+        getConentOfSubject();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
+
   // handle add lession
   async function handleAddLession() {
     if (!lessionName) {
@@ -121,6 +161,30 @@ const Content = () => {
     }
   }
 
+  async function handleUpdateLession() {
+    const updateLession = {
+      lessionName,
+      lessionNumber,
+    };
+    if (lessionName == "") {
+      toast.error("vui lòng nhập tên bài học");
+    } else if (lessionNumber == "") {
+      toast.error("vui lòng số thứ tự bài học");
+    } else {
+      try {
+        const res = await axios.put(
+          "http://localhost:8000/api/lession/update/" + lessionID,
+          updateLession
+        );
+        toast.success("cập nhật bài học thành công");
+        handleCloseUpdateLession();
+        getConentOfSubject();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
   async function handleDeleteLession() {
     if (!lessionID) {
       toast.error("lỗi lấy id");
@@ -141,10 +205,7 @@ const Content = () => {
   useEffect(() => {
     getConentOfSubject();
   }, []);
-  useEffect(() => {
-    // console.log("test:", unitID);
-    console.log("lession id to delete:", lessionID);
-  });
+  useEffect(() => {});
   return (
     <div className="subject-content-page">
       <div className="subject-content-title">
@@ -177,7 +238,15 @@ const Content = () => {
                         {unitItem.unitName}
                       </span>
                       <span className="subject-content-item-unit-edit">
-                        <ion-icon name="build-outline"></ion-icon>
+                        <ion-icon
+                          name="build-outline"
+                          onClick={() => {
+                            handleShowUpdateUnit(
+                              unitItem._id,
+                              unitItem.unitName
+                            );
+                          }}
+                        ></ion-icon>
                       </span>
                       <span className="subject-content-item-unit-delete">
                         <ion-icon name="trash-outline"></ion-icon>
@@ -201,7 +270,16 @@ const Content = () => {
                                   >
                                     <span>{lessionItem.lessionName}</span>
                                     <span className="subject-content-item-unit-edit">
-                                      <ion-icon name="build-outline"></ion-icon>
+                                      <ion-icon
+                                        name="build-outline"
+                                        onClick={() => {
+                                          handleShowUpdateLession(
+                                            lessionItem._id,
+                                            lessionItem.lessionName,
+                                            lessionItem.lessionNumber
+                                          );
+                                        }}
+                                      ></ion-icon>
                                     </span>
                                     <span className="subject-content-item-unit-delete">
                                       <ion-icon
@@ -293,6 +371,38 @@ const Content = () => {
       </Modal>
       {/* end modal add unit */}
 
+      {/* start modal update unit */}
+      <Modal show={showUpdateUnit} onHide={handleCloseUpdateUnit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Thêm chương mới</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Tên chương</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="chương 1. tên chương"
+                autoFocus
+                value={unitName}
+                onChange={(e) => {
+                  setUnitName(e.target.value);
+                }}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseUpdateUnit}>
+            Hủy bỏ
+          </Button>
+          <Button variant="primary" onClick={handleUpdateUnit}>
+            Lưu lại
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* end modal update unit */}
+
       {/* start modal add lesssion */}
       <Modal show={showAddLession} onHide={handleCloseAddLession}>
         <Modal.Header closeButton>
@@ -334,6 +444,47 @@ const Content = () => {
         </Modal.Footer>
       </Modal>
       {/* end modal add lesssion */}
+      {/* start modal update lesssion */}
+      <Modal show={showUpdateLession} onHide={handleCloseUpdateLession}>
+        <Modal.Header closeButton>
+          <Modal.Title>Cập nhật bài học</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Tên bài học</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="bài 1. tên bài học"
+                autoFocus
+                value={lessionName}
+                onChange={(e) => {
+                  setLessionName(e.target.value);
+                }}
+              />
+              <Form.Label>Thứ tự bài học</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="1 hoặc 2 ,..."
+                autoFocus
+                value={lessionNumber}
+                onChange={(e) => {
+                  setLessionNumber(e.target.value);
+                }}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseUpdateLession}>
+            Hủy bỏ
+          </Button>
+          <Button variant="primary" onClick={handleUpdateLession}>
+            Lưu lại
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* end modal update lesssion */}
       {/* start modal comfirm delete lesssion */}
       <Modal
         show={comfirmDeleteLession}

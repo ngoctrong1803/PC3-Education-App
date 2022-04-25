@@ -9,6 +9,21 @@ const examController = {
       listExam: listExam,
     });
   },
+  //[get]/api/exam/:id
+  getExamByID: async (req, res) => {
+    const examID = req.params.id;
+    const exam = await Exam.findOne({ _id: examID });
+    if (exam) {
+      res.status(200).json({
+        message: "đã lấy thành công",
+        exam: exam,
+      });
+    } else {
+      res.status(400).json({
+        message: "không tồn tại",
+      });
+    }
+  },
   //[post]/api/exam/create
   createExam: async (req, res) => {
     const { title, time, totalQuestion, imageUrl, subjectID, exaTypID } =
@@ -21,7 +36,7 @@ const examController = {
       exaTypID == null ||
       subjectID == null
     ) {
-      res.status(200).json({
+      res.status(400).json({
         message: "thông tin để tạo 1 bài kiểm tra chưa đầy đủ",
       });
     } else {

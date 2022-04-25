@@ -5,25 +5,17 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const CreateExercise = () => {
+const CreateQuestion = () => {
   const [editorLoaded, setEditorLoaded] = useState(false);
 
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
-  const exerciseID = arrayTemp[position];
-
-  const [exercise, setExercise] = useState();
-
-  const [categoryOfExercise, setCategoryOfExercise] = useState();
-
-  const option1Ref = useRef();
-  const option2Ref = useRef();
-  const option3Ref = useRef();
-  const option4Ref = useRef();
-
-  // data to create exercise
-  const [contentOfExercise, setContentOfExercise] = useState("");
+  const examID = arrayTemp[position];
+  const [exam, setExam] = useState();
+  const [categoryOfQuestion, setCategoryOfQuestion] = useState();
+  // data to create Question
+  const [contentOfQuestion, setContentOfQuestion] = useState("");
   const [option1, setOption1] = useState("");
   const [option2, setOption2] = useState("");
   const [option3, setOption3] = useState("");
@@ -33,59 +25,42 @@ const CreateExercise = () => {
   const [recommend, setRecommend] = useState("");
   const [explain, setExplain] = useState("");
 
-  async function getInforExercise() {
+  // handel get content
+  async function getInforOfExam() {
     try {
-      const url = "http://localhost:8000/api/mcexercise/detail/" + exerciseID;
+      const url = "http://localhost:8000/api/exam/" + examID;
       const res = await axios.get(url);
-      setExercise(res.data.mcExercise);
-      setContentOfExercise(res.data.mcExercise.question);
-      setOption1(res.data.mcExercise.option1);
-      setOption2(res.data.mcExercise.option2);
-      setOption3(res.data.mcExercise.option3);
-      setOption4(res.data.mcExercise.option4);
-      setAnswer(res.data.mcExercise.answer);
-      if (res.data.mcExercise.answer == "option1") {
-        option1Ref.current.checked = true;
-      } else if (res.data.mcExercise.answer == "option2") {
-        option2Ref.current.checked = true;
-      } else if (res.data.mcExercise.answer == "option3") {
-        option3Ref.current.checked = true;
-      } else if (res.data.mcExercise.answer == "option4") {
-        option4Ref.current.checked = true;
-      }
-      setCateExerID(res.data.mcExercise.catExeID);
-      setRecommend(res.data.mcExercise.recommend);
-      setExplain(res.data.mcExercise.explain);
+      setExam(res.data.exam);
     } catch (err) {
       const errMessage = err.response?.data.message;
       toast.error(errMessage);
     }
   }
-
-  async function getCategoryOfExercise() {
+  async function getCategoryOfQuestion() {
     try {
       const url = "http://localhost:8000/api/category-exercise/list";
       const res = await axios.get(url);
-      console.log("data:", res.data.listCateExer);
-      setCategoryOfExercise(res.data.listCateExer);
+      setCategoryOfQuestion(res.data.listCateExer);
     } catch (err) {
       const errMessage = err.response?.data.message;
       toast.error(errMessage);
     }
   }
-  async function handleUpdateMCExercise() {
+  async function handleAddQuestion() {
     if (
-      contentOfExercise == "" ||
+      contentOfQuestion == "" ||
       option1 == "" ||
       option2 == "" ||
       option3 == "" ||
       option4 == "" ||
       answer == ""
     ) {
-      toast.error("bài tập chưa đủ thông tin để tạo mới vui lòng kiểm tra lại");
+      toast.error(
+        "bài tập chưa đủ thông tin để tạo mới câu hỏi vui lòng kiểm tra lại"
+      );
     } else {
-      const newExercise = {
-        question: contentOfExercise,
+      const newQuestion = {
+        question: contentOfQuestion,
         option1,
         option2,
         option3,
@@ -94,59 +69,40 @@ const CreateExercise = () => {
         catExeID: cateExerID,
         recommend,
         explain,
+        examID,
       };
-      console.log("update exercise:", newExercise);
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/mcexercise/update/" + exerciseID,
-          newExercise
+        const res = await axios.post(
+          "http://localhost:8000/api/exam-question/create",
+          newQuestion
         );
-        toast.success("cập nhật bài tập thành công");
+        toast.success("thêm mới câu hỏi thành công");
       } catch (err) {
         const errMessage = err.response?.data.message;
         toast.error(errMessage);
       }
     }
   }
-  useEffect(() => {
-    const newExercise = {
-      contentOfExercise,
-      option1,
-      option2,
-      option3,
-      option4,
-      answer,
-      cateExerID,
-      recommend,
-      explain,
-    };
-    console.log("new exercise:", newExercise);
-  }, [
-    contentOfExercise,
-    option1,
-    option2,
-    option3,
-    option4,
-    answer,
-    cateExerID,
-    recommend,
-    explain,
-  ]);
 
   useEffect(() => {
-    getInforExercise();
-    getCategoryOfExercise();
+    getInforOfExam();
+    getCategoryOfQuestion();
     setEditorLoaded(true);
   }, []);
 
-  const onChangeEditor = () => {};
   return (
     <div className="admin-subject-exercise-page">
       <div className="admin-subject-exercise-header">
         <div className="admin-subject-exercise-input-file">
-          <h4>Chi tiết câu hỏi</h4>
+          <span>Thêm mới câu hỏi bằng excel</span>
+          <Form.Group controlId="formFile" className="import-excel">
+            <Form.Control type="file" />
+          </Form.Group>
         </div>
         <div>
+          <Button variant="outline-success" style={{ "margin-right": "5px" }}>
+            Excel mẫu
+          </Button>
           <Button
             variant="outline-warning"
             onClick={() => {
@@ -158,16 +114,19 @@ const CreateExercise = () => {
         </div>
       </div>
       <div className="admin-subject-exercise-content-wrap">
+        <div className="admin-subject-exercise-content-title">
+          <span>{exam?.title}</span>
+        </div>
         <div className="admin-subject-exercise-content-question-wrap">
-          <h5>Cập nhật nội dung câu hỏi</h5>
+          <span>Nhập thông tin của câu hỏi mới</span>
           <div className="admin-subject-exercise-content-question">
             <span>Nội dung câu hỏi</span>
             <Editor
               name="description"
               onChange={(data) => {
-                setContentOfExercise(data);
+                setContentOfQuestion(data);
               }}
-              value={contentOfExercise}
+              value={contentOfQuestion}
               editorLoaded={editorLoaded}
             />
           </div>
@@ -177,7 +136,6 @@ const CreateExercise = () => {
             <Row xs={2} md={4} lg={4}>
               <Col>
                 <Form.Check
-                  ref={option1Ref}
                   label="A"
                   inline
                   name="group1"
@@ -198,7 +156,6 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
-                  ref={option2Ref}
                   label="B"
                   inline
                   name="group1"
@@ -219,7 +176,6 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
-                  ref={option3Ref}
                   label="C"
                   inline
                   name="group1"
@@ -240,7 +196,6 @@ const CreateExercise = () => {
               </Col>
               <Col>
                 <Form.Check
-                  ref={option4Ref}
                   label="D"
                   inline
                   name="group1"
@@ -273,7 +228,7 @@ const CreateExercise = () => {
                   }}
                 >
                   <option>-- chọn thể loại --</option>;
-                  {categoryOfExercise?.map((item, index) => {
+                  {categoryOfQuestion?.map((item, index) => {
                     return (
                       <>
                         {
@@ -311,8 +266,8 @@ const CreateExercise = () => {
             />
           </div>
           <div className="admin-subject-exercise-footer">
-            <Button variant="primary" onClick={handleUpdateMCExercise}>
-              Cập nhật
+            <Button variant="primary" onClick={handleAddQuestion}>
+              Lưu lại
             </Button>
             <Button
               variant="primary"
@@ -328,5 +283,5 @@ const CreateExercise = () => {
     </div>
   );
 };
-CreateExercise.layout = "adminLayout";
-export default CreateExercise;
+CreateQuestion.layout = "adminLayout";
+export default CreateQuestion;

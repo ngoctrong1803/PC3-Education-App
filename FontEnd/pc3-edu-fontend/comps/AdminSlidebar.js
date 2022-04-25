@@ -73,12 +73,14 @@ const AdminSlidebar = () => {
                 </li>
               </Link>
 
-              <li className="admin-slidebar-function">
-                <span>
-                  <ion-icon name="newspaper"></ion-icon>
-                </span>
-                <span>Quản lý luyện đề</span>
-              </li>
+              <Link href="/admin/exams">
+                <li className="admin-slidebar-function">
+                  <span>
+                    <ion-icon name="newspaper"></ion-icon>
+                  </span>
+                  <span>Quản lý luyện đề</span>
+                </li>
+              </Link>
               <li className="admin-slidebar-function">
                 <span>
                   <ion-icon name="trophy-outline"></ion-icon>

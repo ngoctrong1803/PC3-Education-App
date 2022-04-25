@@ -9,6 +9,11 @@ router.get(
   subjectController.getListSubject
 );
 router.get(
+  "/list-subject-by-grade/:id",
+  //authMiddleware.checkAdmin,
+  subjectController.getSubjectByGradeID
+);
+router.get(
   "/get-list-subject/:page",
   //authMiddleware.checkAdmin,
   subjectController.getListSubjectPagination
