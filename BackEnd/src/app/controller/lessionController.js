@@ -2,6 +2,8 @@ const Lession = require("../models/Lession");
 const Subject = require("../models/Subject");
 const Theory = require("../models/Theory");
 const Unit = require("../models/Unit");
+const MCExercise = require("../models/MCExercise");
+const CategoryExercise = require("../models/CategoryExercise");
 
 const lessionController = {
   //[get]/api/lession/list-lession
@@ -26,6 +28,23 @@ const lessionController = {
       unitOfLession,
       subjectOfUnit,
       theory,
+    });
+  },
+  //[get]/api/mcexercise/mcexercise-by-lession/:id
+  getMCExerciseOfLession: async (req, res) => {
+    const lession = await Lession.findOne({ _id: req.params.id });
+    const listMCExercise = await MCExercise.find({
+      lessionID: lession._id,
+    });
+    const MCExerciseIDArray = listMCExercise.map(({ _id }) => _id);
+    const listCatExe = await CategoryExercise.find({
+      _id: { $in: MCExerciseIDArray },
+    });
+    res.status(200).json({
+      message: "đã lấy nội dung môn học thành công",
+      lession,
+      listMCExercise,
+      listCatExe,
     });
   },
   //[post]/api/lession/create

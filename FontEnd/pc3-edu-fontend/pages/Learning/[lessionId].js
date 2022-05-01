@@ -67,7 +67,7 @@ const Learning = () => {
             <div className="learning-detail-wrap">
               <div className="learning-detail-title">
                 <h2>{lession.lessionName}</h2>
-                <Link href={"/Exercises/bai-tap"}>
+                <Link href={`/Exercises/${lessionID}`}>
                   <button type="button" className="btn btn-primary">
                     Bài tập vận dụng
                   </button>
@@ -83,7 +83,7 @@ const Learning = () => {
                     />
                   </MathJax>
                 </div>
-                <Link href={"/Exercises/bai-tap"}>
+                <Link href={`/Exercises/${lessionID}`}>
                   <button type="button" className="btn btn-primary">
                     Bài tập vận dụng
                   </button>

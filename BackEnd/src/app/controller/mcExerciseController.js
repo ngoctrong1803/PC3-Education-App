@@ -1,5 +1,6 @@
 const CategoryExercise = require("../models/CategoryExercise");
 const MCExercise = require("../models/MCExercise");
+const Lession = require("../models/Lession");
 const mcExerciseController = {
   //[get]/api/mcexercise/list-mcexercise
   getMCExercise: async (req, res) => {
@@ -12,20 +13,19 @@ const mcExerciseController = {
   //[get]/api/mcexercise/list/:lessionid
   getMCExerciseOfLession: async (req, res) => {
     const lessionID = req.params.id;
-    console.log("lessionID: ", lessionID);
+    const lession = await Lession.findOne({ _id: lessionID });
     const listMCExercise = await MCExercise.find({
       lessionID: lessionID,
     });
     const mcExerciseIdArray = listMCExercise.map(({ catExeID }) => catExeID);
-    console.log("mcExerciseIdArray: ", mcExerciseIdArray);
     const categoryOfExercise = await CategoryExercise.find({
       _id: { $in: mcExerciseIdArray },
     });
-    console.log("categoryOfExercise: ", categoryOfExercise);
     res.status(200).json({
       message: "thành công truy cập get list exercise",
       listMCExercise,
       categoryOfExercise,
+      lession,
     });
   },
   //[get]/api/mcexercise/detail/:id
