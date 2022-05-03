@@ -28,12 +28,13 @@ const FlashcardWrite = ({ listFlashcard }) => {
   const [currentQuestionWriteIndex, setCurrentQuestionWriteIndex] =
     useState(-1);
   const [currentQuestionWrite, setCurrentQuestionWrite] = useState({});
+  const btnSubmit = useRef();
+  const txtInputAnswer = useRef();
   const { messages, speak } = useSpeech({ voice: "karen" });
 
   async function handleLoadQuestion(index) {
     setCurrentQuestionWriteIndex(index);
     const currentFlashcard = listFlashcard[index];
-
     const currentQuestion = {
       question: currentFlashcard?.meaningInVietnamese,
       answer: currentFlashcard?.meaningInEnglish,
@@ -58,10 +59,12 @@ const FlashcardWrite = ({ listFlashcard }) => {
     setTotalAnswerFalseWrite(0);
     setTotalAnswerTrueWrite(0);
   }
-  // Third Attempts
+  //handle couter
   useEffect(() => {
     if (timerWrite == 0) {
       if (currentQuestionWriteIndex < listFlashcard.length) {
+        audioFalse.volume = 0.7;
+        audioFalse.play();
         toast.error("Hết thời gian!", {
           position: "top-right",
           autoClose: 1000,
@@ -72,12 +75,7 @@ const FlashcardWrite = ({ listFlashcard }) => {
           draggable: true,
           progress: undefined,
         });
-        const answerOfUser = document.getElementsByClassName(
-          "answer-write-flashcard"
-        );
-        for (var i = 0; i < answerOfUser.length; i++) {
-          answerOfUser[i].disabled = true;
-        }
+        txtInputAnswer.current.disabled = true;
         setTimerWrite(-1);
         setTimeout(() => {
           setTotalAnswerFalseWrite((pre) => pre + 1);
@@ -86,13 +84,30 @@ const FlashcardWrite = ({ listFlashcard }) => {
         }, 1500);
       }
     }
-    // const timer =
-    //   timerWrite > 0 && setInterval(() => setTimerWrite(timerWrite - 1), 1000);
-    // return () => clearInterval(timer);
+    const timer =
+      timerWrite > 0 && setInterval(() => setTimerWrite(timerWrite - 1), 1000);
+    return () => clearInterval(timer);
   }, [timerWrite]);
+
+  // handle change question
+  useEffect(() => {
+    txtInputAnswer?.current?.focus();
+    setUserAnswer("");
+    txtInputAnswer.current?.addEventListener("keydown", (e) => {
+      if (e.keyCode === 13) {
+        btnSubmit.current.click();
+      }
+    });
+    if (currentQuestionWriteIndex == listFlashcard.length) {
+      setTimeout(() => {
+        audioWin.volume = 0.7;
+        audioWin.play();
+      }, 300);
+    }
+  }, [currentQuestionWriteIndex]);
+
   // handle answer
   function handleAnswerWrite(answer) {
-    console.log("User Answer", answer);
     const result =
       currentQuestionWrite.answer.trim().toLowerCase() ==
       answer.trim().toLowerCase();
@@ -111,6 +126,7 @@ const FlashcardWrite = ({ listFlashcard }) => {
         draggable: true,
         progress: undefined,
       });
+      txtInputAnswer.current.disabled = true;
     } else {
       audioFalse.volume = 0.7;
       audioFalse.play();
@@ -125,11 +141,12 @@ const FlashcardWrite = ({ listFlashcard }) => {
         draggable: true,
         progress: undefined,
       });
+      txtInputAnswer.current.disabled = true;
     }
     setTimeout(() => {
       setCurrentQuestionWriteIndex((pre) => pre + 1);
       handleLoadQuestion(currentQuestionWriteIndex + 1);
-    }, 2300);
+    }, 2500);
   }
   return (
     <Style>
@@ -179,6 +196,11 @@ const FlashcardWrite = ({ listFlashcard }) => {
                 </div>
                 <div className="question-flashcard-write-wrap">
                   <h4>{currentQuestionWrite.question}</h4>
+                  {timerWrite == -1 ? (
+                    <div className="question-flashcard-write-answer">
+                      {currentQuestionWrite.answer}
+                    </div>
+                  ) : null}
                 </div>
                 <div>
                   <ProgressBar
@@ -191,6 +213,7 @@ const FlashcardWrite = ({ listFlashcard }) => {
                     <Col sm={12} lg={12} md={12}></Col>
                     <InputGroup className="mb-3">
                       <FormControl
+                        ref={txtInputAnswer}
                         value={userAnswer}
                         placeholder="Nghĩa của từ"
                         onChange={(e) => {
@@ -198,6 +221,7 @@ const FlashcardWrite = ({ listFlashcard }) => {
                         }}
                       />
                       <Button
+                        ref={btnSubmit}
                         variant="success"
                         id="button-addon2"
                         onClick={() => {

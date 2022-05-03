@@ -1,17 +1,16 @@
 import styled from "styled-components";
 const Style = styled.div`
-  .flashcard-write-wrap {
-    background-image: url("/background/background-pinkcute.jpg");
+  .flashcard-match-wrap {
+    background-image: url("/background/background-beach.jpg");
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
-    color: #004ba2;
     position: relative;
     margin-right: 15px;
     border-radius: 10px;
+    min-height: 600px;
     width: 100%;
     height: 100%;
-    min-height: 600px;
     border: #333 solid 2px;
     display: flex;
     flex-direction: column;
@@ -19,12 +18,43 @@ const Style = styled.div`
     h3 {
       margin-top: 75px;
     }
+    .content-flashcard-match {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      border: solid #333 2px;
+      right: 15px;
+      bottom: 15px;
+      top: 15px;
+      left: 230px;
+      border-radius: 15px;
+      padding: 25px;
+      .content-flashcard-match-item-wrap {
+        border-radius: 1px;
+        width: 190px;
+        height: 100px;
+        padding: 0px;
+        background-color: rgba(18, 14, 14, 0.1);
 
-    .flash-card-write-level {
+        margin: 0.5px;
+        box-shadow: 0 0.3rem 0.3rem rgba(255, 255, 255, 0.15) !important;
+        .content-flashcard-match-item {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 47, 194, 0.5);
+          color: #fff;
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .flash-card-match-level {
       box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
       padding: 35px;
       border-radius: 15px;
-      .flash-card-write-level-item {
+      .flash-card-match-level-item {
         box-shadow: 0 0.2rem 0.2rem rgba(0, 0, 0, 0.15) !important;
         background-color: var(--clr);
         color: rgb(255, 255, 255);
@@ -35,11 +65,13 @@ const Style = styled.div`
         margin: 5px;
       }
     }
-    .result-flashcard-write {
+    .result-flashcard-match {
+      padding-top: 15px;
       width: 200px;
-      height: 200px;
+      height: 240px;
 
-      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
+      background-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 0.2rem 0.2rem rgba(0, 0, 0, 0.15) !important;
       border-radius: 5px;
       position: absolute;
       left: 10px;
@@ -52,8 +84,8 @@ const Style = styled.div`
         height: 15px;
       }
     }
-    .result-flashcard-write-final {
-      margin-top: 65px;
+    .result-flashcard-match-final {
+      margin-top: 75px;
       margin-bottom: 35px;
       width: 400px;
       height: 420px;
@@ -66,7 +98,7 @@ const Style = styled.div`
       display: flex;
       flex-direction: column;
       align-items: center;
-      .result-flashcard-write-final-title {
+      .result-flashcard-match-final-title {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -79,21 +111,21 @@ const Style = styled.div`
         background-color: rgba(53, 215, 12, 0.901);
         color: rgb(255, 255, 255);
       }
-      .result-flashcard-write-final-content {
+      .result-flashcard-match-final-content {
         margin-top: 15px;
         box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
         padding: 25px;
         border-radius: 10px;
       }
-      .result-flashcard-write-final-footer-title {
+      .result-flashcard-match-final-footer-title {
         color: rgb(254, 70, 70);
         margin-top: 15px;
         font-size: 22px;
         font-weight: 500;
       }
-      .result-flashcard-write-final-footer {
+      .result-flashcard-match-final-footer {
         button {
-          margin: 5px;
+          margin: 25px;
         }
       }
       .result-progress {
@@ -105,7 +137,7 @@ const Style = styled.div`
         font-size: 20px;
       }
     }
-    .timer-flashcard-write {
+    .timer-flashcard-match {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -122,50 +154,11 @@ const Style = styled.div`
         font-size: 58px;
       }
     }
-    .question-flashcard-write-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 10px;
-      width: 600px;
-      height: 450px;
-      border: rgb(176, 176, 176) solid 2px;
-      border-radius: 10px;
-      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
-      .question-flashcard-write-answer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        font-size: 20px;
-        right: 15px;
-        bottom: 15px;
-        background-color: #69ec5a;
-        width: 180px;
-        height: 60px;
-        border-radius: 15px;
-        color: #fff;
-        box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
-      }
-    }
-    .answer-write-flashcard {
-      font-size: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 5px 25px 10px 25px;
-      border: rgb(212, 234, 249) solid 2px;
-      width: 230px;
-      height: 50px;
-      background-color: #f3f5f6c4;
-      border-radius: 10px;
-      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
-    }
-    #btn-next {
+    .timrer-match {
       position: absolute;
-      bottom: 15px;
-      right: 15px;
+      width: 100%;
+      height: 10px;
+      bottom: 5px;
     }
   }
 `;

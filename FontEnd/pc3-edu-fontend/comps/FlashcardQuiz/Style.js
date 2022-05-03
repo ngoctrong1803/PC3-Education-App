@@ -1,18 +1,28 @@
 import styled from "styled-components";
 const Style = styled.div`
   .flashcard-quiz-wrap {
+    background-image: url("/background/background-vutru.jpg");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
     position: relative;
     margin-right: 15px;
     border-radius: 10px;
     width: 100%;
     height: 100%;
+    min-height: 600px;
     border: #333 solid 2px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: #fff;
+    h3 {
+      margin-top: 75px;
+    }
     .flash-card-quiz-level {
-      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
+      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.35) !important;
       padding: 35px;
+      border: #fff 1px solid;
       border-radius: 15px;
       .flash-card-quiz-level-item {
         box-shadow: 0 0.2rem 0.2rem rgba(0, 0, 0, 0.15) !important;
@@ -43,12 +53,13 @@ const Style = styled.div`
       }
     }
     .result-flashcard-quiz-final {
-      margin-top: 15px;
+      margin-top: 55px;
+      color: #333;
       margin-bottom: 35px;
       width: 400px;
       height: 420px;
       background-color: rgba(243, 245, 243, 0.901);
-      box-shadow: 0 0.5rem 0.5rem rgb(206, 212, 224) !important;
+      box-shadow: 0 0.3rem 0.3rem rgb(206, 212, 224) !important;
       border-radius: 15px;
       // position: absolute;
       left: 10px;
@@ -66,7 +77,7 @@ const Style = styled.div`
         height: 70px;
         padding: 10px;
         border-radius: 15px 15px 0 0;
-        background-color: rgba(53, 215, 12, 0.901);
+        background-color: rgba(53, 215, 12, 0.991);
         color: rgb(255, 255, 255);
       }
       .result-flashcard-quiz-final-content {

@@ -23,6 +23,7 @@ import { useSpeech } from "react-web-voice";
 import { toast } from "react-toastify";
 import FlashcardQuiz from "../../comps/FlashcardQuiz";
 import FlashcardWrite from "../../comps/FlashcardWrite";
+import FlashcardMatch from "../../comps/FlashcardMatch";
 
 const Topic = () => {
   const url = window.location.pathname;
@@ -121,7 +122,7 @@ const Topic = () => {
                 </li>
                 <li
                   onClick={() => {
-                    setShow("matchcard");
+                    setShow("match");
                   }}
                 >
                   Ghép thẻ
@@ -236,6 +237,11 @@ const Topic = () => {
         {show == "write" ? (
           <Col xs={9} ms={9}>
             <FlashcardWrite listFlashcard={listFlashcard}></FlashcardWrite>
+          </Col>
+        ) : null}
+        {show == "match" ? (
+          <Col xs={9} ms={9}>
+            <FlashcardMatch listFlashcard={listFlashcard}></FlashcardMatch>
           </Col>
         ) : null}
       </Row>

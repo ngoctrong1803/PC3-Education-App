@@ -1576,6 +1576,12 @@ ul.navbar-home {
     }
   }
   .flashcard-detail-content {
+    .swiper-wrapper{
+      background-image: url("/background/background-beach.jpg");
+      background-position: center; /* Center the image */
+      background-repeat: no-repeat; /* Do not repeat the image */
+      background-size: cover; /* Resize the background image to cover the entire container */
+    }
     margin: 15px;
     border: #333 solid 1px;
     min-height: 500px;
