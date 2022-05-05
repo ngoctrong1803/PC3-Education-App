@@ -9,6 +9,18 @@ const resultOfExerController = {
       listResultOfExercise: listResultOfExercise,
     });
   },
+
+  //[get]/api/result-of-exercise/:statisticalID
+  getResultOfExerciseByStatisticalID: async (req, res) => {
+    const statisticalID = req.params.id;
+    const listResultOfExercise = await ResultOfExercise.find({
+      statisticalID,
+    });
+    res.status(200).json({
+      message: "truy cập thành công",
+      listResultOfExercise: listResultOfExercise,
+    });
+  },
   //[post]/api/result-of-exercise/create
   createResultOfExercise: async (req, res) => {
     const { option, statisticalID, MCExerciseID } = req.body;

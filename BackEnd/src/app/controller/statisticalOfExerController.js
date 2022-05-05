@@ -1,5 +1,5 @@
 const StatisticalOfExercise = require("../models/StatisticalOfExercise");
-
+const ResultOfExercise = require("../models/ResultOfExercise");
 const statisticalOfExerController = {
   //[get]/api/statistical-of-exercise/list
   getStatisticalOfExercise: async (req, res) => {
@@ -9,15 +9,49 @@ const statisticalOfExerController = {
       listStatisticalOfExercise: listStatisticalOfExercise,
     });
   },
+
+  //[post]/api/statistical-of-exercise/delete/by-user-and-lession
+  getStatisticalOfExerciseByUserAndLession: async (req, res) => {
+    const { userID, lessionID } = req.body;
+    
+    const statisticalOfExercise = await StatisticalOfExercise.findOne({
+      userID,
+      lessionID,
+    });
+    res.status(200).json({
+      message: "đã truy cập thành công",
+      statisticalOfExercise: statisticalOfExercise,
+    });
+  },
+  //[post]/api/statistical-of-exercise/delete/by-user-and-lession
+  deleteStatisticalOfExerciseByUserAndLession: async (req, res) => {
+    const { userID, lessionID } = req.body;
+    const statisticalOfExercise = await StatisticalOfExercise.findOne({
+      userID,
+      lessionID,
+    });
+    if (statisticalOfExercise) {
+      await ResultOfExercise.deleteMany({
+        statisticalID: statisticalOfExercise._id,
+      });
+      await StatisticalOfExercise.deleteOne({
+        userID,
+        lessionID,
+      });
+      res.status(200).json({
+        message: "xóa kết quả thành công",
+      });
+    } else {
+      res.status(400).json({
+        message: "không tồn tại kết quả cần xóa",
+      });
+    }
+  },
   //[post]/api/statistical-of-exercise/create
   createStatisticalOfExercise: async (req, res) => {
     const { score, isDone, time, totalAnswerTrue, userID, lessionID } =
       req.body;
     const checkExist = await StatisticalOfExercise.findOne({
-      score: score,
-      isDone: isDone,
-      time: time,
-      totalAnswerTrue: totalAnswerTrue,
       userID: userID,
       lessionID: lessionID,
     });

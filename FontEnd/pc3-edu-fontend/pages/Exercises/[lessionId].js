@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 const Exercise = () => {
   const config = {
     loader: { load: ["input/asciimath"] },
@@ -14,6 +15,11 @@ const Exercise = () => {
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const lessionID = arrayTemp[position];
+
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+
   const [modalShow, setModalShow] = useState(false);
 
   const [option1, setOption1] = useState(false);
@@ -41,6 +47,7 @@ const Exercise = () => {
           answer: answer[i].id,
         };
         console.log("userAnswer", userAnswer);
+
         if (listMCExercise[currentQuestionIndex].answer == answer[i].id) {
           toast.success("Chính xác! chúc mừng bạn!", {
             position: "bottom-center",
@@ -52,15 +59,18 @@ const Exercise = () => {
             draggable: true,
             progress: undefined,
           });
-          setListAnswerOfUser([...listAnswerOfUser, userAnswer]);
           if (score < listMCExercise.length * 10) {
             setScore((pre) => pre + 10);
+          }
+          if (listAnswerOfUser.length < listMCExercise.length) {
+            setListAnswerOfUser([...listAnswerOfUser, userAnswer]);
           }
 
           if (currentQuestionIndex < listMCExercise.length - 1) {
             setCurrentQuestionIndex((pre) => pre + 1);
           }
           if (currentQuestionIndex == listMCExercise.length - 1) {
+            // done exercise
             setTimeDone(timer);
             setTimeout(() => {
               setModalShow(true);
@@ -77,10 +87,13 @@ const Exercise = () => {
             draggable: true,
             progress: undefined,
           });
-          setListAnswerOfUser([...listAnswerOfUser, userAnswer]);
           if (currentQuestionIndex < listMCExercise.length - 1) {
             setCurrentQuestionIndex((pre) => pre + 1);
           }
+          if (listAnswerOfUser.length < listMCExercise.length) {
+            setListAnswerOfUser([...listAnswerOfUser, userAnswer]);
+          }
+
           if (currentQuestionIndex == listMCExercise.length - 1) {
             setTimeDone(timer);
             setModalShow(true);
@@ -103,12 +116,57 @@ const Exercise = () => {
       });
     }
   }
+  async function hanldeSaveResult() {
+    //done exercise
+    let statisticalOfExercise = {
+      score: score,
+      isDone: true,
+      time: timeDone,
+      totalAnswerTrue: score / 10,
+      userID: currentUser.userInfor._id,
+      lessionID: lessionID,
+    };
+    console.log("statisticalOfExercise", statisticalOfExercise);
+
+    try {
+      // save statistical
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exercise/create",
+        statisticalOfExercise
+      );
+      // save answer of exercise
+      if (res.data.statisticalOfExercise) {
+        for (var i = 0; i < listAnswerOfUser.length; i++) {
+          let resultOfExercise = {
+            option: listAnswerOfUser[i].answer,
+            statisticalID: res.data.statisticalOfExercise._id,
+            MCExerciseID: listAnswerOfUser[i].mcExerciseID,
+          };
+          console.log(` ----------result[${i}]:`, resultOfExercise);
+          try {
+            const resResult = await axios.post(
+              "http://localhost:8000/api/result-of-exercise/create",
+              resultOfExercise
+            );
+          } catch (err) {
+            const errMessage = resResult?.response.data.message;
+            toast.error(errMessage);
+          }
+        }
+      }
+      toast.success("lưu kết quả thành công");
+    } catch (err) {
+      const errMessage = err?.response?.data?.message ?? "lỗi lưu kết quả";
+      toast.error(errMessage);
+    }
+  }
 
   async function getMCExercises() {
     if (lessionID) {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/mcexercise/mcexercise-by-lession/625ee4d8bbcb381015ea1a36"
+          "http://localhost:8000/api/mcexercise/mcexercise-by-lession/" +
+            lessionID
         );
         console.log("res data:", res.data);
         setLession(res.data.lession);
@@ -120,9 +178,8 @@ const Exercise = () => {
       }
     }
   }
-  useEffect(() => {
-    console.log("list answer of user:", listAnswerOfUser);
-  }, [listAnswerOfUser]);
+
+  function backToLearning() {}
 
   // Third Attempts
   useEffect(() => {
@@ -476,12 +533,16 @@ const Exercise = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button
+            variant="success"
             onClick={() => {
-              setModalShow(false);
+              hanldeSaveResult();
             }}
           >
-            Quay lại bài học
+            Lưu kết quả
           </Button>
+          <Link href={`/Learning/${lessionID}`}>
+            <Button>Quay lại bài học</Button>
+          </Link>
         </Modal.Footer>
       </Modal>
     </>

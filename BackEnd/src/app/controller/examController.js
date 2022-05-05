@@ -1,4 +1,5 @@
 const Exam = require("../models/Exam");
+const ExamQuestion = require("../models/ExamQuestion");
 
 const examController = {
   //[get]/api/exam/list
@@ -24,6 +25,7 @@ const examController = {
       });
     }
   },
+
   //[post]/api/exam/create
   createExam: async (req, res) => {
     const { title, time, totalQuestion, imageUrl, subjectID, exaTypID } =

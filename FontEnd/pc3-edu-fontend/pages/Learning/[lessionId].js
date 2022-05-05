@@ -6,7 +6,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { useSelector } from "react-redux";
 const Learning = () => {
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -21,10 +26,10 @@ const Learning = () => {
   const [theory, setTheory] = useState({});
   const [listUnit, setListUnit] = useState([]);
   const [listLession, setListLession] = useState([]);
+  const [statistical, setStatistical] = useState(null);
 
   async function getContentOfSubject(subjectTemp) {
     try {
-      console.log("mục lục:", subjectTemp.slug);
       if (subjectTemp.slug) {
         const res = await axios.get(
           "http://localhost:8000/api/subjects/content/" + subjectTemp.slug
@@ -43,11 +48,11 @@ const Learning = () => {
       try {
         const url = "http://localhost:8000/api/lession/" + lessionID;
         const res = await axios.get(url);
-        console.log("lession res:", res.data);
+
         setLession(res.data.lession);
         setTheory(res.data.theory);
         subjectTemp = res.data.subjectOfUnit;
-        console.log("subjectTemp", subjectTemp);
+
         getContentOfSubject(subjectTemp);
       } catch (err) {
         const errMessage = err.response.data.message;
@@ -55,7 +60,31 @@ const Learning = () => {
       }
     }
   }
+  async function getStatistical() {
+    if (lessionID) {
+      try {
+        const dataToFind = {
+          userID: currentUser.userInfor._id,
+          lessionID: lessionID,
+        };
+        const res = await axios.post(
+          "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
+          dataToFind
+        );
+        console.log("statistical:", res);
+        if (res.data.statisticalOfExercise) {
+          setStatistical(res.data.statisticalOfExercise);
+        }
+      } catch (err) {
+        const errMessage = err?.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
 
+  useEffect(() => {
+    getStatistical();
+  }, []);
   useEffect(() => {
     getContentOfLession();
   }, [lessionID]);
@@ -67,11 +96,19 @@ const Learning = () => {
             <div className="learning-detail-wrap">
               <div className="learning-detail-title">
                 <h2>{lession.lessionName}</h2>
-                <Link href={`/Exercises/${lessionID}`}>
-                  <button type="button" className="btn btn-primary">
-                    Bài tập vận dụng
-                  </button>
-                </Link>
+                {!statistical ? (
+                  <Link href={`/Exercises/${lessionID}`}>
+                    <button type="button" className="btn btn-primary">
+                      Bài tập vận dụng
+                    </button>
+                  </Link>
+                ) : (
+                  <Link href={`/Exercises/Result/${lessionID}`}>
+                    <button type="button" className="btn btn-success">
+                      Xem kết quả
+                    </button>
+                  </Link>
+                )}
               </div>
               <div className="learning-detail-content-wrap">
                 <div className="learning-detail-content">

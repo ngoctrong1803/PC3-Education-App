@@ -1358,7 +1358,7 @@ ul.navbar-home {
     position: relative;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     border-radius: 10px;
-    height: 800px;
+    min-height: 800px;
     .exam-title {
       text-align: center;
       padding-top: 15px;
@@ -1367,8 +1367,10 @@ ul.navbar-home {
     }
     .exam-content {
       .exam-item-wrap {
-        margin-top: 35px;
-        margin-left: 35px;
+        margin: 25px;
+       padding: 15px;
+       border-radius: 5px;
+        box-shadow: 0 0 0.01rem 0.07rem rgba(0, 0, 0, 0.15) !important;
         .exam-item-type {
           background-color: green;
           border-radius: 10px;
@@ -1377,6 +1379,19 @@ ul.navbar-home {
           text-align: center;
         }
         .exam-item-title {
+          display: flex;
+          align-items: center;
+          label{
+            font-weight: 600;
+            font-size: 18px;
+            padding: 2px;
+            border-radius: 5px;
+            background-color: rgb(222, 222, 222);
+          }
+          p{
+            margin-bottom: 0px;
+            font-size: 16px;
+          }
         }
         .exam-item-content {
           border-radius: 15px;
@@ -1392,8 +1407,8 @@ ul.navbar-home {
               border-radius: 10px;
               display: flex;
               align-items: center;
-              div {
-                margin-left: 15px;
+              p{
+                margin-bottom: 0px;
               }
             }
           }
@@ -1402,6 +1417,8 @@ ul.navbar-home {
     }
   }
   .exam-slidebar-wrap {
+    position: sticky;
+    top: 80px;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     border-radius: 10px;
     height: 400px;
@@ -2551,5 +2568,119 @@ ul.navbar-home {
   justify-content: center;
 }
 // ================================== end user exercise page=============================
+
+// ================================== start user result exercise page=============================
+.content-of-exercise-result-wrap{
+  box-shadow: 0 0 0.3rem 0.3rem rgba(167, 171, 171, 0.231) !important;
+  margin-top: 15px;
+  margin-left: 15px;
+  border-radius: 15px;
+  .content-of-exercise-result-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: #1111 solid 1px;
+    button{
+      margin: 5px;
+    }
+  }
+  .content-of-exercise-result{
+    margin-left: 15px;
+    margin-right: 35px;
+    .content-of-exercise-result-exercise{
+      margin: 15px;
+      box-shadow: 0 0 0.2rem 0.2rem rgba(167, 171, 171, 0.231) !important;
+      padding: 5px;
+      position: relative;
+      .result-exercise-explain{
+        position:absolute;
+        bottom: 20px;
+        right: 20px;
+      }
+    .content-of-exercise-result-question{
+      margin: 15px;
+      display: flex;
+      align-items: center;
+      span{
+        margin-bottom: 0px;
+        margin-right: 15px;
+        ;
+      }
+      p{
+        margin-bottom: 0px;
+        font-weight: 600;
+      }
+      h6{
+        margin-bottom: 0px;
+        background-color: rgb(246, 246, 246);
+        padding: 7px;
+        border-radius: 5px;
+      }
+      label{
+        margin-left: 15px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        padding: 3px;
+        color: rgb(39, 180, 10);
+        border: solid 1px rgb(39, 180, 10);
+        display: flex;
+        align-items: center;
+      }
+    }
+    .content-of-exercise-result-answer{
+      margin: 15px;
+      box-shadow: 0 0 0.1rem 0.1rem rgba(167, 171, 171, 0.231) !important;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .content-of-exercise-result-user-answer{
+      display: flex;
+      .content-of-exercise-result-answer-final{
+        margin-bottom: 15px;
+        margin-left: 15px;
+        display: flex;
+        font-weight: 600;
+        align-items: center;
+        margin-right: 25px; 
+        p{
+          margin-bottom: 0px;
+        }
+        h6{
+          margin-bottom: 0px;
+        }
+        .result-final-true{
+            background-color: #1acd3e;
+            padding: 5px;
+            border-radius: 5px;
+            color: #fff;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .result-final-false{
+          background-color: #ee4b4b;
+          padding: 5px;
+          border-radius: 5px;
+          color: #fff;
+          margin-left: 10px;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+    }
+  }
+}
+.sidebar-of-exercise-result-wrap{
+
+  box-shadow: 0 0.5rem 1rem rgba(167, 171, 171, 0.231) !important;
+  min-height: 400px;
+  margin-top: 15px;
+  margin-right: 15px;
+  border-radius: 15px;
+}
+
+// ================================== end user result exercise page===============================
 
 

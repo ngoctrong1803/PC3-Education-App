@@ -4,6 +4,14 @@ const statisticalOfExerController = require("../app/controller/statisticalOfExer
 
 router.get("/list", statisticalOfExerController.getStatisticalOfExercise);
 router.post("/create", statisticalOfExerController.createStatisticalOfExercise);
+router.post(
+  "/by-user-and-lession",
+  statisticalOfExerController.getStatisticalOfExerciseByUserAndLession
+);
+router.post(
+  "/delete/by-user-and-lession",
+  statisticalOfExerController.deleteStatisticalOfExerciseByUserAndLession
+);
 router.put(
   "/update/:id",
   statisticalOfExerController.updateStatisticalOfExercise
