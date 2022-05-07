@@ -1,4 +1,5 @@
 const StatisticalOfExam = require("../models/StatisticalOfExam");
+const ResultOfExam = require("../models/ResultOfExam");
 
 const statisticalOfExamController = {
   //[get]/api/statistical-of-exam/list
@@ -9,14 +10,28 @@ const statisticalOfExamController = {
       listStatisticalOfExam: listStatisticalOfExam,
     });
   },
+  //[post]/api/statistical-of-exam/get-by-user-and-exam
+  getStatisticalOfExamByUserAndExam: async (req, res) => {
+    const { userID, examID } = req.body;
+    const statistical = await StatisticalOfExam.findOne({
+      userID: userID,
+      examID: examID,
+    });
+    if (statistical) {
+      res.status(200).json({
+        message: "lấy kết quả thành công",
+        statistical,
+      });
+    } else {
+      res.status(400).json({
+        message: "không tìm thấy kết quả",
+      });
+    }
+  },
   //[post]/api/statistical-of-exam/create
   createStatisticalOfExam: async (req, res) => {
     const { score, isDone, time, totalAnswerTrue, userID, examID } = req.body;
     const checkExist = await StatisticalOfExam.findOne({
-      score: score,
-      isDone: isDone,
-      time: time,
-      totalAnswerTrue: totalAnswerTrue,
       userID: userID,
       examID: examID,
     });
@@ -110,6 +125,37 @@ const statisticalOfExamController = {
     } catch (err) {
       res.status(400).json({
         message: "Id không hợp lệ",
+      });
+    }
+  },
+  //[post]/api/statistical-of-exam/delete/by-user-and-exam
+  deleleStatisticalOfExamByUserAndExam: async (req, res) => {
+    const { userID, examID } = req.body;
+    const statistical = await StatisticalOfExam.findOne({
+      userID: userID,
+      examID: examID,
+    });
+    if (statistical) {
+      try {
+        console.log("statistical id:", statistical._id);
+        await ResultOfExam.deleteMany({
+          statisticalID: statistical._id,
+        });
+        await StatisticalOfExam.deleteOne({
+          userID: userID,
+          examID: examID,
+        });
+        res.status(200).json({
+          message: "xóa thành công",
+        });
+      } catch (error) {
+        res.status(400).json({
+          message: "xóa thất bại",
+        });
+      }
+    } else {
+      res.status(400).json({
+        message: "không tồn tại kết quả cần xóa",
       });
     }
   },

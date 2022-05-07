@@ -53,7 +53,7 @@ const authController = {
   // create access token
   createAccessToken: (payload) => {
     return jwt.sign(payload, process.env.JWT_KEY_ACCESSTOKEN, {
-      expiresIn: "9000s",
+      expiresIn: "15s",
     });
   },
   // create refresh token

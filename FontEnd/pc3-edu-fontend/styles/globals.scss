@@ -1354,6 +1354,16 @@ ul.navbar-home {
 //-------------------------------start detail Exam page--------------------------------
 .detail-exam-page {
   margin: 35px;
+  .exam-infor-wrap{
+    top: 80px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    border-radius: 10px;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
   .exam-wrap {
     position: relative;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
@@ -1371,6 +1381,7 @@ ul.navbar-home {
        padding: 15px;
        border-radius: 5px;
         box-shadow: 0 0 0.01rem 0.07rem rgba(0, 0, 0, 0.15) !important;
+        position: relative;
         .exam-item-type {
           background-color: green;
           border-radius: 10px;
@@ -1392,9 +1403,18 @@ ul.navbar-home {
             margin-bottom: 0px;
             font-size: 16px;
           }
+          .result-exam-question-type{
+            margin-left: 10px;
+            border-radius: 5px;
+            border: 1px solid #0ba62a;
+            color: #0ba62a;
+            padding: 3px;
+            box-shadow: 0 0.01rem 0.07rem rgba(128, 239, 0, 0.5) !important;
+          }
         }
         .exam-item-content {
           border-radius: 15px;
+         
           .answers-of-question {
             display: flex;
             flex-direction: column;
@@ -1412,7 +1432,59 @@ ul.navbar-home {
               }
             }
           }
+         
         }
+        .result-exam-user-answer-wrap{
+          color: #06308a;
+          display: flex;
+          align-items: center;
+          .result-exam-user-answer{
+            font-weight: 500;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .result-exam-option{
+              display: flex;
+              align-items: center;
+              p{
+                margin-bottom: 0;
+              }
+            }
+            .result-final-true{
+              background-color: #0ba62a;
+              padding: 5px;
+              border-radius: 7px;
+              color: #fff;
+            }
+            .result-final-false{
+              background-color: rgb(255, 45, 45);
+              padding: 5px;
+              border-radius: 7px;
+              color: #fff;
+            }
+          }
+          .result-exam-question-answer{
+            color: #0ba62a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+           font-weight: 500;
+            .result-exam-option{
+              display: flex;
+              align-items: center;
+              p{
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+        .result-exam-explain{
+          position: absolute;
+         right: 20px;
+        }
+
       }
     }
   }
@@ -1421,7 +1493,7 @@ ul.navbar-home {
     top: 80px;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     border-radius: 10px;
-    height: 400px;
+    min-height: 400px;
     .slidebar-title {
       text-align: center;
       padding: 10px;
@@ -1436,6 +1508,12 @@ ul.navbar-home {
         align-items: center;
         .timer {
           text-align: center;
+          .timer-content{
+            span{
+              font-size: 22px;
+              font-weight: 400;
+            }
+          }
         }
         .button-nav {
           width: 100%;

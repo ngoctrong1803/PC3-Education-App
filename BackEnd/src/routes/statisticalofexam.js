@@ -4,6 +4,14 @@ const statisticalOfExamController = require("../app/controller/statisticalOfExam
 
 router.get("/list", statisticalOfExamController.getStatisticalOfExam);
 router.post("/create", statisticalOfExamController.createStatisticalOfExam);
+router.post(
+  "/delete/by-user-and-exam",
+  statisticalOfExamController.deleleStatisticalOfExamByUserAndExam
+);
+router.post(
+  "/get-by-user-and-exam",
+  statisticalOfExamController.getStatisticalOfExamByUserAndExam
+);
 router.put("/update/:id", statisticalOfExamController.updateStatisticalOfExam);
 router.delete(
   "/delete/:id",

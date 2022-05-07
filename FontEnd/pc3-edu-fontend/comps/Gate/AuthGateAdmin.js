@@ -21,7 +21,7 @@ const AuthGateAdmin = ({ children }) => {
       })
       .catch((err) => {
         console.log("bị lỗi ở gọi api");
-        console.log(err.message);
+        console.log("lỗi admin", err.message);
         toast.error("bạn không có quyền admin");
         router.push("/");
       });

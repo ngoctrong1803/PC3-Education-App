@@ -9,6 +9,17 @@ const resultOfExamController = {
       listResultOfExam: listResultOfExam,
     });
   },
+  //[get]/api/result-of-exam/:examID
+  getResultOfExamByStatistical: async (req, res) => {
+    statisticalID = req.params.id;
+    const listResultOfExam = await ResultOfExam.find({
+      statisticalID,
+    });
+    res.status(200).json({
+      message: "truy cập thành công",
+      listResultOfExam: listResultOfExam,
+    });
+  },
   //[post]/api/result-of-exam/create
   createResultOfExam: async (req, res) => {
     const { option, statisticalID, exaQuesID } = req.body;

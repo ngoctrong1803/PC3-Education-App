@@ -1,5 +1,6 @@
 const ExamQuestion = require("../models/ExamQuestion");
 const Exam = require("../models/Exam");
+const CategoryExercise = require("../models/CategoryExercise");
 const examQuestionController = {
   //[get]/api/exam-question/list
   getExamQuestion: async (req, res) => {
@@ -9,15 +10,23 @@ const examQuestionController = {
       listExamQuestion: listExamQuestion,
     });
   },
-  //[get]/api/exam-question/list
+  //[get]/api/exam-question/list/:id
   getExamQuestionByExamID: async (req, res) => {
     const examID = req.params.id;
     const exam = await Exam.findOne({ _id: examID });
     if (exam) {
       const listExamQuestion = await ExamQuestion.find({ examID: examID });
+      const cateQuesIDArray = listExamQuestion.map(({ catExeID }) => {
+        return catExeID;
+      });
+
+      const listCateQues = await CategoryExercise.find({
+        _id: { $in: cateQuesIDArray },
+      });
       res.status(200).json({
         message: "lấy thành công danh sách câu hỏi",
         listExamQuestion: listExamQuestion,
+        listCateQues: listCateQues,
       });
     } else {
       res.status(400).json({
