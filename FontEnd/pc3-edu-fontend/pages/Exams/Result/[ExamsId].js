@@ -14,7 +14,7 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-
+import { useRouter } from "next/router";
 const Exam = () => {
   const config = {
     loader: { load: ["input/asciimath"] },
@@ -25,6 +25,7 @@ const Exam = () => {
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const examID = arrayTemp[position];
+  const router = useRouter();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
@@ -51,7 +52,8 @@ const Exam = () => {
         "http://localhost:8000/api/statistical-of-exam/get-by-user-and-exam",
         dataToFind
       );
-      if (res.data.statistical) {
+
+      if (res.data.statistical._id) {
         setStatisticalOfExam(res.data.statistical);
         setTimeDone(res.data.statistical.time);
 
@@ -60,17 +62,15 @@ const Exam = () => {
           const resOfResult = await axios.get(
             "http://localhost:8000/api/result-of-exam/" + statisticalID
           );
-          console.log(
-            "danh sách câu trả lời user:",
-            resOfResult.data.listResultOfExam
-          );
           setListAnswerOfUser(resOfResult.data.listResultOfExam);
         } catch (err) {
           const errMessage = err.response.data.message;
           toast.error(errMessage);
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      router.push("/Exams/" + examID);
+    }
   }
 
   async function getExam() {
@@ -98,7 +98,22 @@ const Exam = () => {
   }
 
   async function handleRedo() {
-    alert("xử lý làm lại");
+    try {
+      const dataToDelete = {
+        userID: currentUser.userInfor._id,
+        examID: examID,
+      };
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exam/delete/by-user-and-exam",
+        dataToDelete
+      );
+      setTimeout(() => {
+        router.push("/Exams/" + examID);
+      }, 300);
+    } catch (err) {
+      const errMessage = err?.response.data.message;
+      toast.error(errMessage);
+    }
   }
 
   useEffect(() => {
@@ -106,9 +121,6 @@ const Exam = () => {
     getContenOfExam();
     getStatisticalOfExam();
   }, []);
-  useEffect(() => {
-    console.log("test: ", statisticalOfExam);
-  }, [statisticalOfExam]);
   return (
     <MathJaxContext config={config}>
       <div className="detail-exam-page">
@@ -246,10 +258,18 @@ const Exam = () => {
                                       </div>
                                     ) : null}
                                     {answerItem.exaQuesID == questionItem._id &&
-                                    questionItem.answer != answerItem.option ? (
+                                    questionItem.answer != answerItem.option &&
+                                    answerItem.option != "" ? (
                                       <div className="result-final-false">
                                         <ion-icon name="close-outline"></ion-icon>
                                         Sai rồi
+                                      </div>
+                                    ) : null}
+                                    {answerItem.exaQuesID == questionItem._id &&
+                                    answerItem.option == "" ? (
+                                      <div className="result-final-false">
+                                        <ion-icon name="close-outline"></ion-icon>
+                                        Chưa chọn
                                       </div>
                                     ) : null}
                                   </>

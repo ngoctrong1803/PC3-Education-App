@@ -27,6 +27,7 @@ const Learning = () => {
   const [listUnit, setListUnit] = useState([]);
   const [listLession, setListLession] = useState([]);
   const [statistical, setStatistical] = useState(null);
+  const [changeLession, setChangeLession] = useState(false);
 
   async function getContentOfSubject(subjectTemp) {
     try {
@@ -61,6 +62,7 @@ const Learning = () => {
     }
   }
   async function getStatistical() {
+    console.log("lession ID:", lessionID);
     if (lessionID) {
       try {
         const dataToFind = {
@@ -71,9 +73,10 @@ const Learning = () => {
           "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
           dataToFind
         );
-        console.log("statistical:", res);
         if (res.data.statisticalOfExercise) {
           setStatistical(res.data.statisticalOfExercise);
+        } else {
+          setStatistical(false);
         }
       } catch (err) {
         const errMessage = err?.response.data.message;
@@ -81,10 +84,13 @@ const Learning = () => {
       }
     }
   }
+  function handleChangeLession() {
+    setChangeLession(true);
+  }
 
   useEffect(() => {
     getStatistical();
-  }, []);
+  }, [changeLession]);
   useEffect(() => {
     getContentOfLession();
   }, [lessionID]);
@@ -148,7 +154,12 @@ const Learning = () => {
                                 return (
                                   <>
                                     <Link href={`/Learning/${lessionItem._id}`}>
-                                      <div className="lession-item">
+                                      <div
+                                        className="lession-item"
+                                        onClick={() => {
+                                          handleChangeLession();
+                                        }}
+                                      >
                                         {lessionItem.lessionName}
                                       </div>
                                     </Link>

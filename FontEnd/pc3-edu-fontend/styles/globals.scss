@@ -989,7 +989,7 @@ ul.navbar-home {
   margin-left: 35px;
   .forum-content {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    height: 800px;
+    min-height: 800px;
     .forum-topic {
       ul {
         display: flex;
@@ -1045,6 +1045,7 @@ ul.navbar-home {
         }
       }
       .post-item-footer {
+        padding-bottom: 25px;
       }
     }
     .forum-question-item {
@@ -1170,6 +1171,11 @@ ul.navbar-home {
       display: flex;
       align-items: center;
       margin-left: 15px;
+      justify-content: space-between;
+      align-items: flex-end;
+      button{
+        margin: 15px;
+      }
       img {
         width: 40px;
         height: 40px;
@@ -1194,14 +1200,30 @@ ul.navbar-home {
     .forum-event-detail-content {
       margin: 15px;
       border-radius: 10px;
-      border: #919191 solid 1px;
+      box-shadow: 0 0.3rem 0.3rem rgba(0, 0, 0, 0.15) !important;
+      padding: 15px;
       min-height: 500px;
+      .image-forum-event-detail-content{
+        margin: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+          max-width: 600px;
+          border-radius: 10px;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+      }
+     
     }
     .forum-event-detail-footer {
       display: flex;
+      font-size: 18px;
+      font-weight: 600;
       justify-content: flex-end;
       margin-right: 15px;
-      padding-bottom: 15px;
+      padding-bottom: 35px;
     }
   }
   .forum-question-detail {
@@ -2325,6 +2347,71 @@ ul.navbar-home {
     }
   }
 }
+//========================================Admin forum page===============================================
+.admin-forum-page {
+  margin: 0 15px 0 15px;
+  .admin-forum-title {
+    padding-top: 35px;
+    span {
+      font-size: 24px;
+      font-weight: 600;
+    }
+  }
+  .admin-forum-header {
+    display: flex;
+    justify-content: space-between;
+    .admin-forum-header-find {
+      width: 300px;
+      margin-right: 10px;
+    }
+    .admin-forum-header-role {
+      padding: 0px;
+      height: 40px;
+      width: 180px;
+      margin-right: 10px;
+    }
+    .admin-forum-header-list-role {
+      padding: 0px;
+      height: 40px;
+      width: 180px;
+      margin-right: 10px;
+    }
+    .admin-forum-header-export-excel {
+      padding: 0px;
+      height: 40px;
+      width: 130px;
+      margin-right: 10px;
+    }
+    .admin-forum-header-add-user {
+      padding: 0px;
+      height: 40px;
+      width: 130px;
+      margin-right: 10px;
+    }
+  }
+  .admin-forum-list {
+    .main-forum-list-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .admin-forum-list-table {
+      align-items: center;
+      tr {
+        th {
+          text-align: center;
+        }
+        td {
+          text-align: center;
+          vertical-align: middle;
+          button {
+            margin: 5px;
+          }
+        }
+      }
+    }
+  }
+}
 //========================================= admin content subject page ============================================
 .subject-content-page {
   padding: 15px;
@@ -2609,6 +2696,89 @@ ul.navbar-home {
       }
     }
   }
+}
+
+//============================================= admin forum create blog =========================================
+.admin-forum-blog-page {
+  padding: 15px;
+  .admin-forum-blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 15px;
+    padding: 5px;
+    border-bottom: #666 solid 1px;
+    .admin-forum-blog-input-file {
+    }
+    span {
+      font-size: 16px;
+      font-weight: 600;
+      padding-bottom: 10px;
+    }
+    .import-excel {
+      margin-top: 5px;
+      width: 400px;
+    }
+  }
+  .admin-forum-blog-content-wrap {
+    padding: 15px;
+    .admin-forum-blog-content-title {
+      span {
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+    .admin-forum-blog-content-question-wrap {
+      .admin-forum-blog-content-question {
+        .ck-editor__editable {
+          min-height: 150px;
+        }
+      }
+      .admin-forum-blog-content-answer {
+        .ck-editor__editable {
+          min-height: 150px;
+        }
+        .col {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+      .admin-forum-blog-content-type-and-recommend {
+        display: flex;
+        justify-content: space-between;
+        margin: 15px;
+        .admin-forum-blog-content-image{
+
+        }
+        
+        .admin-forum-blog-content-recommend {
+          span {
+            padding: 5px;
+          }
+          .ck-editor__editable {
+            min-height: 150px;
+          }
+        }
+      }
+      .admin-forum-blog-content-explain {
+        .ck-editor__editable {
+          min-height: 150px;
+        }
+      }
+      .admin-forum-blog-footer {
+        margin-top: 10px;
+        button {
+          margin: 5px;
+        }
+      }
+    }
+  }
+}
+.admin-forum-blog-content-type {
+  display: flex;
+align-items: flex-end;
 }
 // ================================== start user exercise page=============================
 .result-exercise-wrap{

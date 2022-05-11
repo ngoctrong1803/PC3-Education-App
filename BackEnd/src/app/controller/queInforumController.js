@@ -5,7 +5,18 @@ const queInForumController = {
   getQuestionInForum: async (req, res) => {
     const listQuestionInForum = await QuestionInForum.find({});
     res.status(200).json({
-      message: "đã câu hỏi trong diễn đàn lấy thành công",
+      message: "đã câu hỏi trong diễn đàn thành công",
+      listQuestionInForum: listQuestionInForum,
+    });
+  },
+  //[get]/api/question-in-forum/list
+  getQuestionInForumByUserID: async (req, res) => {
+    const userID = req.params.id;
+    const listQuestionInForum = await QuestionInForum.find({
+      userID: userID,
+    });
+    res.status(200).json({
+      message: "đã câu hỏi trong diễn đàn thành công",
       listQuestionInForum: listQuestionInForum,
     });
   },
@@ -38,6 +49,7 @@ const queInForumController = {
           content: content,
           userID: userID,
           catQueID: catQueID,
+          status: false,
         });
         newQuestionInForum.save();
         res.status(200).json({

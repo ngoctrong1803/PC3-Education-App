@@ -1,4 +1,5 @@
 const CategoryBlog = require("../models/CategoryBlog");
+const Blog = require("../models/Blog");
 const cateBlogController = {
   //[get]/api/category-blog/list
   getCateBlog: async (req, res) => {
@@ -67,6 +68,7 @@ const cateBlogController = {
     try {
       let checkId = await CategoryBlog.findById(cateBlogId);
       if (checkId) {
+        await Blog.deleteMany({ cateBlogID: cateBlogId });
         await CategoryBlog.deleteOne({ _id: cateBlogId });
         res.status(200).json({
           message: "đã xóa thành công",

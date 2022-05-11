@@ -1,17 +1,32 @@
 const Blog = require("../models/Blog");
+const User = require("../models/User");
 
 const blogController = {
   //[get]/api/blog/list
   getBlog: async (req, res) => {
     const listBlog = await Blog.find({});
+    const arrayUserID = listBlog.map(({ userID }) => userID);
+    const listAuthor = await User.find({ _id: { $in: arrayUserID } });
     res.status(200).json({
       message: "đã lấy thành công",
-      listBlog: listBlog,
+      listBlog,
+      listAuthor,
+    });
+  },
+  //[get]/api/blog/:id
+  getBlogById: async (req, res) => {
+    const blogID = req.params.id;
+    const blog = await Blog.findOne({ _id: blogID });
+    const author = await User.find({ _id: blog.userID });
+    res.status(200).json({
+      message: "đã lấy thành công",
+      blog,
+      author,
     });
   },
   //[post]/api/blog/create
   createBlog: async (req, res) => {
-    const { content, title, userID, cateBlogID } = req.body;
+    const { content, title, userID, cateBlogID, image } = req.body;
     if (
       content == null ||
       title == null ||
@@ -38,10 +53,11 @@ const blogController = {
           title: title,
           userID: userID,
           cateBlogID: cateBlogID,
+          image: image,
         });
         newBlog.save();
         res.status(200).json({
-          message: "thêm mới blog",
+          message: "thêm mới blog thành công",
         });
       }
     }

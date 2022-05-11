@@ -87,12 +87,14 @@ const AdminSlidebar = () => {
                 </span>
                 <span>Quản lý thi đấu</span>
               </li>
-              <li className="admin-slidebar-function">
-                <span>
-                  <ion-icon name="people-circle-outline"></ion-icon>
-                </span>
-                <span>Quản lý diễn Đàn</span>
-              </li>
+              <Link href="/admin/forum">
+                <li className="admin-slidebar-function">
+                  <span>
+                    <ion-icon name="people-circle-outline"></ion-icon>
+                  </span>
+                  <span>Quản lý diễn Đàn</span>
+                </li>
+              </Link>
             </ul>
           </div>
         </div>
