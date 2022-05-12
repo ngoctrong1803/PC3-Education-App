@@ -1,12 +1,29 @@
 const QuestionInForum = require("../models/QuestionInForum");
+const QuestionInLike = require("../models/QuestionLike");
+const Comment = require("../models/Comment");
+const CommentLike = require("../models/CommentLike");
+const User = require("../models/User");
+const CategoryQuestion = require("../models/CategoryQuestion");
 
 const queInForumController = {
   //[get]/api/question-in-forum/list
   getQuestionInForum: async (req, res) => {
     const listQuestionInForum = await QuestionInForum.find({});
+    const authorArray = listQuestionInForum.map(({ userID }) => userID);
+    const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
+    const listAuthor = [];
+    listAuthorTemp.map((authorItem, index) => {
+      author = {
+        userID: authorItem._id,
+        fullname: authorItem.fullname,
+        email: authorItem.email,
+      };
+      listAuthor.push(author);
+    });
     res.status(200).json({
       message: "đã câu hỏi trong diễn đàn thành công",
       listQuestionInForum: listQuestionInForum,
+      listAuthor: listAuthor,
     });
   },
   //[get]/api/question-in-forum/list
@@ -19,6 +36,60 @@ const queInForumController = {
       message: "đã câu hỏi trong diễn đàn thành công",
       listQuestionInForum: listQuestionInForum,
     });
+  },
+  //[get]/api/question-in-forum/list
+  getContentOfQuestionByQuestionID: async (req, res) => {
+    try {
+      const questionID = req.params.id;
+      const questionInForum = await QuestionInForum.findOne({
+        _id: questionID,
+      });
+      if (questionInForum) {
+        const authorTemp = await User.findOne({ _id: questionInForum.userID });
+        const author = {
+          userID: authorTemp._id,
+          fullname: authorTemp.fullname,
+          email: authorTemp.email,
+        };
+        const category = await CategoryQuestion.findOne({
+          _id: questionInForum.catQueID,
+        });
+
+        const listComment = await Comment.find({ questionID: questionID }).sort(
+          { createdAt: -1 }
+        );
+        const commentArray = await listComment.map(({ userID }) => userID);
+        const listUserCommentTemp = await User.find({
+          _id: { $in: commentArray },
+        });
+        const listUserComment = [];
+        listUserCommentTemp.map((userItem, index) => {
+          const dataToAdd = {
+            fullname: userItem.fullname,
+            email: userItem.email,
+            userID: userItem._id,
+          };
+          listUserComment.push(dataToAdd);
+        });
+
+        res.status(200).json({
+          message: "đã lấy câu hỏi trong diễn đàn thành công",
+          questionInForum: questionInForum,
+          author: author,
+          category: category,
+          listComment: listComment,
+          listUserComment: listUserComment,
+        });
+      } else {
+        res.status(400).json({
+          message: "không tồn tại câu hỏi cần tìm",
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: "Id không đúng định dạng!",
+      });
+    }
   },
   //[post]/api/question-in-forum/create
   createQuestionInForum: async (req, res) => {
@@ -58,6 +129,33 @@ const queInForumController = {
       }
     }
   },
+  //[put]/api/question-in-forum/update-status/:id
+  updateStatusQuestionInForum: async (req, res) => {
+    try {
+      const checkId = await QuestionInForum.findOne({
+        _id: req.params.id,
+      });
+      if (checkId) {
+        await QuestionInForum.updateOne(
+          { _id: req.params.id },
+          {
+            status: !checkId.status,
+          }
+        );
+        res.status(200).json({
+          message: "cập nhật trạng thái thành công",
+        });
+      } else {
+        res.status(400).json({
+          message: "không tồn tại câu hỏi cần cập nhật",
+        });
+      }
+    } catch (err) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
+      });
+    }
+  },
   //[put]/api/question-in-forum/update/:id
   updateQuestionInForum: async (req, res) => {
     const { title, content, userID, catQueID } = req.body;
@@ -94,6 +192,7 @@ const queInForumController = {
                 content: content,
                 userID: userID,
                 catQueID: catQueID,
+                status: false,
               }
             );
             res.status(200).json({
@@ -119,6 +218,25 @@ const queInForumController = {
         _id: req.params.id,
       });
       if (checkExist) {
+        const listComment = await Comment.find({ questionID: req.params.id });
+        const commentArray = listComment.map(({ _id }) => _id);
+
+        // delete many comment like
+        await CommentLike.deleteMany({
+          commentID: { $in: commentArray },
+        });
+
+        //delete many comment
+        await Comment.deleteMany({
+          questionID: req.params.id,
+        });
+
+        //delete question like
+        await QuestionInLike.deleteMany({
+          questionID: req.params.id,
+        });
+
+        //delete question
         await QuestionInForum.deleteOne({
           _id: req.params.id,
         });

@@ -35,10 +35,32 @@ const Forum = () => {
   const [questionCateID, setQuestionCateID] = useState("");
   const [questionContent, setQuestionContent] = useState("");
 
+  // modal add question
   const [showAddQuestion, setShowAddQuestion] = useState(false);
-
   const handleCloseAddQuestion = () => setShowAddQuestion(false);
   const handleShowAddQuestion = () => setShowAddQuestion(true);
+
+  // modal update question
+  const [showUpdateQuestion, setShowUpdateQuestion] = useState(false);
+  const handleCloseUpdateQuestion = () => setShowUpdateQuestion(false);
+  const handleShowUpdateQuestion = () => setShowUpdateQuestion(true);
+  const [questionIDToUpdate, setQuestionIDToUpdate] = useState("");
+
+  // modal delete question
+  const [showConfirmDeleteQuestion, setShowConfirmDeleteQuestion] =
+    useState(false);
+  const handleCloseConfirmDeleteQuestion = () =>
+    setShowConfirmDeleteQuestion(false);
+  const handleShowConfirmDeleteQuestion = () =>
+    setShowConfirmDeleteQuestion(true);
+  const [questionIDToDelete, setQuestionIDToDelete] = useState("");
+
+  // list question in forum
+  const [listQuestionInForum, setListQuestionInForum] = useState([]);
+  const [listAuthorOfQuestionInForum, setListAuthorOfQuestionInForum] =
+    useState([]);
+  const [dateWriteQuestions, setDateWriteQuestions] = useState();
+
   async function getBlogCategory() {
     try {
       const res = await axios.get(
@@ -81,6 +103,40 @@ const Forum = () => {
   }
 
   // function question in forum
+  async function getListQuestionInForum() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/question-in-forum/list"
+      );
+
+      const arrayDate = [];
+      // date create
+      res.data.listQuestionInForum.map((quesItem, index) => {
+        let dateTemp = new Date(quesItem.createdAt);
+        let year = dateTemp.getFullYear();
+        let month = dateTemp.getMonth() + 1;
+        let day = dateTemp.getDate();
+        const dataToAdd = {
+          questionID: quesItem._id,
+          date: {
+            day,
+            month,
+            year,
+          },
+        };
+        arrayDate.push(dataToAdd);
+      });
+      console.log("abc:", arrayDate);
+      setDateWriteQuestions(arrayDate);
+      setListQuestionInForum(res.data.listQuestionInForum);
+      setListAuthorOfQuestionInForum(res.data.listAuthor);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+
+  // function question in forum
   async function getQuestionInForumByUser() {
     try {
       const res = await axios.get(
@@ -108,13 +164,65 @@ const Forum = () => {
           "http://localhost:8000/api/question-in-forum/create",
           dataToAdd
         );
-        toast.success("Đã gửi câu hỏi thành công. chờ admin kiểm duyệt nhé!");
+        toast.success(
+          "Đã gửi câu hỏi thành công. chờ quản trị viên kiểm duyệt nhé!"
+        );
+        getQuestionInForumByUser();
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
       }
       handleCloseAddQuestion();
     }
+  }
+
+  async function handleUpdateQuestion() {
+    if (
+      questionIDToUpdate == "" ||
+      questionTitle == "" ||
+      questionCateID == "" ||
+      questionContent == ""
+    ) {
+      toast.error("Vui lòng nhật đầy đủ thông tin của câu hỏi");
+    } else {
+      const dataToUpdate = {
+        content: questionContent,
+        title: questionTitle,
+        userID: currentUser.userInfor._id,
+        catQueID: questionCateID,
+      };
+      try {
+        const res = await axios.put(
+          "http://localhost:8000/api/question-in-forum/update/" +
+            questionIDToUpdate,
+          dataToUpdate
+        );
+        toast.success(
+          "Đã cập nhật thành công! Vui lòng đợi kiểm duyệt của quản trị viên"
+        );
+        handleCloseUpdateQuestion();
+        getQuestionInForumByUser();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
+
+  async function handleDeleteQuestion() {
+    try {
+      const res = await axios.delete(
+        "http://localhost:8000/api/question-in-forum/delete/" +
+          questionIDToDelete
+      );
+      toast.success("Xóa câu hỏi thành công");
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+
+    getQuestionInForumByUser();
+    handleCloseConfirmDeleteQuestion();
   }
 
   async function getListCateQuestion() {
@@ -135,6 +243,7 @@ const Forum = () => {
     getBlogCategory();
     getListCateQuestion();
     getQuestionInForumByUser();
+    getListQuestionInForum();
   }, []);
   const config = {
     loader: { load: ["input/asciimath"] },
@@ -192,7 +301,7 @@ const Forum = () => {
                               </div>
                               <div className="post-item-content">
                                 <div className="post-title">
-                                  <h4>{blogItem.title}</h4>
+                                  <h5>{blogItem.title}</h5>
                                 </div>
                                 <div className="post-content">
                                   <MathJax>
@@ -237,47 +346,85 @@ const Forum = () => {
                 ) : null}
                 {show == "question" ? (
                   <div className="forum-question-wrap">
-                    <div className="forum-question-item">
-                      <div className="forum-question-item-header">
-                        <div className="user-avatar">
-                          <img src="/user/default-avatar.png"></img>
-                        </div>
-                        <div className="user-name">Truong Ngoc Trong</div>
-                      </div>
-                      <div className="forum-question-item-content">
-                        <div className="forum-question-title">
-                          <h4>Xin chào mọi người đây là bài viết đầu tiên</h4>
-                        </div>
-                        <div className="forum-question-content">
-                          <p>
-                            Hello anh em, việc hiển thị các keystrokes (tạm
-                            dịch: “tổ hợp phím”) trong quá trình làm video hướng
-                            dẫn, highlight nội dung bạn đang gõ lên màn hình.
-                            Nếu bạn có nhu cầu đó thì đây là bài viết dành cho
-                            bạn...
-                          </p>
-                        </div>
-                      </div>
-                      <div className="forum-question-item-footer">
-                        <div className="forum-question-time">
-                          12/03/2022 - 4:46 phút
-                        </div>
-                        <div className="forum-question-interactive">
-                          <ion-icon
-                            class="icon-heart"
-                            name="heart-circle-outline"
-                          ></ion-icon>
-                          <ion-icon
-                            class="icon-comment"
-                            name="chatbox-outline"
-                          ></ion-icon>
-                          <ion-icon
-                            class="icon-sharing"
-                            name="arrow-redo-outline"
-                          ></ion-icon>
-                        </div>
-                      </div>
-                    </div>
+                    {listQuestionInForum.map((quesItem, index) => {
+                      if (quesItem.status) {
+                        return (
+                          <>
+                            <Link href={`/Forum/question-${quesItem._id}`}>
+                              <div className="forum-question-item">
+                                <div className="forum-question-item-header">
+                                  <div className="user-avatar">
+                                    <img src="/user/default-avatar.png"></img>
+                                  </div>
+                                  <div className="user-name">
+                                    {listAuthorOfQuestionInForum.map(
+                                      (authorItem, index) => {
+                                        if (
+                                          authorItem.userID == quesItem.userID
+                                        ) {
+                                          return <>{authorItem.fullname}</>;
+                                        }
+                                      }
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="forum-question-item-content">
+                                  <div className="forum-question-title">
+                                    <h5>{quesItem.title}</h5>
+                                  </div>
+                                  <div className="forum-question-content">
+                                    <p>{quesItem.content}</p>
+                                  </div>
+                                </div>
+                                <div className="forum-question-item-footer">
+                                  <div className="forum-question-time">
+                                    {dateWriteQuestions.map(
+                                      (dateItem, index) => {
+                                        if (
+                                          dateItem.questionID == quesItem._id
+                                        ) {
+                                          let day =
+                                            dateItem.date.day < 10
+                                              ? "0" + dateItem.date.day
+                                              : dateItem.date.day;
+                                          let month =
+                                            dateItem.date.month < 10
+                                              ? "0" + dateItem.date.month
+                                              : dateItem.date.month;
+                                          let year =
+                                            dateItem.date.year < 10
+                                              ? "0" + dateItem.date.year
+                                              : dateItem.date.year;
+                                          return (
+                                            <>
+                                              {day}/{month}/{year}
+                                            </>
+                                          );
+                                        }
+                                      }
+                                    )}
+                                  </div>
+                                  <div className="forum-question-interactive">
+                                    <ion-icon
+                                      class="icon-heart"
+                                      name="heart-circle-outline"
+                                    ></ion-icon>
+                                    <ion-icon
+                                      class="icon-comment"
+                                      name="chatbox-outline"
+                                    ></ion-icon>
+                                    <ion-icon
+                                      class="icon-sharing"
+                                      name="arrow-redo-outline"
+                                    ></ion-icon>
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          </>
+                        );
+                      }
+                    })}
                   </div>
                 ) : null}
                 {show == "my-question" ? (
@@ -314,18 +461,51 @@ const Forum = () => {
                                     <td>{index + 1}</td>
                                     <td>{quesItem.title}</td>
                                     <td>{quesItem.content}</td>
-                                    <td>
-                                      {quesItem.status == true ? (
-                                        <>Đã duyệt</>
+                                    <td style={{ minWidth: "110px" }}>
+                                      {quesItem.status ? (
+                                        <span
+                                          style={{
+                                            color: "green",
+                                            fontWeight: "600",
+                                          }}
+                                        >
+                                          <ion-icon name="checkmark-outline"></ion-icon>
+                                          Đã duyệt
+                                        </span>
                                       ) : (
-                                        <>Chờ duyệt</>
+                                        <span
+                                          style={{
+                                            color: "#fec416",
+                                            fontWeight: "600",
+                                          }}
+                                        >
+                                          ...Đợi duyệt
+                                        </span>
                                       )}
                                     </td>
-                                    <td>
-                                      <Button style={{ margin: "5px" }}>
-                                        Chi tiết
+                                    <td style={{ minWidth: "260px" }}>
+                                      <Button>Chi tiết</Button>
+                                      <Button
+                                        variant="warning"
+                                        onClick={() => {
+                                          handleShowUpdateQuestion();
+                                          setQuestionTitle(quesItem.title);
+                                          setQuestionCateID(quesItem.catQueID);
+                                          setQuestionContent(quesItem.content);
+                                          setQuestionIDToUpdate(quesItem._id);
+                                        }}
+                                      >
+                                        Cật nhật
                                       </Button>
-                                      <Button variant="danger">Xóa</Button>
+                                      <Button
+                                        variant="danger"
+                                        onClick={() => {
+                                          handleShowConfirmDeleteQuestion();
+                                          setQuestionIDToDelete(quesItem._id);
+                                        }}
+                                      >
+                                        Xóa
+                                      </Button>
                                     </td>
                                   </tr>
                                 </>
@@ -363,6 +543,7 @@ const Forum = () => {
               </div>
             </Col>
           </Row>{" "}
+          {/* Modal handle add */}
           <Modal show={showAddQuestion} onHide={handleCloseAddQuestion}>
             <Modal.Header closeButton>
               <Modal.Title>Thêm mới câu hỏi</Modal.Title>
@@ -428,6 +609,103 @@ const Forum = () => {
               </Button>
               <Button variant="primary" onClick={handleAddQuestion}>
                 Gửi câu hỏi
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* Modal handle update */}
+          <Modal show={showUpdateQuestion} onHide={handleCloseUpdateQuestion}>
+            <Modal.Header closeButton>
+              <Modal.Title>Cập nhật câu hỏi</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlInput1"
+                >
+                  <Form.Label>Tiêu đề</Form.Label>
+                  <Form.Control
+                    placeholder=""
+                    autoFocus
+                    value={questionTitle}
+                    onChange={(e) => {
+                      setQuestionTitle(e.target.value);
+                    }}
+                  />
+                </Form.Group>
+
+                <Form.Group>
+                  <Form.Label>Chủ đề</Form.Label>
+                  <Form.Select
+                    aria-label="Default select example"
+                    value={questionCateID}
+                    onChange={(e) => {
+                      setQuestionCateID(e.target.value);
+                    }}
+                  >
+                    <option>-- Chủ đề --</option>
+                    {listCateQuestion.map((cateItem, index) => {
+                      return (
+                        <>
+                          <option value={cateItem._id}>
+                            {cateItem.catQueName}
+                          </option>
+                        </>
+                      );
+                    })}
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlTextarea1"
+                >
+                  <Form.Label>Nội dung câu hỏi</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={questionContent}
+                    onChange={(e) => {
+                      setQuestionContent(e.target.value);
+                    }}
+                  />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseUpdateQuestion}>
+                Hủy
+              </Button>
+              <Button variant="primary" onClick={handleUpdateQuestion}>
+                Cập nhật
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* delete question */}
+          <Modal
+            show={showConfirmDeleteQuestion}
+            onHide={handleCloseConfirmDeleteQuestion}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Xác nhận</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Bạn có chắc chắn muốn xóa câu hỏi này không!
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={handleCloseConfirmDeleteQuestion}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  handleDeleteQuestion();
+                }}
+              >
+                Xóa
               </Button>
             </Modal.Footer>
           </Modal>

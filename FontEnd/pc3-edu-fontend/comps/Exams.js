@@ -44,7 +44,6 @@ const Exams = () => {
                     </div>
                   </Col>
                 </Link>
-                ;
               </>
             );
           })}

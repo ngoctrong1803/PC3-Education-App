@@ -1067,12 +1067,28 @@ ul.navbar-home {
       }
       .forum-question-item-content {
         margin-top: 5px;
+        table{
+          align-items: center;
+          tr {
+            th {
+              text-align: center;
+            }
+            td {
+              text-align: center;
+              vertical-align: middle;
+              button {
+                margin: 3px;
+              }
+            }
+          }
+        }
         .forum-question-title {
         }
         .forum-question-content {
+          
           display: flex;
           align-items: flex-start;
-          justify-content: space-evenly;
+          //justify-content: space-evenly;
           img {
             height: 200px;
             width: 220px;
@@ -1228,12 +1244,13 @@ ul.navbar-home {
   }
   .forum-question-detail {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    height: 800px;
+    min-height: 800px;
     .forum-question-detail-title {
       border-bottom: #c2c2c2 solid 1px;
       padding-top: 30px;
       margin: 0 15px;
       .forum-question-detail-title-user {
+        justify-content: space-between;
         display: flex;
         align-items: center;
         margin-bottom: 15px;
@@ -1254,11 +1271,12 @@ ul.navbar-home {
       }
     }
     .forum-question-detail-content {
+      padding: 15px;
       margin: 10px 15px 0px 15px;
-      min-height: 300px;
+      min-height: 100px;
       border: #a8b2b8 solid 1px;
-      border-radius: 10px 10px 0px 0px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+      border-radius: 5px 5px 0px 0px;
+      box-shadow: 0 0 0.1rem 0.1rem rgba(0, 0, 0, 0.15) !important;
     }
     .forum-question-detail-footer {
       background-color: #2196f3;
@@ -1266,7 +1284,7 @@ ul.navbar-home {
       margin: 0 15px;
       display: flex;
       justify-content: flex-end;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
+      box-shadow: 0 0.3rem 0.3rem rgba(9, 162, 189, 0.2) !important;
       .forum-question-interactive {
         display: flex;
 
@@ -1309,7 +1327,7 @@ ul.navbar-home {
     }
     .forum-question-detail-comment {
       min-height: 200px;
-      border: #919191 solid 1px;
+      border: #cfcfcf solid 1px;
       margin: 0px 15px;
       .forum-question-detail-user-comment {
         display: flex;
@@ -1337,6 +1355,7 @@ ul.navbar-home {
             .forum-question-detail-user-commented-title {
               display: flex;
               align-items: center;
+              justify-content: space-between;
               margin-bottom: 5px;
               margin-top: 5px;
               img {
@@ -1346,9 +1365,14 @@ ul.navbar-home {
                 border-radius: 50%;
                 margin-right: 5px;
               }
+              .btn-delete{
+                margin: 10px;
+                font-size: 22px;
+                color: red;
+              }
             }
             .forum-question-detail-user-commented-content {
-              background-color: #e2e1e17e;
+              background-color: #e7e7e77e;
               border-radius: 10px;
               margin: 5px 15px;
               min-height: 50px;

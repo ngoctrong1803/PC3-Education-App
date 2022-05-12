@@ -25,6 +25,20 @@ const Forum = () => {
   const handleCloseConfirmDelete = () => {
     setShowConfirmDelete(false);
   };
+
+  const [listCateQuestion, setListCateQuestion] = useState([]);
+  const [allQuestion, setAllQuestion] = useState([]);
+  const [listAuthorOfQuestion, setListAuthorOfQuestion] = useState([]);
+
+  // modal delete question
+  const [showConfirmDeleteQuestion, setShowConfirmDeleteQuestion] =
+    useState(false);
+  const handleCloseConfirmDeleteQuestion = () =>
+    setShowConfirmDeleteQuestion(false);
+  const handleShowConfirmDeleteQuestion = () =>
+    setShowConfirmDeleteQuestion(true);
+  const [questionIDToDelete, setQuestionIDToDelete] = useState("");
+
   const handleShowConfirmDelete = () => {
     setShowConfirmDelete(true);
   };
@@ -67,9 +81,61 @@ const Forum = () => {
     }
   }
 
+  async function getListCateQuestion() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/category-question/list"
+      );
+      setListCateQuestion(res.data.listCateQuestion);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  async function getAllQuestion() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/question-in-forum/list"
+      );
+      setAllQuestion(res.data.listQuestionInForum);
+      setListAuthorOfQuestion(res.data.listAuthor);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  async function handleChangeStatus(questionID) {
+    try {
+      const res = await axios.put(
+        "http://localhost:8000/api/question-in-forum/update-status/" +
+          questionID
+      );
+      getAllQuestion();
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  async function handleDeleteQuestion() {
+    try {
+      const res = await axios.delete(
+        "http://localhost:8000/api/question-in-forum/delete/" +
+          questionIDToDelete
+      );
+      toast.success("Xóa câu hỏi thành công");
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+    getAllQuestion();
+    handleCloseConfirmDeleteQuestion();
+  }
+
   useEffect(() => {
     getBlogCategory();
     getListBlog();
+    getListCateQuestion();
+    getAllQuestion();
   }, []);
   return (
     <div className="admin-forum-page">
@@ -121,6 +187,13 @@ const Forum = () => {
               aria-label="Default select example"
             >
               <option>-- Thể loại --</option>
+              {listCateQuestion.map((cateItem, index) => {
+                return (
+                  <>
+                    <option value={cateItem._id}>{cateItem.catQueName}</option>
+                  </>
+                );
+              })}
             </Form.Select>
           </div>
         ) : null}
@@ -276,6 +349,7 @@ const Forum = () => {
             <thead>
               <tr>
                 <th>STT</th>
+                <th>Tiêu đề</th>
                 <th>Nội dung</th>
                 <th>Thể loại</th>
                 <th>Tác giả</th>
@@ -284,17 +358,74 @@ const Forum = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Cho em hỏi về bài toán này với</td>
-                <td>Toán học lớp 10</td>
-                <td>Nguyễn Văn An</td>
-                <td>Chờ duyệt</td>
-                <td>
-                  <Button variant="success">Duyệt</Button>
-                  <Button variant="danger">Xóa</Button>
-                </td>
-              </tr>
+              {allQuestion.map((questionItem, index) => {
+                return (
+                  <>
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>{questionItem.title}</td>
+                      <td>{questionItem.content}</td>
+                      <td>
+                        {listCateQuestion.map((cateItem, index) => {
+                          if (questionItem.catQueID == cateItem._id) {
+                            return <>{cateItem.catQueName}</>;
+                          }
+                        })}
+                      </td>
+                      <td>
+                        {listAuthorOfQuestion.map((authorItem, index) => {
+                          if (questionItem.userID == authorItem.userID) {
+                            return <>{authorItem.fullname}</>;
+                          }
+                        })}
+                      </td>
+                      <td style={{ minWidth: "120px" }}>
+                        {questionItem.status ? (
+                          <span style={{ color: "green", fontWeight: "600" }}>
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                            Đã duyệt
+                          </span>
+                        ) : (
+                          <span style={{ color: "#fec416", fontWeight: "600" }}>
+                            ...Đợi duyệt
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ minWidth: "160px" }}>
+                        {!questionItem.status ? (
+                          <Button
+                            variant="success"
+                            onClick={() => {
+                              handleChangeStatus(questionItem._id);
+                            }}
+                          >
+                            Duyệt
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="warning"
+                            onClick={() => {
+                              handleChangeStatus(questionItem._id);
+                            }}
+                          >
+                            Hủy
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="danger"
+                          onClick={() => {
+                            setQuestionIDToDelete(questionItem._id);
+                            handleShowConfirmDeleteQuestion();
+                          }}
+                        >
+                          Xóa
+                        </Button>
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
             </tbody>
           </Table>
           <div className="main-forum-list-pagination">
@@ -337,6 +468,34 @@ const Forum = () => {
                 variant="danger"
                 onClick={() => {
                   handleDeleteBlog();
+                }}
+              >
+                Xóa
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          {/* delete question */}
+          <Modal
+            show={showConfirmDeleteQuestion}
+            onHide={handleCloseConfirmDeleteQuestion}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Xác nhận</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Bạn có chắc chắn muốn xóa câu hỏi này không!
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={handleCloseConfirmDeleteQuestion}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  handleDeleteQuestion();
                 }}
               >
                 Xóa

@@ -1,11 +1,23 @@
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
-import { Col, Row, Button, InputGroup, FormControl } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Button,
+  InputGroup,
+  FormControl,
+  Modal,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const Detail = () => {
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
   const [showComment, setShowComment] = useState(false);
   const handelShowComment = () => {
     setShowComment(!showComment);
@@ -25,6 +37,21 @@ const Detail = () => {
   const [contentOfBlog, setContentOfBlog] = useState({});
   const [author, setAuthor] = useState({});
   const [dateWriteBlog, setDateWriteBlog] = useState({});
+
+  const [contentOfQuestion, setContentOfQuestion] = useState({});
+  const [commentContent, setCommentContent] = useState("");
+  const [listComment, setListComment] = useState([]);
+  const [listUserComment, setListUserComment] = useState([]);
+
+  const [commentIDToDelete, setCommentIDToDelete] = useState("");
+  const [showConfirmDeleteComment, setShowConfirmDeleteComment] =
+    useState(false);
+  function handleShowConfirmDeleteComment() {
+    setShowConfirmDeleteComment(true);
+  }
+  function handleCloseConfirmDeleteComment() {
+    setShowConfirmDeleteComment(false);
+  }
   async function getContentOfBlog() {
     try {
       const res = await axios.get("http://localhost:8000/api/blog/" + id);
@@ -47,9 +74,66 @@ const Detail = () => {
     }
   }
 
+  async function getContentOfQuestion() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/question-in-forum/content/" + id
+      );
+      const content = {
+        questionContent: res.data.questionInForum,
+        questionAuthor: res.data.author,
+        questionCategory: res.data.category,
+      };
+      setContentOfQuestion(content);
+      setListComment(res.data.listComment);
+      setListUserComment(res.data.listUserComment);
+
+      console.log("nội dung câu hỏi", res.data);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  async function handleComment() {
+    if (commentContent != "") {
+      const dataToAddComment = {
+        content: commentContent,
+        like: 0,
+        questionID: id,
+        userID: currentUser.userInfor._id,
+      };
+      try {
+        const res = await axios.post(
+          "http://localhost:8000/api/comment/create",
+          dataToAddComment
+        );
+        getContentOfQuestion();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
+    }
+  }
+  async function handleDeleteComment() {
+    try {
+      const res = await axios.delete(
+        "http://localhost:8000/api/comment/delete/" + commentIDToDelete
+      );
+      toast.success("Đã xóa bình luận!");
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+    getContentOfQuestion();
+    handleCloseConfirmDeleteComment();
+  }
+
   useEffect(() => {
     if (type == "blog" && id != "") {
       getContentOfBlog();
+    }
+    if (type == "question" && id != "") {
+      getContentOfQuestion();
     }
   }, []);
   const config = {
@@ -115,13 +199,19 @@ const Detail = () => {
               <div className="forum-question-detail">
                 <div className="forum-question-detail-title">
                   <div className="forum-question-detail-title-user">
-                    <img src="/user/default-avatar.png"></img>
-                    <span>Trương Ngọc Trọng</span>
+                    <div>
+                      <img src="/user/default-avatar.png"></img>
+                      <span>{contentOfQuestion?.questionAuthor?.fullname}</span>
+                    </div>
+                    <Button variant="outline-warning">Quay lại</Button>
                   </div>
-                  <span className="question-title">Toán lớp 10</span>
+                  <span className="question-title">
+                    {contentOfQuestion?.questionCategory?.catQueName} -{" "}
+                    {contentOfQuestion?.questionContent?.title}
+                  </span>
                 </div>
                 <div className="forum-question-detail-content">
-                  <span>nội dung bài toán lớp 10</span>
+                  <span>{contentOfQuestion?.questionContent?.content}</span>
                 </div>
                 <div className="forum-question-detail-footer">
                   <div className="forum-question-interactive">
@@ -150,49 +240,76 @@ const Detail = () => {
                         <FormControl
                           placeholder="Viết bình luận"
                           aria-label="Recipient's username with two button addons"
+                          value={commentContent}
+                          onChange={(e) => {
+                            setCommentContent(e.target.value);
+                          }}
                         />
                         <Button variant="outline-secondary">
                           <ion-icon name="image-outline"></ion-icon>
                         </Button>
-                        <Button variant="primary">Bình Luận</Button>
+                        <Button
+                          variant="primary"
+                          onClick={() => {
+                            handleComment();
+                          }}
+                        >
+                          Bình Luận
+                        </Button>
                       </InputGroup>
                     </div>
                     <div className="forum-question-detail-user-commented-wrap">
                       <ul>
-                        <li>
-                          <div className="forum-question-detail-user-commented">
-                            <div className="forum-question-detail-user-commented-title">
-                              <img src="/user/default-avatar.png"></img>
-                              <span>Trương Ngọc Trọng</span>
-                            </div>
-                            <div className="forum-question-detail-user-commented-content">
-                              <span>bài này giải như thế này nè</span>
-                            </div>
-                            <div className="forum-question-detail-user-commented-footer">
-                              <ion-icon
-                                class="icon-heart"
-                                name="heart-circle-outline"
-                              ></ion-icon>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="forum-question-detail-user-commented">
-                            <div className="forum-question-detail-user-commented-title">
-                              <img src="/user/default-avatar.png"></img>
-                              <span>Nguyễn Văn A</span>
-                            </div>
-                            <div className="forum-question-detail-user-commented-content">
-                              <span>bài này bạn áp dụng công thức là ra à</span>
-                            </div>
-                            <div className="forum-question-detail-user-commented-footer">
-                              <ion-icon
-                                class="icon-heart"
-                                name="heart-circle-outline"
-                              ></ion-icon>
-                            </div>
-                          </div>
-                        </li>
+                        {listComment.map((commentItem, index) => {
+                          return (
+                            <>
+                              {" "}
+                              <li key={index}>
+                                <div className="forum-question-detail-user-commented">
+                                  <div className="forum-question-detail-user-commented-title">
+                                    <div>
+                                      <img src="/user/default-avatar.png"></img>
+                                      <span>
+                                        {listUserComment.map(
+                                          (authorItem, index) => {
+                                            if (
+                                              authorItem.userID ==
+                                              commentItem.userID
+                                            )
+                                              return <>{authorItem.fullname}</>;
+                                          }
+                                        )}
+                                      </span>
+                                    </div>
+                                    <div className="btn-delete">
+                                      {commentItem.userID ==
+                                      currentUser.userInfor._id ? (
+                                        <ion-icon
+                                          name="trash-outline"
+                                          onClick={() => {
+                                            setCommentIDToDelete(
+                                              commentItem._id
+                                            );
+                                            handleShowConfirmDeleteComment();
+                                          }}
+                                        ></ion-icon>
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                  <div className="forum-question-detail-user-commented-content">
+                                    <span>{commentItem.content}</span>
+                                  </div>
+                                  <div className="forum-question-detail-user-commented-footer">
+                                    <ion-icon
+                                      class="icon-heart"
+                                      name="heart-circle-outline"
+                                    ></ion-icon>
+                                  </div>
+                                </div>
+                              </li>
+                            </>
+                          );
+                        })}
                       </ul>
                     </div>
                   </div>
@@ -239,6 +356,23 @@ const Detail = () => {
           </Col>
         </Row>
       </MathJaxContext>
+      <Modal
+        show={showConfirmDeleteComment}
+        onHide={handleCloseConfirmDeleteComment}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Xác nhận</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Bạn có chắc chắn muốn xóa bình luận!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseConfirmDeleteComment}>
+            Hủy
+          </Button>
+          <Button variant="danger" onClick={handleDeleteComment}>
+            Xóa
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
