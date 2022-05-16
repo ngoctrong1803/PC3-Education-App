@@ -4,8 +4,6 @@ var cookieParser = require("cookie-parser");
 var app = express();
 var cors = require("cors");
 
-
-
 app.use(BodyParser.json());
 //app.use(BodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -28,6 +26,30 @@ db.connect();
 
 //routes
 route(app);
+// start socket io
+// const http = require("http");
+// const { Server } = require("socket.io");
+// const server = http.createServer(app);
+// //require("events").EventEmitter.prototype._maxListeners = 0;
+// const io = new Server(server, {
+//   cors: {
+//     origin: "http://localhost:3000", // host of client
+//     methods: ["GET", "POST"],
+//   },
+// }); // => from client
+// let couter = 0;
+// io.on("connection", (socket) => {
+//   console.log(` + user connected: ${socket.id}`);
+
+//   io.on("disconnect", () => {
+//     console.log(` - user disconnect: ${socket.id}`);
+//   });
+// });
+
+// server.listen(9000, () => {
+//   console.log("SERVER IS RUNNING");
+// });
+// end socket io
 
 app.listen(8000, () => {
   console.log("Listening at :8000...");

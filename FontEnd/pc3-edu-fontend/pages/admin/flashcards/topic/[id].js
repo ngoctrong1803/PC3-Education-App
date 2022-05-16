@@ -11,10 +11,11 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/dist/client/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import * as XLSX from "xlsx";
 const Flashcard = () => {
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
@@ -151,6 +152,131 @@ const Flashcard = () => {
     }
   }
 
+  // handle upload excel to create flashcard
+  const [uploadFile, setUploadFile] = useState(false);
+  const [listFlashcardInExcelValid, setListFlashcardInExcelValid] = useState(
+    []
+  );
+  const [listFlashcardInExcelInvalid, setListFlashcardInExcelInvalid] =
+    useState([]);
+  const [listFlashcardExist, setListFlashcardExist] = useState([]);
+  const uploadFileInput = useRef();
+  async function readExcel(e) {
+    e.preventDefault();
+    const reader = new FileReader();
+    const fileName = e.target.files[0].name;
+    const arrayTemp = fileName.split(".");
+    const extend = arrayTemp[arrayTemp.length - 1];
+    if (extend == "xlsx") {
+      reader.readAsArrayBuffer(e.target.files[0]);
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet);
+        json.shift();
+        const flashcardArray = json;
+        const flashcardArrayValid = [];
+        const flashcardArrayExist = [];
+        const flashcardArrayInvalid = [];
+
+        console.log(flashcardArray);
+        // handle question in excel
+        if (flashcardArray != 0) {
+          flashcardArray.map((flashcardItem, index) => {
+            let check = true;
+            const dataToPush = {
+              meaningInVietnamese: flashcardItem?.meaning_in_vietnamese ?? "",
+              meaningInEnglish: flashcardItem?.meaning_in_english ?? "",
+              explain: flashcardItem?.explain ?? "",
+              example: flashcardItem?.example ?? "",
+              star: false,
+              forgetfulness: false,
+              shared: false,
+              userID: curentAdmin.userInfor._id,
+              topicID: topicID,
+            };
+            listFlashcard.map((flashcardItem, index) => {
+              if (
+                dataToPush.meaningInVietnamese ==
+                  flashcardItem.meaningInVietnamese &&
+                dataToPush.meaningInEnglish == flashcardItem.meaningInEnglish &&
+                dataToPush.explain == flashcardItem.explain &&
+                dataToPush.example == flashcardItem.example &&
+                dataToPush.userID == flashcardItem.userID &&
+                dataToPush.topicID == flashcardItem.topicID
+              ) {
+                check = false;
+              }
+            });
+            if (
+              dataToPush.meaningInVietnamese != "" &&
+              dataToPush.meaningInEnglish != "" &&
+              dataToPush.example != "" &&
+              check == true
+            ) {
+              flashcardArrayValid.push(dataToPush);
+            } else if (
+              dataToPush.meaningInVietnamese != "" &&
+              dataToPush.meaningInEnglish != "" &&
+              dataToPush.example != "" &&
+              check == false
+            ) {
+              flashcardArrayExist.push(dataToPush);
+            } else {
+              flashcardArrayInvalid.push(dataToPush);
+            }
+          });
+          if (flashcardArrayValid.length == 0) {
+            uploadFileInput.current.value = "";
+          }
+          setListFlashcardInExcelValid(flashcardArrayValid);
+          setListFlashcardInExcelInvalid(flashcardArrayInvalid);
+          setListFlashcardExist(flashcardArrayExist);
+          setUploadFile(true);
+        } else {
+          toast.error("File rỗng vui lòng kiểm tra lại!");
+          uploadFileInput.current.value = "";
+        }
+      };
+    } else {
+      toast.error("File không đúng định dạng!");
+      uploadFileInput.current.value = "";
+    }
+  }
+
+  async function handleUploadFlashcard() {
+    if (listFlashcardInExcelValid.length != 0) {
+      let counter = 0;
+      let checkError = false;
+      for (let i = 0; i < listFlashcardInExcelValid.length; i++) {
+        try {
+          const res = await axios.post(
+            "http://localhost:8000/api/flashcard/create",
+            listFlashcardInExcelValid[i]
+          );
+          counter++;
+        } catch (err) {
+          checkError = true;
+        }
+      }
+      if (counter > 0) {
+        toast.success("Thêm mới flashcard thành công");
+      }
+      if (checkError) {
+        toast.warning(
+          "Đã có flashcard bị trùng lặp trong file excel. flashcard trùng lặp chỉ được thêm 1 lần"
+        );
+      }
+    } else {
+      toast.error("Danh sách các flashcard hợp lệ rỗng!");
+    }
+    getFlashcard();
+    setUploadFile(false);
+    uploadFileInput.current.value = "";
+  }
+
   useEffect(() => {
     getFlashcard();
   }, []);
@@ -171,17 +297,26 @@ const Flashcard = () => {
           </InputGroup>
           <Button
             className="admin-subjects-header-add-user"
-            variant="outline-success"
-          >
-            Excel
-          </Button>
-          <Button
-            className="admin-subjects-header-add-user"
             variant="outline-info"
             onClick={handleShowAddFlashcard}
           >
             Thêm mới
           </Button>
+          <Form.Group controlId="formFile" className="import-excel">
+            <Form.Control
+              ref={uploadFileInput}
+              type="file"
+              onChange={(e) => {
+                readExcel(e);
+              }}
+            />
+          </Form.Group>
+          <a href="/Excel/Flashcards.xlsx" download>
+            {" "}
+            <Button variant="outline-success" style={{ marginLeft: "5px" }}>
+              Excel mẫu
+            </Button>
+          </a>
         </div>
         <Link href="/admin">
           <Button
@@ -193,79 +328,228 @@ const Flashcard = () => {
         </Link>
       </div>
       <div className="admin-subjects-list">
-        <Table bordered className="admin-subjects-list-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tác giả</th>
-              <th>Nghĩa anh</th>
-              <th>Nghĩa tiếng việt</th>
-              <th>Ví dụ</th>
-              <th>Chức năng</th>
-            </tr>
-          </thead>
-          <tbody>
-            {listFlashcard.map(function (item, index) {
-              return (
-                <>
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>
-                      {listUser.map((userItem) => {
-                        if (userItem._id == item.userID) {
-                          return userItem.fullname;
-                        }
-                      })}
-                    </td>
-                    <td>{item.meaningInEnglish}</td>
-                    <td>{item.meaningInVietnamese}</td>
-                    <td>{item.example}</td>
-                    <td>
-                      <Button
-                        className="admin-subjects-header-add-user"
-                        variant="primary"
-                        onClick={() => {
-                          handleShowUpdateFlashcard(
-                            item._id,
-                            item.meaningInVietnamese,
-                            item.meaningInEnglish,
-                            item.example,
-                            item.explain
-                          );
-                        }}
-                      >
-                        Chi tiết
-                      </Button>
+        {!uploadFile ? (
+          <>
+            <Table bordered className="admin-subjects-list-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Tác giả</th>
+                  <th>Nghĩa anh</th>
+                  <th>Nghĩa tiếng việt</th>
+                  <th>Ví dụ</th>
+                  <th>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listFlashcard.map(function (item, index) {
+                  return (
+                    <>
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>
+                          {listUser.map((userItem) => {
+                            if (userItem._id == item.userID) {
+                              return userItem.fullname;
+                            }
+                          })}
+                        </td>
+                        <td>{item.meaningInEnglish}</td>
+                        <td>{item.meaningInVietnamese}</td>
+                        <td>{item.example}</td>
+                        <td>
+                          <Button
+                            className="admin-subjects-header-add-user"
+                            variant="primary"
+                            onClick={() => {
+                              handleShowUpdateFlashcard(
+                                item._id,
+                                item.meaningInVietnamese,
+                                item.meaningInEnglish,
+                                item.example,
+                                item.explain
+                              );
+                            }}
+                          >
+                            Chi tiết
+                          </Button>
 
-                      <Button
-                        className="admin-subjects-header-add-user"
-                        variant="danger"
-                        onClick={() => {
-                          handleShowConfirmDeleteFlashcard(item._id);
-                        }}
-                      >
-                        Xóa
-                      </Button>
-                    </td>
-                  </tr>
-                </>
-              );
-            })}
-          </tbody>
-        </Table>
-        <div className="main-subjects-list-pagination">
-          <Pagination>
-            <Pagination.First />
-            <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
-            <Pagination.Next />
-            <Pagination.Last />
-          </Pagination>
-        </div>
+                          <Button
+                            className="admin-subjects-header-add-user"
+                            variant="danger"
+                            onClick={() => {
+                              handleShowConfirmDeleteFlashcard(item._id);
+                            }}
+                          >
+                            Xóa
+                          </Button>
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </Table>{" "}
+            <div className="main-subjects-list-pagination">
+              <Pagination>
+                <Pagination.First />
+                <Pagination.Prev />
+                <Pagination.Item active>{1}</Pagination.Item>
+                <Pagination.Item>{2}</Pagination.Item>
+                <Pagination.Item>{3}</Pagination.Item>
+                <Pagination.Item>{4}</Pagination.Item>
+                <Pagination.Item>{5}</Pagination.Item>
+                <Pagination.Next />
+                <Pagination.Last />
+              </Pagination>
+            </div>
+          </>
+        ) : null}
+        {uploadFile ? (
+          <>
+            <h5 style={{ color: "#198754" }}>Danh sách các flashcard hợp lệ</h5>
+
+            <Table bordered className="admin-subjects-list-table">
+              <thead>
+                <tr style={{ backgroundColor: "#198754", color: "#fff" }}>
+                  <th>STT</th>
+                  <th>Tác giả</th>
+                  <th>Nghĩa anh</th>
+                  <th>Nghĩa tiếng việt</th>
+                  <th>Ví dụ</th>
+                  <th>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listFlashcardInExcelValid.map(function (item, index) {
+                  return (
+                    <>
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>
+                          {listUser.map((userItem) => {
+                            if (userItem._id == item.userID) {
+                              return userItem.fullname;
+                            }
+                          })}
+                        </td>
+                        <td>{item.meaningInEnglish}</td>
+                        <td>{item.meaningInVietnamese}</td>
+                        <td>{item.example}</td>
+                        <td>
+                          <Button
+                            className="admin-subjects-header-add-user"
+                            variant="danger"
+                            onClick={() => {
+                              const newList = listFlashcardInExcelValid;
+                              newList.splice(index, 1);
+
+                              setListFlashcardInExcelValid([...newList]);
+                            }}
+                          >
+                            Xóa
+                          </Button>
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </Table>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                style={{ marginRight: "5px" }}
+                variant="secondary"
+                onClick={() => {
+                  uploadFileInput.current.value = "";
+                  setUploadFile(false);
+                }}
+              >
+                Hủy bỏ
+              </Button>
+              <Button
+                variant="success"
+                onClick={() => {
+                  handleUploadFlashcard();
+                }}
+              >
+                Tải lên
+              </Button>
+            </div>
+
+            <h5 style={{ color: "#dc3545" }}>
+              Danh sách các flashcard đã tồn tại
+            </h5>
+            <Table bordered className="admin-subjects-list-table">
+              <thead>
+                <tr style={{ backgroundColor: "#dc3545", color: "#fff" }}>
+                  <th>STT</th>
+                  <th>Tác giả</th>
+                  <th>Nghĩa anh</th>
+                  <th>Nghĩa tiếng việt</th>
+                  <th>Ví dụ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listFlashcardExist.map(function (item, index) {
+                  return (
+                    <>
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>
+                          {listUser.map((userItem) => {
+                            if (userItem._id == item.userID) {
+                              return userItem.fullname;
+                            }
+                          })}
+                        </td>
+                        <td>{item.meaningInEnglish}</td>
+                        <td>{item.meaningInVietnamese}</td>
+                        <td>{item.example}</td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </Table>
+            <h5 style={{ color: "#dc3545" }}>
+              Danh sách các flashcard không hợp lệ
+            </h5>
+            <Table bordered className="admin-subjects-list-table">
+              <thead>
+                <tr style={{ backgroundColor: "#dc3545", color: "#fff" }}>
+                  <th>STT</th>
+                  <th>Tác giả</th>
+                  <th>Nghĩa anh</th>
+                  <th>Nghĩa tiếng việt</th>
+                  <th>Ví dụ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listFlashcardInExcelInvalid.map(function (item, index) {
+                  return (
+                    <>
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>
+                          {listUser.map((userItem) => {
+                            if (userItem._id == item.userID) {
+                              return userItem.fullname;
+                            }
+                          })}
+                        </td>
+                        <td>{item.meaningInEnglish}</td>
+                        <td>{item.meaningInVietnamese}</td>
+                        <td>{item.example}</td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </>
+        ) : null}
+
         {/* start modal add flash card */}
         <Modal show={showAddFlashcard} onHide={handleCloseAddFlashcard}>
           <Modal.Header closeButton>

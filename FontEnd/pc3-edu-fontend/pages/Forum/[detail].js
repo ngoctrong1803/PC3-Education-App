@@ -1,5 +1,5 @@
 import { useRouter } from "next/dist/client/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Col,
   Row,
@@ -13,8 +13,19 @@ import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import io from "socket.io-client";
 
+//const socket = io.connect("http://localhost:9000");
 const Detail = () => {
+  // const socket = useSelector((state) => {
+  //   return state.socketIO.socket;
+  // });
+
+  // function testSocket() {
+  //   socket.disconnect();
+  //   //socket.emit("send_message", { message: "hello minasan" }); // emit to server with key: "send_message" and value : object
+  // }
+
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
@@ -355,6 +366,13 @@ const Detail = () => {
             ) : null}
           </Col>
         </Row>
+        <Button
+          onClick={() => {
+            testSocket();
+          }}
+        >
+          Test
+        </Button>
       </MathJaxContext>
       <Modal
         show={showConfirmDeleteComment}

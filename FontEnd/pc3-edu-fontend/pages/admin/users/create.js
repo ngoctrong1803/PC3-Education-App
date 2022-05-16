@@ -80,10 +80,6 @@ const Create = () => {
     class: "",
   });
 
-  useEffect(() => {
-    emailRef.current.focus();
-  }, []);
-
   // check validate email
   useEffect(() => {
     const result = EMAIL_REGEX.test(email);
@@ -211,10 +207,7 @@ const Create = () => {
     } else {
       setMatchPasswordErr("");
     }
-
-    console.log("handle submit");
     if (userRegister.email != "") {
-      console.log("user register:", userRegister);
       axios
         .post("http://localhost:8000/api/auth/create", userRegister)
         .then((res) => {
@@ -230,6 +223,10 @@ const Create = () => {
         });
     }
   }
+  // handle upload excel to create user
+  const [importExcel, setImportExcel] = useState(false);
+  const uploadFile = useRef();
+
   return (
     <div className="create-user-page">
       <div className="create-user-page-header">
@@ -244,186 +241,199 @@ const Create = () => {
         <div className="create-user-page-content-add-file">
           <Form.Group controlId="formFile" className="mb-3">
             <Form.Label>Thêm file Excel</Form.Label>
-            <Form.Control type="file" />
+            <Form.Control
+              type="file"
+              ref={uploadFile}
+              onChange={(e) => {
+                //readExcel(e);
+                setImportExcel(true);
+              }}
+            />
           </Form.Group>
         </div>
         <div className="create-user-page-content-add-form">
-          <Form noValidate onSubmit={handleRegister}>
-            <Row className="mb-3" xs={2} md={2} lg={2}>
-              <Form.Group as={Col} controlId="formGridFullName">
-                <Form.Label
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                  }}
-                >
-                  Họ và tên
-                </Form.Label>
-                <Form.Control
-                  ref={emailRef}
-                  type="text"
-                  placeholder="VD: Nguyễn Văn A"
-                  value={fullname}
-                  onChange={(e) => {
-                    setFullname(e.target.value);
-                  }}
-                />
-                {fullnameErr !== "" ? <span>{fullnameErr}</span> : null}
-              </Form.Group>
-            </Row>
-            <Row className="mb-3" xs={2} md={2} lg={2}>
-              <Form.Group as={Col} controlId="formGridEmail">
-                <Form.Label
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                  }}
-                >
-                  Email{" "}
-                  {validEmail ? (
-                    <ion-icon
-                      name="checkmark-circle-outline"
-                      style={{ color: "green", margin: "5px" }}
-                    ></ion-icon>
-                  ) : null}
-                </Form.Label>
-                <Form.Control
-                  ref={emailRef}
-                  type="email"
-                  placeholder="Tài khoản"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-                {emailErr !== "" ? <span>{emailErr}</span> : null}
-              </Form.Group>
+          {!importExcel ? (
+            <>
+              {" "}
+              <Form noValidate onSubmit={handleRegister}>
+                <Row className="mb-3" xs={2} md={2} lg={2}>
+                  <Form.Group as={Col} controlId="formGridFullName">
+                    <Form.Label
+                      style={{
+                        display: "flex",
+                        "align-items": "center",
+                      }}
+                    >
+                      Họ và tên
+                    </Form.Label>
+                    <Form.Control
+                      ref={emailRef}
+                      type="text"
+                      placeholder="VD: Nguyễn Văn A"
+                      value={fullname}
+                      onChange={(e) => {
+                        setFullname(e.target.value);
+                      }}
+                    />
+                    {fullnameErr !== "" ? <span>{fullnameErr}</span> : null}
+                  </Form.Group>
+                </Row>
+                <Row className="mb-3" xs={2} md={2} lg={2}>
+                  <Form.Group as={Col} controlId="formGridEmail">
+                    <Form.Label
+                      style={{
+                        display: "flex",
+                        "align-items": "center",
+                      }}
+                    >
+                      Email{" "}
+                      {validEmail ? (
+                        <ion-icon
+                          name="checkmark-circle-outline"
+                          style={{ color: "green", margin: "5px" }}
+                        ></ion-icon>
+                      ) : null}
+                    </Form.Label>
+                    <Form.Control
+                      ref={emailRef}
+                      type="email"
+                      placeholder="Tài khoản"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                    />
+                    {emailErr !== "" ? <span>{emailErr}</span> : null}
+                  </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridPassword">
-                <Form.Label
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                  }}
-                >
-                  Mật khẩu{" "}
-                  {validPassword ? (
-                    <ion-icon
-                      name="checkmark-circle-outline"
-                      style={{ color: "green", margin: "5px" }}
-                    ></ion-icon>
-                  ) : null}
-                </Form.Label>
+                  <Form.Group as={Col} controlId="formGridPassword">
+                    <Form.Label
+                      style={{
+                        display: "flex",
+                        "align-items": "center",
+                      }}
+                    >
+                      Mật khẩu{" "}
+                      {validPassword ? (
+                        <ion-icon
+                          name="checkmark-circle-outline"
+                          style={{ color: "green", margin: "5px" }}
+                        ></ion-icon>
+                      ) : null}
+                    </Form.Label>
 
-                <Form.Control
-                  type="password"
-                  placeholder="Mật khẩu"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-                {passwordErr !== "" ? <span>{passwordErr}</span> : null}
-              </Form.Group>
-            </Row>
-            <Row className="mb-3" xs={2} md={2} lg={2}>
-              <Form.Group as={Col} controlId="formGridRole">
-                <Form.Label>Chức vụ</Form.Label>
-                <Form.Select
-                  onChange={(e) => {
-                    setRole(e.target.value);
-                  }}
-                >
-                  <option value={"none"}> -- chọn chức vụ -- </option>
-                  <option value={"admin"}>Quản trị viên</option>
-                  <option value={"teacher"}>Giáo viên</option>
-                  <option value={"student"}>Học sinh</option>
-                </Form.Select>
-                {roleErr !== "" ? <span>{roleErr}</span> : null}
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridMatchPassword">
-                <Form.Label
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                  }}
-                >
-                  Nhập lại mật khẩu
-                  {validMatchPassword ? (
-                    <ion-icon
-                      name="checkmark-circle-outline"
-                      style={{ color: "green", margin: "5px" }}
-                    ></ion-icon>
-                  ) : null}
-                </Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Nhập lại mật khẩu"
-                  value={matchPassword}
-                  onChange={(e) => {
-                    setMatchPassword(e.target.value);
-                  }}
-                />
-                {matchPasswordErr !== "" ? (
-                  <span>{matchPasswordErr}</span>
-                ) : null}
-              </Form.Group>
-            </Row>
-            <Row className="mb-3" xs={2} md={2} lg={2}>
-              <Form.Group className="mb-3" controlId="formGridAddress">
-                <Form.Label>Địa chỉ</Form.Label>
-                <Form.Control
-                  value={address}
-                  onChange={(e) => {
-                    setAddress(e.target.value);
-                  }}
-                  placeholder="VD: 191 Hoàng diệu 2"
-                />
-                {addressErr !== "" ? <span>{addressErr}</span> : null}
-              </Form.Group>
+                    <Form.Control
+                      type="password"
+                      placeholder="Mật khẩu"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                    />
+                    {passwordErr !== "" ? <span>{passwordErr}</span> : null}
+                  </Form.Group>
+                </Row>
+                <Row className="mb-3" xs={2} md={2} lg={2}>
+                  <Form.Group as={Col} controlId="formGridRole">
+                    <Form.Label>Chức vụ</Form.Label>
+                    <Form.Select
+                      onChange={(e) => {
+                        setRole(e.target.value);
+                      }}
+                    >
+                      <option value={"none"}> -- chọn chức vụ -- </option>
+                      <option value={"admin"}>Quản trị viên</option>
+                      <option value={"teacher"}>Giáo viên</option>
+                      <option value={"student"}>Học sinh</option>
+                    </Form.Select>
+                    {roleErr !== "" ? <span>{roleErr}</span> : null}
+                  </Form.Group>
+                  <Form.Group as={Col} controlId="formGridMatchPassword">
+                    <Form.Label
+                      style={{
+                        display: "flex",
+                        "align-items": "center",
+                      }}
+                    >
+                      Nhập lại mật khẩu
+                      {validMatchPassword ? (
+                        <ion-icon
+                          name="checkmark-circle-outline"
+                          style={{ color: "green", margin: "5px" }}
+                        ></ion-icon>
+                      ) : null}
+                    </Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Nhập lại mật khẩu"
+                      value={matchPassword}
+                      onChange={(e) => {
+                        setMatchPassword(e.target.value);
+                      }}
+                    />
+                    {matchPasswordErr !== "" ? (
+                      <span>{matchPasswordErr}</span>
+                    ) : null}
+                  </Form.Group>
+                </Row>
+                <Row className="mb-3" xs={2} md={2} lg={2}>
+                  <Form.Group className="mb-3" controlId="formGridAddress">
+                    <Form.Label>Địa chỉ</Form.Label>
+                    <Form.Control
+                      value={address}
+                      onChange={(e) => {
+                        setAddress(e.target.value);
+                      }}
+                      placeholder="VD: 191 Hoàng diệu 2"
+                    />
+                    {addressErr !== "" ? <span>{addressErr}</span> : null}
+                  </Form.Group>
 
-              <Form.Group className="mb-3" controlId="formGridBirthday">
-                <Form.Label>Ngày sinh</Form.Label>
-                <Form.Control
-                  placeholder="VD: 18/03/2000"
-                  type="date"
-                  value={birthday}
-                  onChange={(e) => {
-                    setBirthday(e.target.value);
-                  }}
-                />
-                {birthdayErr !== "" ? <span>{birthdayErr}</span> : null}
-              </Form.Group>
-            </Row>
-            <Row className="mb-3" xs={2} md={2} lg={2}>
-              <Form.Group className="mb-3" controlId="formGridPhone">
-                <Form.Label>Số điện thoại</Form.Label>
-                <Form.Control
-                  placeholder="VD: 0358489850"
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                  }}
-                />
-                {phoneErr !== "" ? <span>{phoneErr}</span> : null}
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formGridStudentClass">
-                <Form.Label>Lớp học hiện tại</Form.Label>
-                <Form.Control
-                  placeholder="VD: 12A1"
-                  value={studentClass}
-                  onChange={(e) => {
-                    setStudentClass(e.target.value);
-                  }}
-                />
-              </Form.Group>
-            </Row>
+                  <Form.Group className="mb-3" controlId="formGridBirthday">
+                    <Form.Label>Ngày sinh</Form.Label>
+                    <Form.Control
+                      placeholder="VD: 18/03/2000"
+                      type="date"
+                      value={birthday}
+                      onChange={(e) => {
+                        setBirthday(e.target.value);
+                      }}
+                    />
+                    {birthdayErr !== "" ? <span>{birthdayErr}</span> : null}
+                  </Form.Group>
+                </Row>
+                <Row className="mb-3" xs={2} md={2} lg={2}>
+                  <Form.Group className="mb-3" controlId="formGridPhone">
+                    <Form.Label>Số điện thoại</Form.Label>
+                    <Form.Control
+                      placeholder="VD: 0358489850"
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                      }}
+                    />
+                    {phoneErr !== "" ? <span>{phoneErr}</span> : null}
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formGridStudentClass">
+                    <Form.Label>Lớp học hiện tại</Form.Label>
+                    <Form.Control
+                      placeholder="VD: 12A1"
+                      value={studentClass}
+                      onChange={(e) => {
+                        setStudentClass(e.target.value);
+                      }}
+                    />
+                  </Form.Group>
+                </Row>
 
-            <Button variant="primary" type="submit">
-              Thêm mới
-            </Button>
-            {/* <Button onClick={() => setShow(true)}>Show Toast</Button> */}
-          </Form>
+                <Button variant="primary" type="submit">
+                  Thêm mới
+                </Button>
+                {/* <Button onClick={() => setShow(true)}>Show Toast</Button> */}
+              </Form>
+            </>
+          ) : null}
+          {importExcel ? <></> : null}
         </div>
       </div>
       <div className="toast-message">

@@ -34,8 +34,10 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.49.9",
     "scss": "^0.2.4",
+    "socket.io-client": "^4.5.0",
     "styled-components": "^5.3.5",
-    "swiper": "^8.0.7"
+    "swiper": "^8.0.7",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "eslint": "8.9.0",

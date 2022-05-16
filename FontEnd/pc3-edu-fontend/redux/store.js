@@ -1,5 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+//import socketReducer from "./socketSlice";
 import {
   persistStore,
   persistReducer,
@@ -18,6 +19,7 @@ const persistConfig = {
 };
 const rootReducer = combineReducers({
   auth: authReducer,
+  //socketIO: socketReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

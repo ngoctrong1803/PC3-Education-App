@@ -1415,6 +1415,7 @@ ul.navbar-home {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     border-radius: 10px;
     min-height: 800px;
+    padding-bottom: 45px;
     .exam-title {
       text-align: center;
       padding-top: 15px;
@@ -2297,6 +2298,8 @@ ul.navbar-home {
   .create-user-page-content {
     .create-user-page-content-add-file {
       width: 500px;
+      border-bottom: solid 1px rgb(214, 214, 214);
+      margin-right: 50%;
     }
     .create-user-page-content-add-form {
       span {
@@ -2720,6 +2723,45 @@ ul.navbar-home {
       }
     }
   }
+  .valid-table{
+    align-items: center;
+    tr {
+      th {
+        text-align: center;
+        background-color: #198754;
+        color: #fff;
+      }
+      td {
+        text-align: center;
+        vertical-align: middle;
+        button {
+          margin: 3px;
+        }
+      }
+    }
+  }
+  .btn-upload-excel{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .invalid-table{
+    align-items: center;
+    tr {
+      th {
+        text-align: center;
+        background-color: #dc3545;
+        color: #fff;
+      }
+      td {
+        text-align: center;
+        vertical-align: middle;
+        button {
+          margin: 3px;
+        }
+      }
+    }
+  }
+ 
 }
 
 //============================================= admin forum create blog =========================================
