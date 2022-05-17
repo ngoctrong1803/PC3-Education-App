@@ -7,4 +7,5 @@ router.get("/list-user", userController.getUser);
 
 // creating one user
 router.post("/create", authController.resgisterUser);
+router.delete("/delete/:id", userController.deleteUser);
 module.exports = router;

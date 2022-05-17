@@ -7,11 +7,62 @@ import {
   FormControl,
   Form,
   Pagination,
+  Modal,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/dist/client/link";
+import axios from "axios";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
-const users = () => {
+const Users = () => {
+  const [listRole, setListRole] = useState([]);
+  const [listUser, setListUser] = useState([]);
+  const [userIDToDelete, setUserIDToDelete] = useState("");
+  const [comfirmDeleteUser, setConfirmDeleteUser] = useState(false);
+  const handleCloseComfirmDeleteUser = () => {
+    setConfirmDeleteUser(false);
+  };
+  const handleShowComfirmDeleteUser = () => {
+    setConfirmDeleteUser(true);
+  };
+
+  async function getListRole() {
+    try {
+      const res = await axios.get("http://localhost:8000/api/role/list");
+      setListRole(res.data.listRole);
+      console.log("list role:", res.data.listRole);
+    } catch (err) {
+      const errMsg = err.response.data.message;
+      console.log("err: ", err.response.data.message);
+    }
+  }
+  async function getListUser() {
+    try {
+      const res = await axios.get("http://localhost:8000/api/user/list-user");
+      setListUser(res.data.listUser);
+    } catch (err) {
+      const errMsg = err.response.data.message;
+      console.log("err: ", err.response.data.message);
+    }
+  }
+  useEffect(() => {
+    getListRole();
+    getListUser();
+  }, []);
+  async function handleDeleteUser() {
+    try {
+      await axios.delete(
+        "http://localhost:8000/api/user/delete/" + userIDToDelete
+      );
+      toast.success("Xóa người dùng thành công!");
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+    handleCloseComfirmDeleteUser();
+    getListUser();
+  }
   return (
     <div className="admin-users-page">
       <div className="admin-users-title">
@@ -31,9 +82,16 @@ const users = () => {
           aria-label="Default select example"
         >
           <option>-- Chức vụ --</option>
-          <option value="1">Quản trị viên</option>
-          <option value="2">Giáo viên</option>
-          <option value="3">Học sinh</option>
+          {listRole.map((roleItem, index) => {
+            return (
+              <>
+                {" "}
+                <option value={roleItem.roleName}>
+                  {roleItem.description}
+                </option>
+              </>
+            );
+          })}
         </Form.Select>
         <Button
           className="admin-users-header-list-role"
@@ -59,53 +117,56 @@ const users = () => {
       <div className="admin-users-list">
         <Table striped bordered hover>
           <thead>
-            <tr>
-              <th>#</th>
+            <tr style={{ backgroundColor: "#0d6efd", color: "#fff" }}>
+              <th>STT</th>
               <th>Họ và tên</th>
               <th>Chức vụ</th>
               <th>Email</th>
               <th>Số điện thoại</th>
               <th>Ngày sinh</th>
-              <th>Hành động</th>
+              <th>Lớp</th>
+              <th>Chức năng</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Trương Ngọc Trọng</td>
-              <td>Quản trị viên</td>
-              <td>ngoctrong1412@gmail.com</td>
-              <td>035 848 9850</td>
-              <td>18/03/200</td>
-              <td>
-                <Button variant="primary">Sửa</Button>
-                <Button variant="primary">Xóa</Button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Trương Ngọc Trọng</td>
-              <td>Quản trị viên</td>
-              <td>ngoctrong1412@gmail.com</td>
-              <td>035 848 9850</td>
-              <td>18/03/200</td>
-              <td>
-                <Button variant="primary">Sửa</Button>
-                <Button variant="primary">Xóa</Button>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Trương Ngọc Trọng</td>
-              <td>Quản trị viên</td>
-              <td>ngoctrong1412@gmail.com</td>
-              <td>035 848 9850</td>
-              <td>18/03/200</td>
-              <td>
-                <Button variant="primary">Sửa</Button>
-                <Button variant="primary">Xóa</Button>
-              </td>
-            </tr>
+            {listUser.map((userItem, index) => {
+              return (
+                <>
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{userItem.fullname}</td>
+                    <td>
+                      {listRole.map((roleItem, index) => {
+                        if (roleItem.roleName == userItem.role)
+                          return <>{roleItem.description}</>;
+                      })}
+                    </td>
+                    <td>{userItem.email}</td>
+                    <td>{userItem.phone}</td>
+                    <td>
+                      {new Date(userItem.birthday).getDate() +
+                        "/" +
+                        (new Date(userItem.birthday).getMonth() + 1) +
+                        "/" +
+                        new Date(userItem.birthday).getFullYear()}
+                    </td>
+                    <td>{userItem.class}</td>
+                    <td>
+                      <Button variant="primary">Sửa</Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => {
+                          setUserIDToDelete(userItem._id);
+                          handleShowComfirmDeleteUser();
+                        }}
+                      >
+                        Xóa
+                      </Button>
+                    </td>
+                  </tr>
+                </>
+              );
+            })}
           </tbody>
         </Table>
         <div className="main-users-list-pagination">
@@ -121,10 +182,43 @@ const users = () => {
             <Pagination.Last />
           </Pagination>
         </div>
+        {/* start modal comfirm delete user */}
+        <Modal show={comfirmDeleteUser} onHide={handleCloseComfirmDeleteUser}>
+          <Modal.Header closeButton>
+            <Modal.Title style={{ color: "red" }}>Xóa người dùng</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group
+                className="mb-3"
+                controlId="exampleForm.ControlInput1"
+              >
+                <Form.Label>
+                  Khi xóa người dùng toàn bộ dữ liệu liên quan đến người dùng
+                  này sẽ bị xóa. Bạn có chắc chắn muốn xóa!
+                </Form.Label>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseComfirmDeleteUser}>
+              Hủy bỏ
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                handleDeleteUser();
+              }}
+            >
+              Đồng ý
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* end modal comfirm delete user */}
       </div>
     </div>
   );
 };
 
-users.layout = "adminLayout";
-export default users;
+Users.layout = "adminLayout";
+export default Users;

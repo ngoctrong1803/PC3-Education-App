@@ -10,7 +10,7 @@ const User = new Schema(
     address: { type: String, required: true },
     birthday: { type: Date, required: true },
     phone: { type: String, required: true },
-    class: { type: String },
+    class: { type: String, required: true },
   },
   {
     timestamps: true,

@@ -2283,6 +2283,7 @@ ul.navbar-home {
 .create-user-page {
   margin: 0 35px 0 35px;
   padding-top: 35px;
+  padding-bottom: 35px;
   .create-user-page-header {
     display: flex;
     justify-content: space-between;
@@ -2304,6 +2305,44 @@ ul.navbar-home {
     .create-user-page-content-add-form {
       span {
         color: rgba(247, 8, 8, 0.89);
+      }
+      .valid-table{
+        align-items: center;
+        tr {
+          th {
+            text-align: center;
+            background-color: #198754;
+            color: #fff;
+          }
+          td {
+            text-align: center;
+            vertical-align: middle;
+            button {
+              margin: 3px;
+            }
+          }
+        }
+      }
+      .btn-upload-excel{
+        display: flex;
+        justify-content: flex-end;
+      }
+      .invalid-table{
+        align-items: center;
+        tr {
+          th {
+            text-align: center;
+            background-color: #dc3545;
+            color: #fff;
+          }
+          td {
+            text-align: center;
+            vertical-align: middle;
+            button {
+              margin: 3px;
+            }
+          }
+        }
       }
     }
   }

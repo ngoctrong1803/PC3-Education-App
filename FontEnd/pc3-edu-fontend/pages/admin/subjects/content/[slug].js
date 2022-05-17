@@ -81,7 +81,6 @@ const Content = () => {
       console.log("nội dung bài học:", res.data.lessions);
       setLessions(res.data.lessions);
     } catch (err) {
-      console.log("chạy vào catch:", err);
       const errMessage = err.response.data.message;
       toast.error(errMessage);
     }

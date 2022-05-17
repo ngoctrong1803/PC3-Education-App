@@ -12,7 +12,6 @@ const authController = {
     //encrypt password
     bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
       encryptedPassword = hash;
-      console.log("password encrypted:", encryptedPassword);
       const user = new User({
         fullname: req.body.fullname,
         email: req.body.email,
@@ -23,8 +22,6 @@ const authController = {
         phone: req.body.phone,
         class: req.body.class,
       });
-      console.log("user in server:", user);
-
       try {
         const checkUser = await User.find({ email: user.email });
         const checkPhone = await User.find({ phone: user.phone });
