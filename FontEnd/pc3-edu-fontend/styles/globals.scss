@@ -2617,6 +2617,8 @@ ul.navbar-home {
   }
   .admin-statistical-header {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     .admin-statistical-header-find {
       width: 300px;
       margin-right: 10px;
@@ -2647,6 +2649,23 @@ ul.navbar-home {
     }
   }
   .admin-statistical-list {
+    table{
+      align-items: center;
+      tr {
+        th {
+          text-align: center;
+          background-color: #198754;
+          color: #fff;
+        }
+        td {
+          text-align: center;
+          vertical-align: middle;
+          button {
+            margin: 3px;
+          }
+        }
+      }
+    }
     .main-statistical-list-pagination {
       display: flex;
       justify-content: center;
@@ -3026,9 +3045,10 @@ align-items: flex-end;
   }
 }
 .sidebar-of-exercise-result-wrap{
+  padding: 15px;
 
   box-shadow: 0 0.5rem 1rem rgba(167, 171, 171, 0.231) !important;
-  min-height: 400px;
+  min-height: 200px;
   margin-top: 15px;
   margin-right: 15px;
   border-radius: 15px;

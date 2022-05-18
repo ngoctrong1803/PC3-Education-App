@@ -1,5 +1,9 @@
 const StatisticalOfExercise = require("../models/StatisticalOfExercise");
 const ResultOfExercise = require("../models/ResultOfExercise");
+const User = require("../models/User");
+const MCExercise = require("../models/MCExercise");
+const Lession = require("../models/Lession");
+const Unit = require("../models/Unit");
 const statisticalOfExerController = {
   //[get]/api/statistical-of-exercise/list
   getStatisticalOfExercise: async (req, res) => {
@@ -12,17 +16,143 @@ const statisticalOfExerController = {
 
   //[post]/api/statistical-of-exercise/delete/by-user-and-lession
   getStatisticalOfExerciseByUserAndLession: async (req, res) => {
-    const { userID, lessionID } = req.body;
-    
-    const statisticalOfExercise = await StatisticalOfExercise.findOne({
-      userID,
-      lessionID,
-    });
-    res.status(200).json({
-      message: "đã truy cập thành công",
-      statisticalOfExercise: statisticalOfExercise,
-    });
+    try {
+      const { userID, lessionID } = req.body;
+      const statisticalOfExercise = await StatisticalOfExercise.findOne({
+        userID,
+        lessionID,
+      });
+      const user = await User.findOne({ _id: userID });
+      const userInfor = {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        address: user.address,
+        birthday: user.birthday,
+        phone: user.phone,
+        class: user.class,
+      };
+      res.status(200).json({
+        message: "đã truy cập thành công",
+        statisticalOfExercise: statisticalOfExercise,
+        userInfor: userInfor,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: "Đã xảy ra ngoại lệ",
+      });
+    }
   },
+  //[get]/api/statistical-of-exercise/lession/:id
+  getStatisticalOfExerciseByLession: async (req, res) => {
+    try {
+      const lessionID = req.params.id;
+      //list statistical of exercise
+      const listStatisticalOfExercise = await StatisticalOfExercise.find({
+        lessionID: lessionID,
+      });
+      const userIDArray = listStatisticalOfExercise.map(({ userID }) => {
+        return userID;
+      });
+      const statisticalIDArray = listStatisticalOfExercise.map((_id) => {
+        return _id;
+      });
+      // list user infor
+      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listUserInfor = listUserTemp.map((item, index) => {
+        return {
+          _id: item._id,
+          fullname: item.fullname,
+          email: item.email,
+          role: item.role,
+          address: item.address,
+          birthday: item.birthday,
+          phone: item.phone,
+          class: item.class,
+        };
+      });
+      //list result of exercise
+      const listResultOfExercise = await ResultOfExercise.find({
+        statisticalID: { $in: statisticalIDArray },
+      });
+
+      const MCExerciseIDArray = listResultOfExercise.map(({ MCExerciseID }) => {
+        return MCExerciseID;
+      });
+      //list mcexercise have in result
+      const listMCExercise = await MCExercise.find({
+        _id: { $in: MCExerciseIDArray },
+      });
+
+      const statisticalOfExercise = {
+        listStatisticalOfExercise,
+        listUserInfor,
+        listResultOfExercise,
+        listMCExercise,
+      };
+
+      res.status(200).json({
+        message: "Lấy thống kê thành công",
+        statisticalOfExercise: statisticalOfExercise,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
+      });
+    }
+  },
+  //[get]/api/statistical-of-exercise/unit/:id
+  getStatisticalOfExerciseByUnit: async (req, res) => {
+    try {
+      const unitID = req.params.id;
+      const unitInfor = await Unit.findOne({ _id: unitID });
+      const listLessionOfUnit = await Lession.find({ unitID: unitID });
+      const lessionIDArray = listLessionOfUnit.map((_id) => {
+        return _id;
+      });
+
+      //list statistical of exercise
+      const listStatisticalOfExercise = await StatisticalOfExercise.find({
+        lessionID: { $in: lessionIDArray },
+      });
+
+      const userIDArray = listStatisticalOfExercise.map(({ userID }) => {
+        return userID;
+      });
+      // list user infor
+      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listUserInfor = listUserTemp.map((item, index) => {
+        return {
+          _id: item._id,
+          fullname: item.fullname,
+          email: item.email,
+          role: item.role,
+          address: item.address,
+          birthday: item.birthday,
+          phone: item.phone,
+          class: item.class,
+        };
+      });
+
+      const statisticalOfExercise = {
+        unitInfor,
+        listLessionOfUnit,
+        listStatisticalOfExercise,
+        listUserInfor,
+      };
+
+      res.status(200).json({
+        message: "Lấy thống kê thành công",
+        statisticalOfExercise: statisticalOfExercise,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
+      });
+    }
+  },
+
   //[post]/api/statistical-of-exercise/delete/by-user-and-lession
   deleteStatisticalOfExerciseByUserAndLession: async (req, res) => {
     const { userID, lessionID } = req.body;

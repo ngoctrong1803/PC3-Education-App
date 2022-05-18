@@ -91,7 +91,7 @@ const Subject = () => {
                     <Link href={`/Subjects/${subjectItem.slug}`}>
                       <div className="subject-item-wrap">
                         <div className="subject_item">
-                          <img src="/subject/MonToanf1.jpg"></img>
+                          <img src={subjectItem.image}></img>
                         </div>
                         <span className="subject-title">
                           {subjectItem.name}

@@ -33,6 +33,36 @@ const userController = {
       listUser: listUserToClient,
     });
   },
+  getUserByID: async (req, res) => {
+    const userID = req.params.id;
+    try {
+      const user = await User.findOne({ _id: userID });
+      const userToClient = {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        address: user.address,
+        birthday: user.birthday,
+        phone: user.phone,
+        class: user.class,
+      };
+      if (user._id) {
+        res.status(200).json({
+          message: "Lấy thông tin người dùng thành công",
+          user: userToClient,
+        });
+      } else {
+        res.status(400).json({
+          message: "Không tìm thấy người dùng",
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: "Id không đúng định dạng",
+      });
+    }
+  },
   deleteUser: async (req, res) => {
     const userID = req.params.id;
     console.log("userID", userID);

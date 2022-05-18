@@ -3,6 +3,14 @@ const router = express.Router();
 const statisticalOfExerController = require("../app/controller/statisticalOfExerController");
 
 router.get("/list", statisticalOfExerController.getStatisticalOfExercise);
+router.get(
+  "/lession/:id",
+  statisticalOfExerController.getStatisticalOfExerciseByLession
+);
+router.get(
+  "/unit/:id",
+  statisticalOfExerController.getStatisticalOfExerciseByUnit
+);
 router.post("/create", statisticalOfExerController.createStatisticalOfExercise);
 router.post(
   "/by-user-and-lession",

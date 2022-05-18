@@ -15,11 +15,34 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 const Subjects = () => {
+  const [listImage, setListImage] = useState([
+    {
+      name: "Toán Học",
+      link: "/subject/MonToanf1.jpg",
+    },
+    {
+      name: "Hóa Học",
+      link: "/subject/MonHoaHocf1.jpg",
+    },
+    {
+      name: "Tiếng Anh",
+      link: "/subject/MonTiengAnhf1.jpg",
+    },
+    {
+      name: "Sinh Học",
+      link: "/subject/MonSinhHocf1.jpg",
+    },
+    {
+      name: "Vật Lý",
+      link: "/subject/MonVatLyf1.jpg",
+    },
+  ]);
   const [listSubject, setListSubject] = useState([]);
   const [showAddSubject, setShowAddSubject] = useState(false);
   const [showUpdateSubject, setShowUpdateSubject] = useState(false);
   const [subjectID, setSubjectID] = useState("");
   const [subjectName, setSubjectName] = useState("");
+  const [subjectImage, setSubjectImage] = useState("");
   const [gradeID, setGradeID] = useState("");
   const [listGrade, setListGrade] = useState([]);
   function handleCloseAddSubject() {
@@ -44,7 +67,7 @@ const Subjects = () => {
       const res = await axios.get(
         "http://localhost:8000/api/subjects/get-list-subject"
       );
-      console.log("list subject: ", res.data.listSubject);
+
       setListSubject(res.data.listSubject);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -63,11 +86,14 @@ const Subjects = () => {
     const newSubject = {
       name: subjectName,
       gradeID: gradeIDOfSubject,
+      image: subjectImage,
     };
     if (subjectName == "") {
       toast.error("vui lòng nhập tên môn học");
     } else if (gradeID == "") {
       toast.error("vui lòng chọn khối");
+    } else if (subjectImage == "none" || subjectImage == "") {
+      toast.error("vui lòng chọn hình ảnh cho môn học");
     } else {
       try {
         const res = await axios.post(
@@ -83,7 +109,6 @@ const Subjects = () => {
         toast.error(errMessage);
       }
     }
-    console.log("data to add:", newSubject);
   }
   async function handleUpdateSubject(e) {
     e.preventDefault(); // ngăn chặn hành động mặc định
@@ -92,19 +117,27 @@ const Subjects = () => {
     const updateSubject = {
       name: subjectName,
       gradeID: gradeIDOfSubject,
+      image: subjectImage,
     };
-    try {
-      const res = await axios.put(
-        "http://localhost:8000/api/subjects/update/" + subjectID,
-        updateSubject
-      );
-      console.log("updateSubject:", updateSubject);
-      toast.success("Cật nhật môn học thành công");
-      handleCloseAddSubject();
-      getSubject();
-    } catch (err) {
-      const errMessage = err.response.data.message;
-      toast.error(errMessage);
+    if (subjectName == "") {
+      toast.error("vui lòng nhập tên môn học");
+    } else if (gradeID == "") {
+      toast.error("vui lòng chọn khối");
+    } else if (subjectImage == "none" || subjectImage == "") {
+      toast.error("vui lòng chọn hình ảnh cho môn học");
+    } else {
+      try {
+        const res = await axios.put(
+          "http://localhost:8000/api/subjects/update/" + subjectID,
+          updateSubject
+        );
+        toast.success("Cật nhật môn học thành công");
+        handleCloseUpdateSubject();
+        getSubject();
+      } catch (err) {
+        const errMessage = err.response.data.message;
+        toast.error(errMessage);
+      }
     }
   }
 
@@ -112,6 +145,29 @@ const Subjects = () => {
     getSubject();
     getGrade();
   }, []);
+
+  //handle delete subject
+  const [subjectIDToDelete, setSubjectIDToDelete] = useState("");
+  const [showComfirmDeleteSubject, setShowConfirmDeleteSubject] =
+    useState(false);
+  const handleShowComfirmDeleteSubject = () => {
+    setShowConfirmDeleteSubject(true);
+  };
+  const handleCloseComfirmDeleteSubject = () => {
+    setShowConfirmDeleteSubject(false);
+  };
+  async function handleDeleteSubject() {
+    try {
+      const res = await axios.delete(
+        "http://localhost:8000/api/subjects/delete/" + subjectIDToDelete
+      );
+      toast.success("Xóa môn học thành công");
+      handleCloseComfirmDeleteSubject();
+      getSubject();
+    } catch (error) {
+      toast.error("Xóa thất bại, đã xảy ra ngoại lệ");
+    }
+  }
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">
@@ -200,6 +256,7 @@ const Subjects = () => {
                             item.name,
                             item.gradeID
                           );
+                          setSubjectImage(item.image);
                         }}
                       >
                         Sửa
@@ -207,6 +264,10 @@ const Subjects = () => {
                       <Button
                         className="admin-subjects-header-add-user"
                         variant="danger"
+                        onClick={() => {
+                          setSubjectIDToDelete(item._id);
+                          handleShowComfirmDeleteSubject();
+                        }}
                       >
                         Xóa
                       </Button>
@@ -266,6 +327,24 @@ const Subjects = () => {
                     );
                   })}
                 </Form.Select>
+                <Form.Label>Hình ảnh</Form.Label>
+                <Form.Select
+                  onChange={(e) => {
+                    setSubjectImage(e.target.value);
+                  }}
+                  value={subjectImage}
+                >
+                  <option value="none">-- Hình ảnh --</option>
+                  {listImage.map(function (item, i) {
+                    return (
+                      <>
+                        <option value={item.link} key={i}>
+                          {item.name}
+                        </option>
+                      </>
+                    );
+                  })}
+                </Form.Select>
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -316,6 +395,24 @@ const Subjects = () => {
                     );
                   })}
                 </Form.Select>
+                <Form.Label>Hình ảnh</Form.Label>
+                <Form.Select
+                  onChange={(e) => {
+                    setSubjectImage(e.target.value);
+                  }}
+                  value={subjectImage}
+                >
+                  <option value="none">-- Hình ảnh --</option>
+                  {listImage.map(function (item, i) {
+                    return (
+                      <>
+                        <option value={item.link} key={i}>
+                          {item.name}
+                        </option>
+                      </>
+                    );
+                  })}
+                </Form.Select>
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -329,6 +426,40 @@ const Subjects = () => {
           </Modal.Footer>
         </Modal>
         {/* end modal update subject */}
+        {/* start modal comfirm delete subject */}
+        <Modal
+          show={showComfirmDeleteSubject}
+          onHide={handleCloseComfirmDeleteSubject}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title style={{ color: "red" }}>Xóa môn học</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group
+                className="mb-3"
+                controlId="exampleForm.ControlInput1"
+              >
+                <Form.Label>
+                  Khi xóa môn học toàn bộ dữ liệu liên quan đến môn học sẽ bị
+                  xóa. Bạn có chắc chắn muốn xóa môn học này.
+                </Form.Label>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={handleCloseComfirmDeleteSubject}
+            >
+              Hủy bỏ
+            </Button>
+            <Button variant="danger" onClick={handleDeleteSubject}>
+              Đồng ý
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* end modal comfirm delete subject */}
       </div>
     </div>
   );

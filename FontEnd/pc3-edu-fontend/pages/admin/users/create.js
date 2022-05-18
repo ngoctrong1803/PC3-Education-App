@@ -764,6 +764,9 @@ const Create = () => {
               </div>
               <h5 style={{ color: "#dc3545" }}>
                 Danh sách người dùng đã tồn tại
+                <span style={{ fontSize: "16px", color: "#dc3545" }}>
+                  (Email hoặc số điện thoại đã được đăng ký)
+                </span>
               </h5>
               <Table striped bordered hover className="invalid-table">
                 <thead>

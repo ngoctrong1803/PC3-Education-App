@@ -89,7 +89,6 @@ const subjectController = {
   },
   //[post]/api/subject/create
   createSucject: async (req, res) => {
-    console.log("data when create subject:", req.body);
     const checkSubject = await Subject.findOne({
       name: req.body.name,
       gradeID: req.body.gradeID,
@@ -102,6 +101,7 @@ const subjectController = {
       const newsubject = new Subject({
         name: req.body.name,
         gradeID: req.body.gradeID,
+        image: req.body.image,
       });
       newsubject.save();
       res
@@ -115,7 +115,7 @@ const subjectController = {
       name: req.body.name,
       gradeID: req.body.gradeID,
     });
-    if (subject) {
+    if (subject?._id && subject?._id != req.params.id) {
       res.status(400).json({
         message: "môn học đã tồn tại",
       });
@@ -129,6 +129,7 @@ const subjectController = {
               name: req.body.name,
               gradeID: req.body.gradeID,
               slug: slugify(req.body.name + "-" + req.body.gradeID),
+              image: req.body.image,
             }
           );
           res.status(200).json({
@@ -154,8 +155,10 @@ const subjectController = {
         console.log(
           "====================================handle delete====================================="
         );
+        //handle find data to delete
         const subjectID = subject._id;
         console.log("subject:", subject);
+
         const units = await Unit.find({ subjectID: subjectID });
         console.log("units:", units);
         const unitIDArray = units.map(({ _id }) => _id);
@@ -222,6 +225,37 @@ const subjectController = {
           statisticalID: { $in: statisticalOfExamIDArray },
         });
         console.log("result of exam:", resultOfExam);
+
+        // handle delete
+        //delete exam
+        await ExamQuestion.deleteMany({ examID: { $in: examIDArray } });
+        await ResultOfExam.deleteMany({
+          statisticalID: { $in: statisticalOfExamIDArray },
+        });
+        await StatisticalOfExam.deleteMany({ examID: { $in: examIDArray } });
+        await Exam.deleteMany({
+          subjectID: subjectID,
+        });
+        //delete mcExercise
+        await MCExercise.deleteMany({
+          lessionID: { $in: lessionIdArray },
+        });
+        await ResultOfExercise.deleteMany({
+          statisticalID: { $in: statisticalOfExerciseIDArray },
+        });
+        await StatisticalOfExercise.deleteMany({
+          lessionID: { $in: lessionIdArray },
+        });
+        await Theory.deleteMany({
+          lessionID: { $in: lessionIdArray },
+        });
+        await Lession.deleteMany({
+          unitID: { $in: unitIDArray },
+        });
+        await Unit.deleteMany({
+          subjectID: subjectID,
+        });
+        await Subject.deleteOne({ _id: subjectID });
 
         console.log(
           "====================================end handle delete====================================="

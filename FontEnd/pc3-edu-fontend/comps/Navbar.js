@@ -119,20 +119,6 @@ const Navbar = () => {
             </Link>
           </li>
           <li
-            ref={matchButton}
-            className="sidebar__item "
-            style={{ "--clr": "#2196f3" }}
-          >
-            <Link href="/Matches" className="sidebar__link">
-              <a>
-                <span className="icon">
-                  <ion-icon name="trophy-outline"></ion-icon>
-                </span>
-                <span className="sidebarText">Thi Đấu</span>
-              </a>
-            </Link>
-          </li>
-          <li
             ref={examsButton}
             className="sidebar__item "
             style={{ "--clr": "#446eb6" }}

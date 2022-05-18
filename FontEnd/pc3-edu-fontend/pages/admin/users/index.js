@@ -93,18 +93,7 @@ const Users = () => {
             );
           })}
         </Form.Select>
-        <Button
-          className="admin-users-header-list-role"
-          variant="outline-warning"
-        >
-          Danh sách chức vụ
-        </Button>
-        <Button
-          className="admin-users-header-export-excel"
-          variant="outline-success"
-        >
-          Xuất excel
-        </Button>
+
         <Link href="users/create">
           <Button
             className="admin-users-header-add-user"
@@ -152,7 +141,10 @@ const Users = () => {
                     </td>
                     <td>{userItem.class}</td>
                     <td>
-                      <Button variant="primary">Sửa</Button>
+                      <Link href={`/admin/users/detail/${userItem._id}`}>
+                        <Button variant="primary">Chi tiết</Button>
+                      </Link>
+
                       <Button
                         variant="danger"
                         onClick={() => {

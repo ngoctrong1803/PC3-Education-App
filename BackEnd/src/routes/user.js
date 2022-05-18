@@ -4,6 +4,7 @@ const authController = require("../app/controller/authController");
 const userController = require("../app/controller/userController");
 // geting all user
 router.get("/list-user", userController.getUser);
+router.get("/get-user-by-id/:id", userController.getUserByID);
 
 // creating one user
 router.post("/create", authController.resgisterUser);

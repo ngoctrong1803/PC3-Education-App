@@ -191,7 +191,6 @@ const Content = () => {
       try {
         const url = "http://localhost:8000/api/lession/delete/" + lessionID;
         const res = await axios.delete(url);
-        console.log("res", res);
         handleCloseComfirmDeleteLession();
         toast.success(res.data.message);
         getConentOfSubject();
@@ -303,7 +302,13 @@ const Content = () => {
                                     >
                                       <Button variant="primary">Bài tập</Button>
                                     </Link>
-                                    <Button variant="primary">Thống kê</Button>
+                                    <Link
+                                      href={`/admin/subjects/lession-statistical/${lessionItem._id}`}
+                                    >
+                                      <Button variant="primary">
+                                        Thống kê
+                                      </Button>
+                                    </Link>
                                   </Col>
                                 </Row>
                               </li>
@@ -312,15 +317,36 @@ const Content = () => {
                         );
                       })}
 
-                      <li>
-                        {" "}
+                      <li style={{ display: "flex" }}>
+                        <Link
+                          href={`/admin/subjects/unit-statistical/${unitItem._id}`}
+                        >
+                          <Button
+                            variant="primary"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginRight: "5px",
+                            }}
+                          >
+                            <ion-icon name="bar-chart-outline"></ion-icon>Thống
+                            kê chương
+                          </Button>
+                        </Link>
+
                         <Button
-                          variant="primary"
+                          variant="outline-primary"
                           onClick={() => {
                             handleShowAddLession();
                             setUnitID(unitItem._id);
                           }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginRight: "5px",
+                          }}
                         >
+                          <ion-icon name="add-circle-outline"></ion-icon>
                           Thêm mới bài học
                         </Button>
                       </li>
@@ -490,12 +516,15 @@ const Content = () => {
         onHide={handleCloseComfirmDeleteLession}
       >
         <Modal.Header closeButton>
-          <Modal.Title style={{ color: "red" }}>Xóa môn học</Modal.Title>
+          <Modal.Title style={{ color: "red" }}>Xóa bài học</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Bạn có chắc chắn muốn xóa môn học này</Form.Label>
+              <Form.Label>
+                Khi xóa bài học toàn bộ lý thuyết và bài của của bài học sẽ bị
+                xóa. Bạn có chắc chắn muốn xóa bài học này
+              </Form.Label>
             </Form.Group>
           </Form>
         </Modal.Body>
