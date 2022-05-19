@@ -11,6 +11,14 @@ router.get(
   "/unit/:id",
   statisticalOfExerController.getStatisticalOfExerciseByUnit
 );
+router.get(
+  "/user/:id",
+  statisticalOfExerController.getStatisticalOfExerciseByUser
+);
+router.get(
+  "/subject/:id",
+  statisticalOfExerController.getStatisticalOfExerciseBySubject
+);
 router.post("/create", statisticalOfExerController.createStatisticalOfExercise);
 router.post(
   "/by-user-and-lession",

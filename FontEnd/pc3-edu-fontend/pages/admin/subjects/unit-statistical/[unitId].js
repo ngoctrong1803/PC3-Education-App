@@ -71,6 +71,14 @@ const Statistical = () => {
           />
           <Button variant="primary">Tìm kiếm</Button>
         </InputGroup>
+        <Button
+          variant="warning"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          Quay lại
+        </Button>
       </div>
       <div className="admin-statistical-list">
         <Table striped bordered hover>
@@ -154,8 +162,23 @@ const Statistical = () => {
               <Table striped bordered hover style={{ alignItems: "center" }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "center" }}>Tên bài học</th>
-                    <th style={{ textAlign: "center", width: "120px" }}>
+                    <th
+                      style={{
+                        textAlign: "center",
+                        backgroundColor: "#198754",
+                        color: "#fff",
+                      }}
+                    >
+                      Tên bài học
+                    </th>
+                    <th
+                      style={{
+                        textAlign: "center",
+                        width: "120px",
+                        backgroundColor: "#198754",
+                        color: "#fff",
+                      }}
+                    >
                       Hoàn thành
                     </th>
                   </tr>
@@ -169,11 +192,12 @@ const Statistical = () => {
                         <tr>
                           <td
                             style={{
-                              textAlign: "center",
+                              // textAlign: "center",
+
                               verticalAlign: "middle",
                             }}
                           >
-                            {lessionItem.lessionName}
+                            <span>{lessionItem.lessionName}</span>
                           </td>
                           <td
                             style={{

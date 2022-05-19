@@ -238,7 +238,7 @@ const Subjects = () => {
                           Nội dung
                         </Button>
                       </Link>
-                      <Link href="subjects/statistical">
+                      <Link href={`subjects/statistical/${item._id}`}>
                         <Button
                           className="admin-subjects-header-add-user"
                           variant="success"

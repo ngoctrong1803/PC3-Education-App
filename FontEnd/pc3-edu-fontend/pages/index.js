@@ -16,7 +16,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import Rank from "../comps/Rank";
-import { Button } from "react-bootstrap";
+import { Button, Card, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Question from "../comps/Questions";
 import Event from "../comps/Events";
@@ -52,47 +52,53 @@ const Home = () => {
         <div className={styles.content_wrapper}>
           <div className={styles.content}>
             <div className="selection_list">
-              <ul className="nav-grades">
-                <li className="nav-item" id="grade-10">
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => {
-                      changeGrade(10);
-                    }}
-                  >
-                    Khối 10
-                  </Button>
-                </li>
-                <li className="nav-item" id="grade-11">
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => {
-                      changeGrade(11);
-                    }}
-                  >
-                    Khối 11
-                  </Button>
-                </li>
-                <li className="nav-item" id="grade-12">
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => {
-                      changeGrade(12);
-                    }}
-                  >
-                    Khối 12
-                  </Button>
-                </li>
-              </ul>
-              {/* start swiper */}
-              <div className="selection_list_title">
-                <h4>môn học khối {grade}</h4>
-                <a href="#">xem tất cả</a>
-              </div>
-              {grade == 10 ? <SubjectList grade="10"></SubjectList> : null}
-              {grade == 11 ? <SubjectList grade="11"></SubjectList> : null}
-              {grade == 12 ? <SubjectList grade="12"></SubjectList> : null}
-              {/* end swiper */}
+              <Card>
+                <Card.Header>
+                  <Nav variant="tabs" defaultActiveKey="#first">
+                    <Nav.Item>
+                      <Nav.Link
+                        href="#khoi-10"
+                        onClick={() => {
+                          changeGrade(10);
+                        }}
+                      >
+                        Khối 10
+                      </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link
+                        href="#khoi-11"
+                        onClick={() => {
+                          changeGrade(11);
+                        }}
+                      >
+                        Khối 11
+                      </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Nav.Link
+                        href="#khoi-12"
+                        onClick={() => {
+                          changeGrade(12);
+                        }}
+                      >
+                        Khối 12
+                      </Nav.Link>
+                    </Nav.Item>
+                  </Nav>
+                </Card.Header>
+                <Card.Body>
+                  {/* start swiper */}
+                  <div className="selection_list_title">
+                    <h5>môn học khối {grade}</h5>
+                    <a href="#">xem tất cả</a>
+                  </div>
+                  {grade == 10 ? <SubjectList grade="10"></SubjectList> : null}
+                  {grade == 11 ? <SubjectList grade="11"></SubjectList> : null}
+                  {grade == 12 ? <SubjectList grade="12"></SubjectList> : null}
+                  {/* end swiper */}
+                </Card.Body>
+              </Card>
             </div>
             <div className="selection_list">
               <div className="selection_list_title">

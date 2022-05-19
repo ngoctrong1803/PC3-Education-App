@@ -7,7 +7,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import { loginResetFunc } from "../redux/apiRequest";
 
-
 const Header = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -96,11 +95,13 @@ const Header = () => {
                       </li>
                     </Link>
                   ) : null}
-                  <li className="list__item">
-                    <a className="list__link" href="">
-                      Kết quả học tập
-                    </a>
-                  </li>
+                  <Link href={`/result-study`}>
+                    <li className="list__item">
+                      <a className="list__link" href="">
+                        Kết quả học tập
+                      </a>
+                    </li>
+                  </Link>
                 </ul>
                 <hr />
                 <ul className="list">

@@ -153,6 +153,27 @@ const Exams = () => {
     getExaTyp();
     getSubjects();
   }, []);
+  // handle delete
+  const [examIDToDelete, setExamIDToDelete] = useState("");
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const handleShowConfirmDelete = () => {
+    setShowConfirmDelete(true);
+  };
+  const handleCloseConfirmDelete = () => {
+    setShowConfirmDelete(false);
+  };
+  async function handleDeleteExam() {
+    try {
+      const res = await axios.delete(
+        "http://localhost:8000/api/exam/delete/" + examIDToDelete
+      );
+      toast.success("Xóa bài kiểm tra thành công.");
+      getExams();
+      handleCloseConfirmDelete();
+    } catch (error) {
+      toast.error("Lỗi, xóa bài kiểm tra");
+    }
+  }
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">
@@ -274,7 +295,7 @@ const Exams = () => {
                           Nội dung
                         </Button>
                       </Link>
-                      <Link href="#">
+                      <Link href={`exams/statistical/${examItem._id}`}>
                         <Button
                           className="admin-subjects-header-add-user"
                           variant="success"
@@ -302,6 +323,10 @@ const Exams = () => {
                       <Button
                         className="admin-subjects-header-add-user"
                         variant="danger"
+                        onClick={() => {
+                          setExamIDToDelete(examItem._id);
+                          handleShowConfirmDelete();
+                        }}
                       >
                         Xóa
                       </Button>
@@ -515,6 +540,27 @@ const Exams = () => {
           </Modal.Footer>
         </Modal>
         {/* end modal update exam */}
+        {/* start modal comfirm delete */}
+        <Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <h4 style={{ color: "red" }}>Xác nhận</h4>
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Khi Xóa đề thi các câu hỏi thuộc bài thi và kết quả thống kê của
+            người dùng sẽ bị xóa. Bạn có chắc chắn muốn xóa!
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseConfirmDelete}>
+              Hủy bỏ
+            </Button>
+            <Button variant="primary" onClick={handleDeleteExam}>
+              Xóa
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {/* end modal comfirm delete */}
       </div>
     </div>
   );

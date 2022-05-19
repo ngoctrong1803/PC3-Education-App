@@ -34,8 +34,8 @@ const userController = {
     });
   },
   getUserByID: async (req, res) => {
-    const userID = req.params.id;
     try {
+      const userID = req.params.id;
       const user = await User.findOne({ _id: userID });
       const userToClient = {
         _id: user._id,

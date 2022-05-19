@@ -4,6 +4,7 @@ const User = require("../models/User");
 const MCExercise = require("../models/MCExercise");
 const Lession = require("../models/Lession");
 const Unit = require("../models/Unit");
+const Subject = require("../models/Subject");
 const statisticalOfExerController = {
   //[get]/api/statistical-of-exercise/list
   getStatisticalOfExercise: async (req, res) => {
@@ -41,6 +42,43 @@ const statisticalOfExerController = {
     } catch (err) {
       res.status(400).json({
         message: "Đã xảy ra ngoại lệ",
+      });
+    }
+  },
+  //[get]/api/statistical-of-exercise/user/:id
+  getStatisticalOfExerciseByUser: async (req, res) => {
+    try {
+      const userID = req.params.id;
+      //list statistical
+      const listStatistical = await StatisticalOfExercise.find({
+        userID: userID,
+      });
+      const lessionIDArray = listStatistical.map(({ lessionID }) => {
+        return lessionID;
+      });
+      //list lession
+      const listLession = await Lession.find({ _id: { $in: lessionIDArray } });
+      const unitIDArray = listLession.map(({ unitID }) => {
+        return unitID;
+      });
+      //list unit
+      const listUnit = await Unit.find({ _id: { $in: unitIDArray } });
+      const subjectIDArray = listUnit.map(({ subjectID }) => {
+        return subjectID;
+      });
+      //list subject
+      const listSubject = await Subject.find({ _id: { $in: subjectIDArray } });
+
+      res.status(200).json({
+        message: "Lấy thống kê thành công",
+        listStatistical,
+        listLession,
+        listUnit,
+        listSubject,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
       });
     }
   },
@@ -102,6 +140,7 @@ const statisticalOfExerController = {
       });
     }
   },
+
   //[get]/api/statistical-of-exercise/unit/:id
   getStatisticalOfExerciseByUnit: async (req, res) => {
     try {
@@ -137,6 +176,66 @@ const statisticalOfExerController = {
 
       const statisticalOfExercise = {
         unitInfor,
+        listLessionOfUnit,
+        listStatisticalOfExercise,
+        listUserInfor,
+      };
+
+      res.status(200).json({
+        message: "Lấy thống kê thành công",
+        statisticalOfExercise: statisticalOfExercise,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
+      });
+    }
+  },
+  //[get]/api/statistical-of-exercise/unit/:id
+  getStatisticalOfExerciseBySubject: async (req, res) => {
+    try {
+      const subjectID = req.params.id;
+      // subject infor
+      const subjectInfor = await Subject.findOne({ _id: subjectID });
+      // list unit
+      const listUnit = await Unit.find({ subjectID: subjectID });
+      const unitIDArray = listUnit.map(({ _id }) => {
+        return _id;
+      });
+      // list lession
+      const listLessionOfUnit = await Lession.find({
+        unitID: { $in: unitIDArray },
+      });
+      const lessionIDArray = listLessionOfUnit.map((_id) => {
+        return _id;
+      });
+
+      //list statistical of exercise
+      const listStatisticalOfExercise = await StatisticalOfExercise.find({
+        lessionID: { $in: lessionIDArray },
+      });
+
+      const userIDArray = listStatisticalOfExercise.map(({ userID }) => {
+        return userID;
+      });
+      // list user infor
+      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listUserInfor = listUserTemp.map((item, index) => {
+        return {
+          _id: item._id,
+          fullname: item.fullname,
+          email: item.email,
+          role: item.role,
+          address: item.address,
+          birthday: item.birthday,
+          phone: item.phone,
+          class: item.class,
+        };
+      });
+
+      const statisticalOfExercise = {
+        subjectInfor,
+        listUnit,
         listLessionOfUnit,
         listStatisticalOfExercise,
         listUserInfor,

@@ -3,6 +3,7 @@ const router = express.Router();
 const statisticalOfExamController = require("../app/controller/statisticalOfExamController");
 
 router.get("/list", statisticalOfExamController.getStatisticalOfExam);
+router.get("/exam/:id", statisticalOfExamController.getStatisticalByExamID);
 router.post("/create", statisticalOfExamController.createStatisticalOfExam);
 router.post(
   "/delete/by-user-and-exam",

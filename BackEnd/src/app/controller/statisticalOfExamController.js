@@ -1,5 +1,8 @@
 const StatisticalOfExam = require("../models/StatisticalOfExam");
 const ResultOfExam = require("../models/ResultOfExam");
+const Exam = require("../models/Exam");
+const ExamQuestion = require("../models/ExamQuestion");
+const User = require("../models/User");
 
 const statisticalOfExamController = {
   //[get]/api/statistical-of-exam/list
@@ -25,6 +28,52 @@ const statisticalOfExamController = {
     } else {
       res.status(400).json({
         message: "không tìm thấy kết quả",
+      });
+    }
+  },
+  getStatisticalByExamID: async (req, res) => {
+    try {
+      const examID = req.params.id;
+      const listStatisticalOfExam = await StatisticalOfExam.find({
+        examID: examID,
+      });
+      const statisticalIDArray = listStatisticalOfExam.map(({ _id }) => {
+        return _id;
+      });
+      const userIDArray = listStatisticalOfExam.map(({ userID }) => {
+        return userID;
+      });
+      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listUserInfor = listUserTemp.map((item, index) => {
+        return {
+          _id: item._id,
+          fullname: item.fullname,
+          email: item.email,
+          role: item.role,
+          address: item.address,
+          birthday: item.birthday,
+          phone: item.phone,
+          class: item.class,
+        };
+      });
+      const listResultOfExam = await ResultOfExam.find({
+        statisticalID: { $in: statisticalIDArray },
+      });
+      const listExamQuestion = await ExamQuestion.find({ examID: examID });
+
+      const dataToClient = {
+        listUserInfor,
+        listStatisticalOfExam,
+        listResultOfExam,
+        listExamQuestion,
+      };
+      res.status(200).json({
+        message: "Lấy thống kê thành công",
+        statisticalOfExam: dataToClient,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
       });
     }
   },

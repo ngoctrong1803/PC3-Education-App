@@ -37,11 +37,12 @@ const Navbar = () => {
   }, []);
   useEffect(() => {
     const url = window.location.pathname;
-    console.log("url nè:", url);
+
     if (
       url.includes("Subjects") ||
       url.includes("Learning") ||
-      url.includes("Exercises")
+      url.includes("Exercises") ||
+      url.includes("result-study")
     ) {
       learningButton.current.classList.add("active");
     } else if (url.includes("Flashcards")) {

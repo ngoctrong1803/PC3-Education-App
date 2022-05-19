@@ -3,7 +3,7 @@ import Head from "next/head";
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import SubjectList from "../../comps/SubjectList";
 import { useEffect, useState } from "react";
-import { Container, Button, Row, Col } from "react-bootstrap";
+import { Container, Button, Row, Col, Card, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
 
@@ -17,10 +17,15 @@ import "swiper/css/pagination";
 import { Grid, Pagination } from "swiper";
 import Link from "next/dist/client/link";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Subject = () => {
   const [grade, setGrade] = useState(10);
   const [listSubject, setListSubject] = useState([]);
+  const [listSubjectStudying, setListSubjectStudying] = useState([]);
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
 
   const changeGrade = (grade) => {
     setGrade(grade);
@@ -37,9 +42,21 @@ const Subject = () => {
       toast.error(errMessage);
     }
   }
+  async function getSubjectStudying() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/statistical-of-exercise/user/" +
+          currentUser.userInfor._id
+      );
+      setListSubjectStudying(res.data.listSubject);
+    } catch (error) {
+      toast.error("Lỗi lấy môn học đang học");
+    }
+  }
 
   useEffect(() => {
     getSubject();
+    getSubjectStudying();
   }, [grade]);
 
   return (
@@ -47,64 +64,95 @@ const Subject = () => {
       <Head>
         <title>Học Tập</title>
       </Head>
-      <div className="selection_list">
-        <ul className="nav-grades">
-          <li className="nav-item" id="grade-10">
-            <Button
-              variant="outline-secondary"
-              onClick={() => {
-                changeGrade(10);
-              }}
-            >
-              Khối 10
-            </Button>
-          </li>
-          <li className="nav-item" id="grade-11">
-            <Button
-              variant="outline-secondary"
-              onClick={() => {
-                changeGrade(11);
-              }}
-            >
-              Khối 11
-            </Button>
-          </li>
-          <li className="nav-item" id="grade-12">
-            <Button
-              variant="outline-secondary"
-              onClick={() => {
-                changeGrade(12);
-              }}
-            >
-              Khối 12
-            </Button>
-          </li>
-        </ul>
-
-        <div className="subject_list">
-          <h3>Các môn học khối: {grade}</h3>
-          <Row sm={2} md={3} lg={4}>
-            {listSubject.map((subjectItem, index) => {
-              return (
-                <>
-                  <Col>
-                    <Link href={`/Subjects/${subjectItem.slug}`}>
-                      <div className="subject-item-wrap">
-                        <div className="subject_item">
-                          <img src={subjectItem.image}></img>
-                        </div>
-                        <span className="subject-title">
-                          {subjectItem.name}
-                        </span>
-                      </div>
-                    </Link>
-                  </Col>
-                </>
-              );
-            })}
-          </Row>
-        </div>
-      </div>
+      <Card>
+        <Card.Header>
+          <Nav variant="tabs" defaultActiveKey="#khoi-10">
+            <Nav.Item>
+              <Nav.Link
+                href="#khoi-10"
+                onClick={() => {
+                  changeGrade(10);
+                }}
+              >
+                Khối 10
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                href="#khoi-11"
+                onClick={() => {
+                  changeGrade(11);
+                }}
+              >
+                Khối 11
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                href="#khoi-12"
+                onClick={() => {
+                  changeGrade(12);
+                }}
+              >
+                Khối 12
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Card.Header>
+        <Card.Body>
+          <div
+            className="selection_list"
+            style={{ marginTop: "0px", paddingTop: "0px" }}
+          >
+            <div className="subject_list">
+              <h4>Các môn học khối: {grade}</h4>
+              <Row sm={2} md={3} lg={4}>
+                {listSubject.map((subjectItem, index) => {
+                  return (
+                    <>
+                      <Col>
+                        <Link href={`/Subjects/${subjectItem.slug}`}>
+                          <div className="subject-item-wrap">
+                            <div className="subject_item">
+                              <img src={subjectItem.image}></img>
+                            </div>
+                            <span className="subject-title">
+                              {subjectItem.name}
+                            </span>
+                          </div>
+                        </Link>
+                      </Col>
+                    </>
+                  );
+                })}
+              </Row>
+            </div>
+            <div className="subject_list">
+              <h4>Bạn đang học:</h4>
+              <Row sm={2} md={3} lg={4}>
+                {listSubjectStudying.map((subjectItem, index) => {
+                  return (
+                    <>
+                      <Col>
+                        <Link href={`/Subjects/${subjectItem.slug}`}>
+                          <div className="subject-item-wrap">
+                            <div className="subject_item">
+                              <img src={subjectItem.image}></img>
+                            </div>
+                            <span className="subject-title">
+                              {subjectItem.name}
+                            </span>
+                          </div>
+                        </Link>
+                      </Col>
+                    </>
+                  );
+                })}
+              </Row>
+            </div>
+          </div>
+        </Card.Body>
+      </Card>
     </div>
   );
 };

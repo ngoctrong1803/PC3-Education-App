@@ -1,5 +1,7 @@
 const Exam = require("../models/Exam");
 const ExamQuestion = require("../models/ExamQuestion");
+const StatisticalOfExam = require("../models/StatisticalOfExam");
+const ResultOfExam = require("../models/ResultOfExam");
 
 const examController = {
   //[get]/api/exam/list
@@ -138,15 +140,31 @@ const examController = {
         _id: req.params.id,
       });
       if (checkExist) {
+        const listStatistical = await StatisticalOfExam.find({
+          examID: checkExist._id,
+        });
+        const statisticalIDArray = listStatistical.map(({ _id }) => {
+          return _id;
+        });
+
+        await ResultOfExam.deleteMany({
+          statisticalID: { $in: statisticalIDArray },
+        });
+        await StatisticalOfExam.deleteMany({
+          examID: checkExist._id,
+        });
+        await ExamQuestion.deleteMany({
+          examID: checkExist._id,
+        });
         await Exam.deleteOne({
           _id: req.params.id,
         });
         res.status(200).json({
-          message: "xóa câu hỏi thành công",
+          message: "xóa bài kiểm tra thành công",
         });
       } else {
         res.status(400).json({
-          message: "không tồn tại câu hỏi cần xóa",
+          message: "không tồn tại bài kiểm cần xóa",
         });
       }
     } catch (err) {
