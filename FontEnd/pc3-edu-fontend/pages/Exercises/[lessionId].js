@@ -119,7 +119,7 @@ const Exercise = () => {
   async function hanldeSaveResult() {
     //done exercise
     let statisticalOfExercise = {
-      score: score,
+      score: Math.ceil((score / 10 / listMCExercise.length) * 10),
       isDone: true,
       time: timeDone,
       totalAnswerTrue: score / 10,
@@ -478,6 +478,11 @@ const Exercise = () => {
         <Modal.Body
           style={{
             height: "500px",
+            backgroundImage: "url('/background/anh_nen_ket_qua.jpg')",
+            backgroundOosition: "center" /* Center the image */,
+            backgroundRepeat: "no-repeat" /* Do not repeat the image */,
+            backgroundSize:
+              "cover" /* Resize the background image to cover the entire container */,
           }}
         >
           <div className="result-exercise-wrap">

@@ -6,9 +6,12 @@ import { Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import { loginResetFunc } from "../redux/apiRequest";
+import { Route } from "react-router-dom";
+import { useRouter } from "next/router";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   useEffect(() => {
     console.log("header -----------------------------");
   });
@@ -17,9 +20,7 @@ const Header = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
-  useEffect(() => {
-    console.log("-------------------curent user ", currentUser);
-  }, [currentUser]);
+
   const avatarRef = useRef();
   const handleAvatarClick = () => {
     setStateMenuInfor(!stateMenuInfor);
@@ -28,6 +29,8 @@ const Header = () => {
   const handleLogout = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    router.push("/");
+
     loginResetFunc(dispatch);
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");
@@ -55,7 +58,7 @@ const Header = () => {
                 className="header__actions__avatar"
                 onClick={handleAvatarClick}
               >
-                <img src="/user/default-avatar.png" alt="" />
+                <img src={currentUser?.userInfor.avatar} alt="" />
               </div>
               {/* start user menu */}
               <div
@@ -67,7 +70,7 @@ const Header = () => {
               >
                 <div className="user">
                   <div className="user__avatar">
-                    <img src="/user/default-avatar.png" alt="" />
+                    <img src={currentUser?.userInfor.avatar} alt="" />
                   </div>
                   <div className="user__info">
                     <div className="name">
@@ -80,15 +83,28 @@ const Header = () => {
                 </div>
                 <hr />
                 <ul className="list">
-                  <li className="list__item">
-                    <a className="list__link" href="">
-                      Thông tin cá nhân
-                    </a>
-                  </li>
+                  <Link href="/user-infor">
+                    <li
+                      className="list__item"
+                      onClick={() => {
+                        handleAvatarClick();
+                      }}
+                    >
+                      <a className="list__link" href="">
+                        Thông tin cá nhân
+                      </a>
+                    </li>
+                  </Link>
+
                   {currentUser?.userInfor.role == "admin" ||
                   currentUser?.userInfor.role == "teacher" ? (
                     <Link href="/admin">
-                      <li className="list__item">
+                      <li
+                        className="list__item"
+                        onClick={() => {
+                          handleAvatarClick();
+                        }}
+                      >
                         <a className="list__link" href="">
                           Trang quản lý
                         </a>
@@ -97,7 +113,13 @@ const Header = () => {
                   ) : null}
                   <Link href={`/result-study`}>
                     <li className="list__item">
-                      <a className="list__link" href="">
+                      <a
+                        className="list__link"
+                        href=""
+                        onClick={() => {
+                          handleAvatarClick();
+                        }}
+                      >
                         Kết quả học tập
                       </a>
                     </li>

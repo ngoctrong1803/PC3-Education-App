@@ -63,6 +63,32 @@ const userController = {
       });
     }
   },
+  updateAvatar: async (req, res) => {
+    try {
+      const userID = req.params.id;
+      const { imageurl } = req.body;
+      const checkUser = await User.findOne({ _id: userID });
+      if (checkUser) {
+        await User.updateOne(
+          { _id: userID },
+          {
+            avatar: imageurl,
+          }
+        );
+        res.status(200).json({
+          message: "Cập nhật avatar thành công",
+        });
+      } else {
+        res.status(400).json({
+          message: "Không tồn tại người dùng cần update",
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: "Lỗi cập nhật avatar",
+      });
+    }
+  },
   deleteUser: async (req, res) => {
     const userID = req.params.id;
     console.log("userID", userID);

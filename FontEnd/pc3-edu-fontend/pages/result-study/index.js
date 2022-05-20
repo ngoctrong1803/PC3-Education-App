@@ -3,6 +3,7 @@ import Head from "next/head";
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import SubjectList from "../../comps/SubjectList";
 import { useEffect, useState } from "react";
+
 import {
   Container,
   Button,
@@ -13,6 +14,9 @@ import {
   Tab,
   Tabs,
   ListGroup,
+  Table,
+  Accordion,
+  Toast,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
@@ -33,6 +37,11 @@ const Subject = () => {
   const [grade, setGrade] = useState(10);
   const [listSubject, setListSubject] = useState([]);
   const [listSubjectStudying, setListSubjectStudying] = useState([]);
+  const [currentSubject, setCurrentSubject] = useState({});
+  const [currentListUnit, setCurrentListUnit] = useState([]);
+  const [currentListLession, setCurrentListLession] = useState([]);
+  const [currentStatistical, setCurrentStatistical] = useState([]);
+  const [currentStatisticalDetail, setCurrentStatisticalDetail] = useState([]);
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
@@ -63,6 +72,36 @@ const Subject = () => {
       toast.error("Lỗi lấy môn học đang học");
     }
   }
+  async function getCurrentSubject(subjectSlug) {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/subjects/content/" + subjectSlug
+      );
+      setCurrentSubject(res.data.subject);
+      setCurrentListLession(res.data.lessions);
+      setCurrentListUnit(res.data.units);
+      getStatisticalOfCurrentSubject(res.data.subject._id);
+    } catch (error) {
+      toast.error("Lấy dữ liệu thất bại");
+    }
+  }
+  async function getStatisticalOfCurrentSubject(subjectID) {
+    try {
+      const dataToSend = {
+        userID: currentUser.userInfor._id,
+        subjectID: subjectID,
+      };
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exercise/by-user-and-subject",
+        dataToSend
+      );
+      console.log("đã lấy data statistical:", res.data);
+      setCurrentStatistical(res.data);
+      setCurrentStatisticalDetail(res.data.statisticalOfExercises);
+    } catch (error) {
+      toast.error("Lỗi lấy dữ liệu");
+    }
+  }
 
   useEffect(() => {
     getSubject();
@@ -85,7 +124,6 @@ const Subject = () => {
                 }}
               >
                 <span style={{ fontSize: "16px", fontWeight: "600" }}>
-                  {" "}
                   Khối 10
                 </span>
               </Nav.Link>
@@ -98,7 +136,6 @@ const Subject = () => {
                 }}
               >
                 <span style={{ fontSize: "16px", fontWeight: "600" }}>
-                  {" "}
                   Khối 11
                 </span>
               </Nav.Link>
@@ -111,7 +148,6 @@ const Subject = () => {
                 }}
               >
                 <span style={{ fontSize: "16px", fontWeight: "600" }}>
-                  {" "}
                   Khối 12
                 </span>
               </Nav.Link>
@@ -139,8 +175,13 @@ const Subject = () => {
                   {listSubject.map((subjectItem, index) => {
                     return (
                       <>
-                        {" "}
-                        <ListGroup.Item action href={`#${subjectItem.slug}`}>
+                        <ListGroup.Item
+                          action
+                          href={`#${subjectItem.slug}`}
+                          onClick={() => {
+                            getCurrentSubject(subjectItem.slug);
+                          }}
+                        >
                           {subjectItem.name}
                         </ListGroup.Item>
                       </>
@@ -150,84 +191,350 @@ const Subject = () => {
               </Col>
               <Col sm={9}>
                 <Tab.Content>
-                  {listSubject.map((subjectItem, index) => {
-                    let persen = 33;
-                    return (
-                      <>
-                        <Tab.Pane eventKey={`#${subjectItem.slug}`}>
-                          <h4>kết quả học tập môn - {subjectItem.name}</h4>
-                          <div className="progress-result-wrap">
-                            {" "}
-                            {persen <= 50 ? (
-                              <div
-                                className="progress-result"
-                                style={{
-                                  "--persen1": `${
-                                    ((persen * 2) / 100) * 180
-                                  }deg`,
-                                  "--persen2": "0deg",
-                                }}
-                              >
-                                <div className="container d-flex">
-                                  <div className="row">
-                                    <div className="col-md-9 col-sm-6">
-                                      <div className="progress blue">
-                                        <span className="progress-left">
-                                          <span className="progress-bar"></span>
-                                        </span>
-                                        <span className="progress-right">
-                                          <span className="progress-bar"></span>
-                                        </span>
-                                        <div className="progress-value">
-                                          {persen}%
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="result-infor">
-                                    <span>Tiến trình học</span> <br></br>
-                                    <span>
-                                      Tổng điểm tích lũy
-                                    </span> <br></br> <span>Nhận xét</span>
+                  <Tab.Pane eventKey={`#${currentSubject?.slug}`}>
+                    <h4>Kết quả học tập {currentSubject?.name}</h4>
+                    <div className="progress-result-wrap">
+                      {currentStatistical.percentDone <= 50 ? (
+                        <div
+                          className="progress-result"
+                          style={{
+                            "--persen1": `${
+                              ((currentStatistical.percentDone * 2) / 100) * 180
+                            }deg`,
+                            "--persen2": "0deg",
+                          }}
+                        >
+                          <div className="container d-flex result-infor-wrap ">
+                            <div className="row">
+                              <div className="col-md-9 col-sm-6">
+                                <div className="progress blue">
+                                  <span className="progress-left">
+                                    <span className="progress-bar"></span>
+                                  </span>
+                                  <span className="progress-right">
+                                    <span className="progress-bar"></span>
+                                  </span>
+                                  <div className="progress-value">
+                                    {currentStatistical.percentDone}%
                                   </div>
                                 </div>
                               </div>
-                            ) : (
-                              <div
-                                className="progress-result"
-                                style={{
-                                  "--persen1": "180deg",
-                                  "--persen2": `${
-                                    (((persen - 50) * 2) / 100) * 180
-                                  }deg`,
-                                }}
-                              >
-                                <div className="container d-flex justify-content-center ">
-                                  <div className="row">
-                                    <div className="col-md-9 col-sm-6">
-                                      <div className="progress blue">
-                                        <span className="progress-left">
-                                          <span className="progress-bar"></span>
-                                        </span>
-                                        <span className="progress-right">
-                                          <span className="progress-bar"></span>
-                                        </span>
-                                        <div className="progress-value">
-                                          {persen}%
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  Tiến trình học <br></br> Tổng điểm tích lũy{" "}
-                                  <br></br> Nhận xét
-                                </div>
-                              </div>
-                            )}
+                            </div>
+                            <div
+                              className="result-infor"
+                              style={{ marginLeft: "150px" }}
+                            >
+                              <span>Tiến trình học:</span>
+                              <span>Tổng điểm tích lũy:</span>
+                              <span>Nhận xét:</span>
+                            </div>
+                            <div
+                              className="result-infor"
+                              style={{ marginLeft: "45px" }}
+                            >
+                              <span>
+                                {currentStatistical.totalLessionDone}/
+                                {currentStatistical.totalLession} Bài học (
+                                {currentStatistical.percentDone}
+                                %)
+                              </span>
+                              <span>{currentStatistical.totalScore} điểm</span>
+                              <span>
+                                {currentStatistical.percentDone == 100 ? (
+                                  <>Đã hoàn thành</>
+                                ) : (
+                                  <>Chưa hoàn thành</>
+                                )}
+                              </span>
+                            </div>
                           </div>
-                        </Tab.Pane>
-                      </>
-                    );
-                  })}
+                          <div className="result-detail">
+                            <h5>Chi tiết kết quả</h5>
+                            <Accordion defaultActiveKey="0">
+                              {currentListUnit.map((unitItem, index) => {
+                                return (
+                                  <>
+                                    <Accordion.Item eventKey={"" + index}>
+                                      <Accordion.Header>
+                                        {unitItem.unitName}
+                                      </Accordion.Header>
+                                      <Accordion.Body>
+                                        <Table striped bordered hover>
+                                          <thead>
+                                            <tr>
+                                              <th>Tên bài học</th>
+                                              <th style={{ width: "120px" }}>
+                                                Hoàn thành
+                                              </th>
+                                              <th style={{ width: "120px" }}>
+                                                Chức năng
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {currentListLession.map(
+                                              (lessionItem, index) => {
+                                                if (
+                                                  lessionItem.unitID ==
+                                                  unitItem._id
+                                                ) {
+                                                  let isDone = false;
+                                                  return (
+                                                    <>
+                                                      <tr>
+                                                        <td>
+                                                          {
+                                                            lessionItem.lessionName
+                                                          }
+                                                        </td>
+                                                        <td>
+                                                          {currentStatisticalDetail.map(
+                                                            (
+                                                              statisItem,
+                                                              index
+                                                            ) => {
+                                                              if (
+                                                                statisItem.lessionID ==
+                                                                lessionItem._id
+                                                              ) {
+                                                                isDone = true;
+                                                                return (
+                                                                  <>
+                                                                    <ion-icon
+                                                                      name="checkmark-circle-outline"
+                                                                      style={{
+                                                                        fontSize:
+                                                                          "22px",
+                                                                        color:
+                                                                          "green",
+                                                                      }}
+                                                                    ></ion-icon>
+                                                                  </>
+                                                                );
+                                                              }
+                                                            }
+                                                          )}
+                                                          {!isDone ? (
+                                                            <>
+                                                              <ion-icon
+                                                                name="alert-circle-outline"
+                                                                style={{
+                                                                  fontSize:
+                                                                    "22px",
+                                                                  color:
+                                                                    "#f2ac0d",
+                                                                }}
+                                                              ></ion-icon>
+                                                            </>
+                                                          ) : null}
+                                                        </td>
+                                                        <td>
+                                                          {isDone ? (
+                                                            <Link
+                                                              href={`/Exercises/Result/${lessionItem._id}`}
+                                                            >
+                                                              <Button>
+                                                                Chi tiết
+                                                              </Button>
+                                                            </Link>
+                                                          ) : (
+                                                            <Link
+                                                              href={`/Learning/${lessionItem._id}`}
+                                                            >
+                                                              <Button variant="warning">
+                                                                Bài học
+                                                              </Button>
+                                                            </Link>
+                                                          )}
+                                                        </td>
+                                                      </tr>
+                                                    </>
+                                                  );
+                                                }
+                                              }
+                                            )}
+                                          </tbody>
+                                        </Table>
+                                      </Accordion.Body>
+                                    </Accordion.Item>
+                                  </>
+                                );
+                              })}
+                            </Accordion>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className="progress-result"
+                          style={{
+                            "--persen1": "180deg",
+                            "--persen2": `${
+                              (((currentStatistical.percentDone - 50) * 2) /
+                                100) *
+                              180
+                            }deg`,
+                          }}
+                        >
+                          <div className="container d-flex result-infor-wrap ">
+                            <div className="row">
+                              <div className="col-md-9 col-sm-6">
+                                <div className="progress blue">
+                                  <span className="progress-left">
+                                    <span className="progress-bar"></span>
+                                  </span>
+                                  <span className="progress-right">
+                                    <span className="progress-bar"></span>
+                                  </span>
+                                  <div className="progress-value">
+                                    {currentStatistical.percentDone}%
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className="result-infor"
+                              style={{ marginLeft: "150px" }}
+                            >
+                              <span>Tiến trình học:</span>
+                              <span>Tổng điểm tích lũy:</span>
+                              <span>Nhận xét:</span>
+                            </div>
+                            <div
+                              className="result-infor"
+                              style={{ marginLeft: "45px" }}
+                            >
+                              <span>
+                                {currentStatistical.totalLessionDone}/
+                                {currentStatistical.totalLession} Bài học (
+                                {currentStatistical.percentDone}
+                                %)
+                              </span>
+                              <span>{currentStatistical.totalScore} điểm</span>
+                              {currentStatistical.percentDone == 100 ? (
+                                <>Đã hoàn thành</>
+                              ) : (
+                                <>Chưa hoàn thành</>
+                              )}
+                            </div>
+                          </div>
+                          <div className="result-detail">
+                            <h5>Chi tiết kết quả</h5>
+                            <Accordion defaultActiveKey="0">
+                              {currentListUnit.map((unitItem, index) => {
+                                return (
+                                  <>
+                                    <Accordion.Item eventKey={"" + index}>
+                                      <Accordion.Header>
+                                        {unitItem.unitName}
+                                      </Accordion.Header>
+                                      <Accordion.Body>
+                                        <Table striped bordered hover>
+                                          <thead>
+                                            <tr>
+                                              <th>Tên bài học</th>
+                                              <th style={{ width: "120px" }}>
+                                                Hoàn thành
+                                              </th>
+                                              <th style={{ width: "120px" }}>
+                                                Chức năng
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {currentListLession.map(
+                                              (lessionItem, index) => {
+                                                if (
+                                                  lessionItem.unitID ==
+                                                  unitItem._id
+                                                ) {
+                                                  let isDone = false;
+                                                  return (
+                                                    <>
+                                                      <tr>
+                                                        <td>
+                                                          {
+                                                            lessionItem.lessionName
+                                                          }
+                                                        </td>
+                                                        <td>
+                                                          {currentStatisticalDetail.map(
+                                                            (
+                                                              statisItem,
+                                                              index
+                                                            ) => {
+                                                              if (
+                                                                statisItem.lessionID ==
+                                                                lessionItem._id
+                                                              ) {
+                                                                isDone = true;
+                                                                return (
+                                                                  <>
+                                                                    <ion-icon
+                                                                      name="checkmark-circle-outline"
+                                                                      style={{
+                                                                        fontSize:
+                                                                          "22px",
+                                                                        color:
+                                                                          "green",
+                                                                      }}
+                                                                    ></ion-icon>
+                                                                  </>
+                                                                );
+                                                              }
+                                                            }
+                                                          )}
+                                                          {!isDone ? (
+                                                            <>
+                                                              <ion-icon
+                                                                name="alert-circle-outline"
+                                                                style={{
+                                                                  fontSize:
+                                                                    "22px",
+                                                                  color:
+                                                                    "#f2ac0d",
+                                                                }}
+                                                              ></ion-icon>
+                                                            </>
+                                                          ) : null}
+                                                        </td>
+                                                        <td>
+                                                          {isDone ? (
+                                                            <Link
+                                                              href={`/Exercises/Result/${lessionItem._id}`}
+                                                            >
+                                                              <Button>
+                                                                Chi tiết
+                                                              </Button>
+                                                            </Link>
+                                                          ) : (
+                                                            <Link
+                                                              href={`/Learning/${lessionItem._id}`}
+                                                            >
+                                                              <Button variant="warning">
+                                                                Bài học
+                                                              </Button>
+                                                            </Link>
+                                                          )}
+                                                        </td>
+                                                      </tr>
+                                                    </>
+                                                  );
+                                                }
+                                              }
+                                            )}
+                                          </tbody>
+                                        </Table>
+                                      </Accordion.Body>
+                                    </Accordion.Item>
+                                  </>
+                                );
+                              })}
+                            </Accordion>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Tab.Pane>
                 </Tab.Content>
               </Col>
             </Row>

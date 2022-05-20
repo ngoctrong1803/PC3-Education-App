@@ -7,6 +7,7 @@ import {
   Form,
   FormControl,
 } from "react-bootstrap";
+import Link from "next/link";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -92,17 +93,22 @@ const AdminNavbar = () => {
                       </div>
                     </div>
                     <hr />
+
                     <ul className="list">
-                      <li className="list__item">
-                        <a className="list__link" href="">
-                          Thông tin cá nhân
-                        </a>
-                      </li>
-                      <li className="list__item">
-                        <a className="list__link" href="">
-                          Kết quả học tập
-                        </a>
-                      </li>
+                      <Link href={`/user-infor`}>
+                        <li className="list__item">
+                          <a className="list__link" href="">
+                            Thông tin cá nhân
+                          </a>
+                        </li>
+                      </Link>
+                      <Link href={`/`}>
+                        <li className="list__item">
+                          <a className="list__link" href="">
+                            Trang học tập
+                          </a>
+                        </li>
+                      </Link>
                     </ul>
                     <hr />
                     <ul className="list">

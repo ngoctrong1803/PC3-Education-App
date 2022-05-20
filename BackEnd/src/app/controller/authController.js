@@ -88,6 +88,7 @@ const authController = {
                 email: data.email,
                 fullname: data.fullname,
                 role: data.role,
+                avatar: data.avatar,
               };
               const accesstoken =
                 authController.createAccessToken(dataSendToClient);
@@ -157,7 +158,6 @@ const authController = {
     );
   },
   logoutUser: async (req, res) => {
-    console.log("đã vào logout");
     res.clearCookie("refreshtoken");
     const refreshtoken = req.headers.cookies;
     //delete refresh cookie in database

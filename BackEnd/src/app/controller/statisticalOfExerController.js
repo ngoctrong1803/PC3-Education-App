@@ -45,6 +45,59 @@ const statisticalOfExerController = {
       });
     }
   },
+  //[post]/api/statistical-of-exercise/delete/by-user-and-lession
+  getStatisticalOfExerciseByUserAndSubject: async (req, res) => {
+    //try {
+    const { userID, subjectID } = req.body;
+
+    const subject = await Subject.findOne({ _id: subjectID });
+    const listUnit = await Unit.find({ subjectID: subject._id });
+    const unitIDArray = listUnit.map((_id) => {
+      return _id;
+    });
+    const listLession = await Lession.find({ unitID: { $in: unitIDArray } });
+    const lessionIDArray = listLession.map((_id) => {
+      return _id;
+    });
+
+    const statisticalOfExercises = await StatisticalOfExercise.find({
+      userID: userID,
+      lessionID: { $in: lessionIDArray },
+    });
+
+    let totalScore = 0;
+    let totalLessionDone = statisticalOfExercises.length;
+    let totalLession = listLession.length;
+    statisticalOfExercises.map((statisItem, index) => {
+      totalScore = totalScore + statisItem.score;
+    });
+
+    const user = await User.findOne({ _id: userID });
+    const userInfor = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
+      address: user.address,
+      birthday: user.birthday,
+      phone: user.phone,
+      class: user.class,
+    };
+    res.status(200).json({
+      message: "đã truy cập thành công",
+      statisticalOfExercises: statisticalOfExercises,
+      totalScore: totalScore,
+      percentDone: Math.floor((totalLessionDone / totalLession) * 100),
+      totalLessionDone: totalLessionDone,
+      totalLession: totalLession,
+      userInfor: userInfor,
+    });
+    // } catch (err) {
+    //   res.status(400).json({
+    //     message: "Đã xảy ra ngoại lệ",
+    //   });
+    // }
+  },
   //[get]/api/statistical-of-exercise/user/:id
   getStatisticalOfExerciseByUser: async (req, res) => {
     try {

@@ -25,6 +25,10 @@ router.post(
   statisticalOfExerController.getStatisticalOfExerciseByUserAndLession
 );
 router.post(
+  "/by-user-and-subject",
+  statisticalOfExerController.getStatisticalOfExerciseByUserAndSubject
+);
+router.post(
   "/delete/by-user-and-lession",
   statisticalOfExerController.deleteStatisticalOfExerciseByUserAndLession
 );

@@ -41,14 +41,14 @@ const Navbar = () => {
     if (
       url.includes("Subjects") ||
       url.includes("Learning") ||
-      url.includes("Exercises") ||
-      url.includes("result-study")
+      url.includes("Exercises")
+      // url.includes("result-study")
     ) {
       learningButton.current.classList.add("active");
     } else if (url.includes("Flashcards")) {
       flashcardButton.current.classList.add("active");
     } else if (url.includes("Matches")) {
-      matchButton.current.classList.add("active");
+      //matchButton.current.classList.add("active");
     } else if (url.includes("Exams")) {
       examsButton.current.classList.add("active");
     } else if (url.includes("Forum")) {
@@ -56,7 +56,7 @@ const Navbar = () => {
     } else {
       homeButton.current.classList.add("active");
     }
-  });
+  }, []);
 
   return (
     <>
