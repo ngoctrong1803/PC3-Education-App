@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 
 const EMAIL_REGEX = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
-const PASS_REGEX = /[a-z0-9]/;
+const PASS_REGEX = /[a-z0-9]{8,32}/;
 const PHONE_REGEX =
   /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
 

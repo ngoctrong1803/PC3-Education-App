@@ -89,6 +89,10 @@ const authController = {
                 fullname: data.fullname,
                 role: data.role,
                 avatar: data.avatar,
+                class: data.class,
+                birthday: data.birthday,
+                address: data.address,
+                phone: data.phone,
               };
               const accesstoken =
                 authController.createAccessToken(dataSendToClient);
@@ -162,6 +166,62 @@ const authController = {
     const refreshtoken = req.headers.cookies;
     //delete refresh cookie in database
     await Token.deleteOne({ refreshtoken: refreshtoken });
+  },
+  changePassword: async (req, res) => {
+    // try {
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
+    const confirmNewPassword = req.body.confirmNewPassword;
+    const userID = req.params.id;
+    const user = await User.findOne({ _id: userID });
+    if (user) {
+      if (newPassword == confirmNewPassword) {
+        const result = await bcrypt.compare(currentPassword, user.password);
+        if (result) {
+          bcrypt
+            .hash(newPassword, saltRounds, async function (err, hash) {
+              try {
+                const encryptedPassword = hash;
+                await User.updateOne(
+                  { _id: userID },
+                  {
+                    password: encryptedPassword,
+                  }
+                );
+                res.status(200).json({
+                  message: "Đổi mật khẩu thành công",
+                });
+              } catch (error) {
+                res.status(500).json({
+                  message: "Lỗi server!",
+                });
+              }
+            })
+            .catch((err) => {
+              res.status(500).json({
+                message: "lỗi serer!",
+              });
+            });
+        } else {
+          res.status(400).json({
+            message: "Mật khẩu cũ không đúng",
+          });
+        }
+      } else {
+        res.status(400).json({
+          message: "Mật khẩu mới không trùng khớp",
+        });
+      }
+    } else {
+      res.status(400).json({
+        message: "Không tìm thấy người dùng cần thay đổi mật khẩu",
+      });
+    }
+    // } catch (error) {
+    //   res.status(400).json({
+    //     message: "Đã xảy ra ngoại lệ",
+    //   });
+    // }
   },
 };
 module.exports = authController;

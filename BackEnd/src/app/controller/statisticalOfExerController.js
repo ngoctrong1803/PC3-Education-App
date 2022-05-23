@@ -431,5 +431,42 @@ const statisticalOfExerController = {
       });
     }
   },
+  getStatisticalResultOfAllSubject: async (req, res) => {
+    const listStatistical = await StatisticalOfExercise.aggregate([
+      {
+        $group: {
+          // group by
+          _id: "$userID",
+          totalSocre: { $sum: "$score" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          // link with foreign model
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          // except property
+          "user.password": 0,
+        },
+      },
+      {
+        $sort: {
+          // sort
+          totalScore: 1,
+        },
+      },
+    ]);
+    res.status(200).json({
+      message: "Lấy danh sách thành công",
+      listStatistical,
+    });
+  },
 };
 module.exports = statisticalOfExerController;

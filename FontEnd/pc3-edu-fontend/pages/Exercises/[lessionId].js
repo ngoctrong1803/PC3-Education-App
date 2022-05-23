@@ -244,17 +244,17 @@ const Exercise = () => {
                           </li>
                         </ul>
                         {exerciseGuideNav == "description" ? (
-                          <div className="exercise-guide-description">
+                          <div className="exercise-guide-description p-2">
                             đây là phần mô tả bài tập
                           </div>
                         ) : null}
                         {exerciseGuideNav == "rank" ? (
-                          <div className="exercise-guide-rank">
+                          <div className="exercise-guide-rank p-2">
                             đây là phần bảng xếp hạng
                           </div>
                         ) : null}
                         {exerciseGuideNav == "help" ? (
-                          <div className="exercise-guide-help">
+                          <div className="exercise-guide-help p-2">
                             đây là phần trợ giúp
                           </div>
                         ) : null}
@@ -319,11 +319,11 @@ const Exercise = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col xs={7} md={7}>
+                  <Col xs={7} md={7} className="ml-0">
                     <div className="exercise-wrap">
                       <div
                         className="exercise-type"
-                        style={{ width: "130px", padding: "5px" }}
+                        style={{ width: "130px", padding: "4px" }}
                       >
                         {listCatExe.map((catExeItem, index) => {
                           if (catExeItem._id == mcexerciseItem.catExeID)
@@ -335,6 +335,7 @@ const Exercise = () => {
                           <MathJax>
                             câu {index + 1}:
                             <p
+                              className="mt-2"
                               dangerouslySetInnerHTML={{
                                 __html: mcexerciseItem?.question,
                               }}

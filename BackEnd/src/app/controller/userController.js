@@ -26,6 +26,7 @@ const userController = {
         birthday: userItem.birthday,
         phone: userItem.phone,
         class: userItem.class,
+        avatar: userItem.avatar,
       };
     });
     res.status(200).json({
@@ -46,6 +47,7 @@ const userController = {
         birthday: user.birthday,
         phone: user.phone,
         class: user.class,
+        avatar: user.avatar,
       };
       if (user._id) {
         res.status(200).json({
@@ -86,6 +88,54 @@ const userController = {
     } catch (error) {
       res.status(400).json({
         message: "Lỗi cập nhật avatar",
+      });
+    }
+  },
+  updateUserInfor: async (req, res) => {
+    try {
+      const userID = req.params.id;
+      const { userAddress, userClass, userPhone } = req.body;
+      const checkUser = await User.findOne({ _id: userID });
+      if (checkUser) {
+        const checkPhone = await User.findOne({ phone: userPhone });
+        if (checkPhone && checkPhone?._id != userID) {
+          res.status(401).json({
+            message: "Số điện thoại đã tồn tại",
+          });
+        } else {
+          await User.updateOne(
+            { _id: userID },
+            {
+              address: userAddress,
+              class: userClass,
+              phone: userPhone,
+            }
+          );
+          const user = await User.findOne({ _id: userID });
+          const userUpdate = {
+            _id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+            role: user.role,
+            address: user.address,
+            birthday: user.birthday,
+            phone: user.phone,
+            class: user.class,
+            avatar: user.avatar,
+          };
+          res.status(200).json({
+            message: "Cập nhật thông tin thành công",
+            userUpdate: userUpdate,
+          });
+        }
+      } else {
+        res.status(401).json({
+          message: "Không tồn tại người dùng cần cập nhật",
+        });
+      }
+    } catch (error) {
+      res.status(402).json({
+        message: "Lỗi cập nhật thông tin người dùng",
       });
     }
   },

@@ -12,9 +12,6 @@ import { useRouter } from "next/router";
 const Header = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  useEffect(() => {
-    console.log("header -----------------------------");
-  });
   const [stateMenuInfor, setStateMenuInfor] = useState(false);
 
   const currentUser = useSelector((state) => {
@@ -39,7 +36,7 @@ const Header = () => {
     <>
       <header className="header">
         <div className="header__logo">
-          <img src="/background/background-mutilcolor.jpg" alt="" />
+          <img src="/background/LogoPhuCat3.jpg" alt="" />
           <h4>Trường THPT Phù Cát 3</h4>
         </div>
         <div className="header__body">

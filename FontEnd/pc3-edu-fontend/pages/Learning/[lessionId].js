@@ -100,8 +100,8 @@ const Learning = () => {
         <Row>
           <Col xs={9} md={9}>
             <div className="learning-detail-wrap">
-              <div className="learning-detail-title">
-                <h2>{lession.lessionName}</h2>
+              <div className="learning-detail-title mb-4 pb-2">
+                <h3>{lession.lessionName}</h3>
                 {!statistical ? (
                   <Link href={`/Exercises/${lessionID}`}>
                     <button type="button" className="btn btn-primary">
@@ -127,7 +127,7 @@ const Learning = () => {
                   </MathJax>
                 </div>
                 <Link href={`/Exercises/${lessionID}`}>
-                  <button type="button" className="btn btn-primary">
+                  <button type="button" className="btn btn-primary mt-3">
                     Bài tập vận dụng
                   </button>
                 </Link>
@@ -137,8 +137,9 @@ const Learning = () => {
           <Col xs={3} md={3}>
             <div className="learning-slidebar-right">
               <div>
-                <h5>
-                  {listUnit.length} chương - {listLession.length} bài học
+                <h5 className=" mt-2 mb-3">
+                  Mục lục
+                  {/* {listUnit.length} chương - {listLession.length} bài học */}
                 </h5>
                 <Accordion defaultActiveKey={0}>
                   {listUnit.map((unitItem, index) => {
@@ -146,9 +147,12 @@ const Learning = () => {
                       <>
                         <Accordion.Item eventKey={index}>
                           <Accordion.Header>
-                            {unitItem.unitName}
+                            <span className="fw-bold">
+                              {" "}
+                              {unitItem.unitName}
+                            </span>
                           </Accordion.Header>
-                          <Accordion.Body>
+                          <Accordion.Body className="p-0">
                             {listLession.map((lessionItem, index) => {
                               if (lessionItem.unitID == unitItem._id)
                                 return (

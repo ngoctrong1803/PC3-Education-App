@@ -40,15 +40,15 @@ const Detail = () => {
         <Col xs={9} md={9}>
           <div className="subject-detail-wrap">
             <div className="subject-detail-title">
-              <h3>
+              <h2>
                 {subject?.name} - Lớp {subject?.gradeID}
-              </h3>
+              </h2>
             </div>
-            <div className="subject-detail-content">
-              <h5>Nội dung môn học</h5>
-              <div className="mt-4">
+            <div className="subject-detail-content ">
+              <h4 className="mt-4">Nội dung môn học</h4>
+              <div className="mt-4 mb-2">
                 <span>{listUnit.length} chương</span>
-                <span>-</span>
+                <span> - </span>
                 <span>{listLession.length} bài học</span>
               </div>
               <Accordion defaultActiveKey={0}>
@@ -56,8 +56,10 @@ const Detail = () => {
                   return (
                     <>
                       <Accordion.Item eventKey={index}>
-                        <Accordion.Header>{unitItem.unitName}</Accordion.Header>
-                        <Accordion.Body>
+                        <Accordion.Header>
+                          <span className="fw-bold">{unitItem.unitName}</span>
+                        </Accordion.Header>
+                        <Accordion.Body className="p-0">
                           {listLession.map((lessionItem, index) => {
                             if (lessionItem.unitID == unitItem._id)
                               return (

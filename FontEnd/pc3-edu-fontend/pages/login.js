@@ -24,7 +24,6 @@ const Login = () => {
 
   useEffect(() => {
     if (loginResponse.currentUser) {
-      console.log("data off user login:", loginResponse.currentUser);
       const accessToken = loginResponse.currentUser.accesstoken;
       const refreshToken = loginResponse.currentUser.refreshtoken;
       window.localStorage.setItem("accesstoken", accessToken);

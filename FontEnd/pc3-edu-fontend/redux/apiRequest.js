@@ -6,7 +6,7 @@ import {
   loginStart,
   loginSuccess,
   loginReset,
-  updateUser,
+  updateCurrentUser,
 } from "./authSlice";
 
 // handle login
@@ -14,7 +14,7 @@ export const loginUser = async (user, dispatch, router) => {
   dispatch(loginStart());
   try {
     const res = await axios.post("http://localhost:8000/api/auth/login", user);
-    console.log("tài khoản đăng nhập:", res.data);
+    console.log("data of user login:", res.data);
     dispatch(loginSuccess(res.data));
     router.push("/");
   } catch (err) {
@@ -27,6 +27,6 @@ export const loginResetFunc = async (dispatch) => {
   dispatch(loginReset());
 };
 // handle update user
-export const updateCurrentUser = async (dataUpdate, dispatch) => {
-  dispatch(updateUser(dataUpdate));
+export const updateCurrentUserFunc = async (dataUpdate, dispatch) => {
+  dispatch(updateCurrentUser(dataUpdate));
 };

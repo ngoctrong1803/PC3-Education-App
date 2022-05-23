@@ -4,6 +4,10 @@ const statisticalOfExerController = require("../app/controller/statisticalOfExer
 
 router.get("/list", statisticalOfExerController.getStatisticalOfExercise);
 router.get(
+  "/list-statistical-result-of-all-subject",
+  statisticalOfExerController.getStatisticalResultOfAllSubject
+);
+router.get(
   "/lession/:id",
   statisticalOfExerController.getStatisticalOfExerciseByLession
 );
