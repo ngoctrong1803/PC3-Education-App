@@ -8,6 +8,10 @@ router.get(
   statisticalOfExerController.getStatisticalResultOfAllSubject
 );
 router.get(
+  "/list-statistical-result-of-subject/:slug",
+  statisticalOfExerController.getStatisticalResultOfSubject
+);
+router.get(
   "/lession/:id",
   statisticalOfExerController.getStatisticalOfExerciseByLession
 );

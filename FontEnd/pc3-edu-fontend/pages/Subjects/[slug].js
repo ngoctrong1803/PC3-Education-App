@@ -90,7 +90,7 @@ const Detail = () => {
             </div>
             <div className="btn btn-primary mt-4">Ôn tập miễn phí</div>
             <div className="mt-4">
-              <Rank></Rank>
+              <Rank name="one-subject" subjectSlug={`${slugOfSubject}`}></Rank>
             </div>
           </div>
         </Col>

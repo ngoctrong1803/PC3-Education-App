@@ -100,10 +100,7 @@ const Subject = () => {
           </Nav>
         </Card.Header>
         <Card.Body>
-          <div
-            className="selection_list"
-            style={{ marginTop: "0px", paddingTop: "0px" }}
-          >
+          <div className="selection_list">
             <div className="subject_list">
               <h4>Các môn học khối: {grade}</h4>
               <Row sm={2} md={3} lg={4}>
@@ -127,7 +124,7 @@ const Subject = () => {
                 })}
               </Row>
             </div>
-            <div className="subject_list">
+            <div className="subject_list mt-4">
               <h4>Bạn đang học:</h4>
               <Row sm={2} md={3} lg={4}>
                 {listSubjectStudying.map((subjectItem, index) => {

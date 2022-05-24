@@ -166,6 +166,7 @@ const Subject = () => {
                   boxShadow: "0 0.3rem 0.5rem rgba(0, 0, 0, 0.15)",
                   borderRadius: "5px",
                   minHeight: "530px",
+                  backgroundColor: "rgba(254, 254, 254, 0.15)",
                 }}
               >
                 <span style={{ fontSize: "18px", marginBottom: "15px" }}>

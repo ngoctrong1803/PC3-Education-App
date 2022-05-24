@@ -1,6 +1,8 @@
 const StatisticalOfExam = require("../models/StatisticalOfExam");
 const ResultOfExam = require("../models/ResultOfExam");
 const Exam = require("../models/Exam");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 const ExamQuestion = require("../models/ExamQuestion");
 const User = require("../models/User");
 
@@ -71,6 +73,109 @@ const statisticalOfExamController = {
         message: "Lấy thống kê thành công",
         statisticalOfExam: dataToClient,
       });
+    } catch (error) {
+      res.status(400).json({
+        message: "Id không hợp lệ",
+      });
+    }
+  },
+  getStatisticalResultAllExam: async (req, res) => {
+    try {
+      const listStatistical = await StatisticalOfExam.aggregate([
+        {
+          $group: {
+            // group by
+            _id: "$userID",
+            totalScore: { $sum: "$score" },
+            totalTime: { $sum: "$time" },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            // link with foreign model
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $project: {
+            // except property
+            "user.password": 0,
+          },
+        },
+        {
+          $sort: {
+            // sort
+            totalScore: -1,
+            totalTime: 1,
+          },
+        },
+        { $limit: 5 },
+      ]);
+      res.status(200).json({
+        message: "Lấy danh sách thành công",
+        listStatistical,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "Đã xảy ra ngoại lệ!",
+      });
+    }
+  },
+  getStatisticalResultOfExam: async (req, res) => {
+    try {
+      const examID = req.params.id;
+      if (Exam.findOne({ _id: examID })) {
+        console.log("exam id:", examID);
+        const listStatistical = await StatisticalOfExam.aggregate([
+          {
+            $match: { examID: ObjectId(examID) },
+          },
+          {
+            $group: {
+              // group by
+              _id: "$userID",
+              totalScore: { $sum: "$score" },
+              totalTime: { $sum: "$time" },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $lookup: {
+              // link with foreign model
+              from: "users",
+              localField: "_id",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $project: {
+              // except property
+              "user.password": 0,
+            },
+          },
+          {
+            $sort: {
+              // sort
+              totalScore: -1,
+              totalTime: 1,
+            },
+          },
+          { $limit: 5 },
+        ]);
+        res.status(200).json({
+          message: "Lấy danh sách thành công",
+          listStatistical,
+        });
+      } else {
+        res.status(400).json({
+          message: "Bài thi không tồn tại",
+        });
+      }
     } catch (error) {
       res.status(400).json({
         message: "Id không hợp lệ",

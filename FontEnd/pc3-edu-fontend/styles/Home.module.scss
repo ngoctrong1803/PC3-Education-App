@@ -74,11 +74,12 @@
 
 // start content
 .content_wrapper {
+    background-color: rgb(254, 254, 254);
     width: 100%;
     display: flex;
     .content {
         width: 75%;
-        background-color: #ffffff;
+        background-color: #effbff9c;
         //position: relative;
     }
 
@@ -92,6 +93,7 @@
         width: 25%;
         border-left: 1px solid #f0f0f0;
         box-shadow: 0px 4px 12px 0 rgba(0, 0, 0, 0.05);
+        background-color: #effbff9c;
     }
     // end sidebar right
 }

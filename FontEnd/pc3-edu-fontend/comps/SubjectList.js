@@ -8,48 +8,60 @@ import "swiper/css/scrollbar";
 
 // import required modules
 import { Navigation, Scrollbar } from "swiper";
-
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Link from "next/dist/client/link";
 
 const SubjectList = (props) => {
-    return (
-        <div className="comps-subject-list">
-            <Swiper
-            spaceBetween={5}
-            slidesPerView= {3}
-            navigation={true} 
-            scrollbar={{
-                hide: false,
-                draggable: true,
-            }}
-            modules={[Navigation, Scrollbar]}
-            className="mySwiper"
-            >
-                <SwiperSlide>
-                    <div className="comps-subject-item">
-                        <img src="/subject/MonToanf1.jpg"></img>
-                        <span>Toán Học {props.grade}</span>
-                    </div>   
-                </SwiperSlide>
-                <SwiperSlide>
-                    <div className="comps-subject-item">
-                        <img src="/subject/MonVatLyf1.jpg"></img>
-                        <span>Lý Học {props.grade}</span>
-                    </div>    
-                </SwiperSlide>
-                <SwiperSlide>
-                    <div className="comps-subject-item">
-                        <img src="/subject/MonHoaHocf1.jpg"></img>
-                        <span>Hóa Học {props.grade}</span>
-                    </div>   
-                </SwiperSlide>
-                <SwiperSlide>
-                    <div className="comps-subject-item">    
-                        <img src="/subject/MonTiengAnhf1.jpg"></img>
-                        <span>Văn Học {props.grade}</span>
-                    </div>   
-                </SwiperSlide>
-            </Swiper>
-        </div>
-    )
-}
-export default SubjectList
+  const grade = props.grade;
+  const [listSubject, setListSubject] = useState([]);
+  async function getListSubject() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/subjects/list-subject-by-grade/" + grade
+      );
+      console.log("subject list:", res.data);
+      setListSubject(res.data.listSubject);
+    } catch (error) {
+      const errMessage = error.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  useEffect(() => {
+    getListSubject();
+  }, []);
+
+  return (
+    <div className="comps-subject-list">
+      <Swiper
+        spaceBetween={5}
+        slidesPerView={3}
+        navigation={true}
+        scrollbar={{
+          hide: false,
+          draggable: true,
+        }}
+        modules={[Navigation, Scrollbar]}
+        className="mySwiper"
+      >
+        {listSubject.map((subjectItem, index) => {
+          return (
+            <>
+              <SwiperSlide>
+                <Link href={`/Subjects/${subjectItem.slug}`}>
+                  <div className="comps-subject-item">
+                    <img src={subjectItem.image}></img>
+                    <span>{subjectItem.name}</span>
+                  </div>
+                </Link>
+              </SwiperSlide>
+            </>
+          );
+        })}
+      </Swiper>
+    </div>
+  );
+};
+export default SubjectList;

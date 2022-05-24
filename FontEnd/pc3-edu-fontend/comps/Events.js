@@ -1,29 +1,48 @@
-const Event = () => {
-    return (
-        <>
-            <div className="event-list">
-                <div className="event-list-title">
-                    <h5>Sự kiện sắp diễn ra</h5>
-                </div>
-                <div className="event-list-content">
-                    <ul>
-                        <li>
-                            sự kiện: giải bóng chuyền chào mừng...
-                        </li>
-                        <li>
-                            sự kiện: cuộc thi học sinh giỏi cấp tỉnh...
-                        </li>
-                        <li>
-                           sự kiện: ngoại khóa chào mừng 20-11
-                        </li>
-                        <li>
-                            sự kiện: chào mừng ngày nhà giáo Việt Nam
-                        </li>
-                    </ul>     
-                </div>
-            </div> 
-        </>
-    )
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import Link from "next/link";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-}
-export default Event
+const Event = () => {
+  const [listBLog, setListBLog] = useState([]);
+  async function getListBLog() {
+    try {
+      const res = await axios.get("http://localhost:8000/api/blog/list-index");
+      setListBLog(res.data.listBlog);
+      console.log("res blog", res.data.listBlog);
+    } catch (error) {
+      const errMessage = error.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  useEffect(() => {
+    getListBLog();
+  }, []);
+  return (
+    <>
+      <div className="event-list">
+        <div className="event-list-title">
+          <h5>Bài đăng - Sự kiện</h5>
+        </div>
+        <div className="event-list-content">
+          <ul>
+            {listBLog.map((blogItem, index) => {
+              return (
+                <>
+                  <Link href={`/Forum/blog-${blogItem._id}`}>
+                    <li>
+                      <img src="/helper/blog-icon.png"></img>
+                      {blogItem.title}
+                    </li>
+                  </Link>
+                </>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </>
+  );
+};
+export default Event;

@@ -480,7 +480,7 @@ const Exam = () => {
                 </div>
               </div>
             ) : (
-              <Rank></Rank>
+              <Rank name="one-exam" examID={`${examID}`}></Rank>
             )}
           </Col>
         </Row>

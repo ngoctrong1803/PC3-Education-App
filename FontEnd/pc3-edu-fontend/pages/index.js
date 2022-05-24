@@ -21,6 +21,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Question from "../comps/Questions";
 import Event from "../comps/Events";
 import BlogList from "../comps/BlogList";
+import Link from "next/link";
 
 const Home = () => {
   const [grade, setGrade] = useState(10);
@@ -52,6 +53,7 @@ const Home = () => {
         <div className={styles.content_wrapper}>
           <div className={styles.content}>
             <div className="selection_list">
+              <h5>Học tập</h5>
               <Card>
                 <Card.Header>
                   <Nav variant="tabs" defaultActiveKey="#first">
@@ -62,7 +64,7 @@ const Home = () => {
                           changeGrade(10);
                         }}
                       >
-                        Khối 10
+                        <span>Khối 10</span>
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
@@ -72,7 +74,7 @@ const Home = () => {
                           changeGrade(11);
                         }}
                       >
-                        Khối 11
+                        <span>Khối 11</span>
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
@@ -82,16 +84,21 @@ const Home = () => {
                           changeGrade(12);
                         }}
                       >
-                        Khối 12
+                        <span>Khối 12</span>
                       </Nav.Link>
                     </Nav.Item>
                   </Nav>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="pb-5">
                   {/* start swiper */}
-                  <div className="selection_list_title">
-                    <h5>môn học khối {grade}</h5>
-                    <a href="#">xem tất cả</a>
+                  <div className="selection_list_title mb-2 mt-1">
+                    <h5>Môn học khối {grade}</h5>
+                    <Link href={`/Subjects`}>
+                      <a>
+                        xem tất cả
+                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                      </a>
+                    </Link>
                   </div>
                   {grade == 10 ? <SubjectList grade="10"></SubjectList> : null}
                   {grade == 11 ? <SubjectList grade="11"></SubjectList> : null}
@@ -101,15 +108,36 @@ const Home = () => {
               </Card>
             </div>
             <div className="selection_list">
-              <div className="selection_list_title">
-                <h4>Các bài viết nổi bậc</h4>
-                <a href="#">xem tất cả</a>
-              </div>
-              <BlogList></BlogList>
+              <h5>Diễn đàn</h5>
+              <Card>
+                <Card.Header>
+                  <Nav variant="tabs" defaultActiveKey="#blog">
+                    <Nav.Item>
+                      <Nav.Link href="#blog">
+                        <span>Các bài viết nổi bậc</span>
+                      </Nav.Link>
+                    </Nav.Item>
+                  </Nav>
+                </Card.Header>
+                <Card.Body className="pb-5">
+                  {/* start swiper */}
+                  <div className="selection_list_title mb-2 mt-1">
+                    <h5>Bài viết nổi bậc</h5>
+                    <Link href={`/Forum`}>
+                      <a>
+                        xem tất cả
+                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                      </a>
+                    </Link>
+                  </div>
+                  <BlogList></BlogList>
+                  {/* end swiper */}
+                </Card.Body>
+              </Card>
             </div>
           </div>
           <div className={styles.sidebar_right}>
-            <Rank></Rank>
+            <Rank name="all-subject"></Rank>
             <div className="mt-4">
               <Question></Question>
             </div>

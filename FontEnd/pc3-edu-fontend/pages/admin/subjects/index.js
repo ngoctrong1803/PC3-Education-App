@@ -60,14 +60,33 @@ const Subjects = () => {
     setGradeID(gradeID);
     setShowUpdateSubject(true);
   }
-
-  async function getSubject() {
+  // handle filter and pagination
+  const [totalPage, setTotalPage] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    const listPagination = document.querySelectorAll(".pagination_item");
+    const activeItem = (itemClick) => {
+      listPagination.forEach((item) => {
+        item.classList.remove("active");
+      });
+      itemClick.classList.add("active");
+    };
+    listPagination.forEach((item) => {
+      item.addEventListener("click", function () {
+        activeItem(item);
+      });
+    });
+  }, [currentPage]);
+  async function getSubject(page) {
     try {
-      console.log("lấy api thành công");
       const res = await axios.get(
-        "http://localhost:8000/api/subjects/get-list-subject"
+        "http://localhost:8000/api/subjects/get-list-subject/" + page
       );
-
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
       setListSubject(res.data.listSubject);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -103,7 +122,7 @@ const Subjects = () => {
         console.log("newSubject:", newSubject);
         toast.success("thêm mới môn học thành công");
         handleCloseAddSubject();
-        getSubject();
+        getSubject(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -133,7 +152,7 @@ const Subjects = () => {
         );
         toast.success("Cật nhật môn học thành công");
         handleCloseUpdateSubject();
-        getSubject();
+        getSubject(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -142,7 +161,7 @@ const Subjects = () => {
   }
 
   useEffect(() => {
-    getSubject();
+    getSubject(1);
     getGrade();
   }, []);
 
@@ -168,6 +187,7 @@ const Subjects = () => {
       toast.error("Xóa thất bại, đã xảy ra ngoại lệ");
     }
   }
+
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">
@@ -187,10 +207,11 @@ const Subjects = () => {
             className="admin-subjects-header-role"
             aria-label="Default select example"
           >
-            <option>Tìm kiếm theo Khối</option>
-            <option value="1">Khối 10</option>
-            <option value="2">Khối 11</option>
-            <option value="3">Khối 12</option>
+            <option value="">Tìm kiếm theo Khối</option>
+            <option value="all">Tất cả các khối</option>
+            <option value="10">Khối 10</option>
+            <option value="11">Khối 11</option>
+            <option value="12">Khối 12</option>
           </Form.Select>
           <Button
             className="admin-subjects-header-add-user"
@@ -282,11 +303,22 @@ const Subjects = () => {
           <Pagination>
             <Pagination.First />
             <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
+            {totalPage.map((item) => {
+              return (
+                <>
+                  <Pagination.Item
+                    className="pagination_item"
+                    onClick={(e) => {
+                      getSubject(item);
+                      setCurrentPage(item);
+                    }}
+                  >
+                    {item}
+                  </Pagination.Item>
+                </>
+              );
+            })}
+
             <Pagination.Next />
             <Pagination.Last />
           </Pagination>

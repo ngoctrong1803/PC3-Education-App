@@ -214,7 +214,14 @@ const Detail = () => {
                       <img src="/user/default-avatar.png"></img>
                       <span>{contentOfQuestion?.questionAuthor?.fullname}</span>
                     </div>
-                    <Button variant="outline-warning">Quay lại</Button>
+                    <Button
+                      variant="outline-warning"
+                      onClick={() => {
+                        window.history.back();
+                      }}
+                    >
+                      Quay lại
+                    </Button>
                   </div>
                   <span className="question-title">
                     {contentOfQuestion?.questionCategory?.catQueName} -{" "}

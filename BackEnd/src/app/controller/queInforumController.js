@@ -26,6 +26,17 @@ const queInForumController = {
       listAuthor: listAuthor,
     });
   },
+  getQuestionInForumIndex: async (req, res) => {
+    const listQuestion = await QuestionInForum.aggregate([
+      { $match: { status: true } },
+      { $sort: { createdAt: -1 } },
+      { $limit: 5 },
+    ]);
+    res.status(200).json({
+      message: "đã câu hỏi trong diễn đàn thành công",
+      listQuestion,
+    });
+  },
   //[get]/api/question-in-forum/list
   getQuestionInForumByUserID: async (req, res) => {
     const userID = req.params.id;

@@ -437,7 +437,8 @@ const statisticalOfExerController = {
         $group: {
           // group by
           _id: "$userID",
-          totalSocre: { $sum: "$score" },
+          totalScore: { $sum: "$score" },
+          totalTime: { $sum: "$time" },
           count: { $sum: 1 },
         },
       },
@@ -459,14 +460,84 @@ const statisticalOfExerController = {
       {
         $sort: {
           // sort
-          totalScore: 1,
+          totalScore: -1,
+          totalTime: 1,
         },
       },
+      { $limit: 5 },
     ]);
     res.status(200).json({
       message: "Lấy danh sách thành công",
       listStatistical,
     });
+  },
+  getStatisticalResultOfSubject: async (req, res) => {
+    try {
+      const subjectSlug = req.params.slug;
+      const subject = await Subject.findOne({ slug: subjectSlug });
+      if (subject) {
+        const listUnitOfSubject = await Unit.find({ subjectID: subject._id });
+        const unitIDArray = listUnitOfSubject.map(({ _id }) => {
+          return _id;
+        });
+        const listLessionOfSubject = await Lession.find({
+          unitID: { $in: unitIDArray },
+        });
+        const lessionIDArray = listLessionOfSubject.map(({ _id }) => {
+          return _id;
+        });
+        const listStatistical = await StatisticalOfExercise.aggregate([
+          {
+            $match: { lessionID: { $in: lessionIDArray } },
+          },
+
+          {
+            $group: {
+              // group by
+              _id: "$userID",
+              totalScore: { $sum: "$score" },
+              totalTime: { $sum: "$time" },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $lookup: {
+              // link with foreign model
+              from: "users",
+              localField: "_id",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          {
+            $project: {
+              // except property
+              "user.password": 0,
+            },
+          },
+          {
+            $sort: {
+              // sort
+              totalScore: -1,
+              totalTime: 1,
+            },
+          },
+          { $limit: 5 },
+        ]);
+        res.status(200).json({
+          message: "Lấy danh sách thành công",
+          listStatistical,
+        });
+      } else {
+        res.status(400).json({
+          message: "Môn học không tồn tại",
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: "Đã xảy ra ngoại lệ",
+      });
+    }
   },
 };
 module.exports = statisticalOfExerController;

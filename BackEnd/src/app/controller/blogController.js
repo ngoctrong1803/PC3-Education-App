@@ -13,6 +13,39 @@ const blogController = {
       listAuthor,
     });
   },
+  getBlogInForumIndex: async (req, res) => {
+    const listBlog = await Blog.aggregate([
+      { $sort: { createdAt: -1 } },
+      { $limit: 5 },
+    ]);
+    res.status(200).json({
+      message: "đã câu hỏi trong diễn đàn thành công",
+      listBlog,
+    });
+  },
+  getListBlogInForumIndex: async (req, res) => {
+    const listBlog = await Blog.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userID",
+          foreignField: "_id",
+          as: "author",
+        },
+      },
+      {
+        $project: {
+          "author.password": 0,
+        },
+      },
+      { $limit: 10 },
+    ]);
+    res.status(200).json({
+      message: "đã câu hỏi trong diễn đàn thành công",
+      listBlog,
+    });
+  },
   //[get]/api/blog/:id
   getBlogById: async (req, res) => {
     const blogID = req.params.id;

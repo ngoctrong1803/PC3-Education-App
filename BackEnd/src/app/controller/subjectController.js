@@ -35,7 +35,7 @@ const subjectController = {
   },
   //[get]/api/subejct/get-list-subject/:page
   getListSubjectPagination: async (req, res) => {
-    let subjectInPage = 3;
+    let subjectInPage = 5;
     let currentPage = req.params.page;
     console.log("page đã lấy được là:", currentPage);
     const listSubject = await Subject.find({})
@@ -72,7 +72,6 @@ const subjectController = {
   },
   getSubjectByGradeID: async (req, res) => {
     const gradeID = req.params.id;
-    console.log("id khối đã lấy được", gradeID);
     if (gradeID) {
       const listSubject = await Subject.find({
         gradeID: gradeID,
@@ -152,9 +151,6 @@ const subjectController = {
     try {
       const subject = await Subject.findOne({ _id: req.params.id });
       if (subject?._id) {
-        console.log(
-          "====================================handle delete====================================="
-        );
         //handle find data to delete
         const subjectID = subject._id;
         console.log("subject:", subject);
@@ -257,9 +253,6 @@ const subjectController = {
         });
         await Subject.deleteOne({ _id: subjectID });
 
-        console.log(
-          "====================================end handle delete====================================="
-        );
         res.status(200).json({
           message: "xóa môn học thành công",
         });

@@ -3,6 +3,7 @@ const router = express.Router();
 const queInForumController = require("../app/controller/queInforumController");
 
 router.get("/list", queInForumController.getQuestionInForum);
+router.get("/list-index", queInForumController.getQuestionInForumIndex);
 router.get("/user/:id", queInForumController.getQuestionInForumByUserID);
 router.get(
   "/content/:id",
