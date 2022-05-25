@@ -73,6 +73,7 @@ const UserDetail = () => {
       const res = await axios.get(
         "http://localhost:8000/api/user/get-user-by-id/" + userID
       );
+      console.log("user infor", res.data.user);
       setUserInfor(res.data.user);
     } catch (err) {
       toast.error("không tồn tại người dùng");
@@ -95,7 +96,7 @@ const UserDetail = () => {
   }, [userInfor]);
 
   return (
-    <div className="create-user-page">
+    <div className="create-user-page pt-4">
       <div className="create-user-page-header">
         <div className="create-user-page-header-title">
           <span>Thông tin người dùng</span>
@@ -112,33 +113,44 @@ const UserDetail = () => {
           </Button>
         </div>
       </div>
-      <div className="create-user-page-content">
+      <div
+        className="create-user-page-content"
+        style={{
+          borderRadius: "15px",
+          padding: "15px",
+          backgroundColor: "#f2f5fa",
+          boxShadow: "0 0.5rem 1rem rgba(0, 0, 0, 0.15)",
+        }}
+      >
         <div className="create-user-page-content-add-form">
           <>
-            {" "}
-            <Form noValidate>
-              <Row className="mb-3" xs={2} md={2} lg={2}>
-                <Form.Group as={Col} controlId="formGridFullName">
-                  <Form.Label
-                    style={{
-                      display: "flex",
-                      "align-items": "center",
-                    }}
-                  >
-                    Họ và tên
-                  </Form.Label>
-                  <Form.Control
-                    ref={emailRef}
-                    type="text"
-                    placeholder="VD: Nguyễn Văn A"
-                    value={fullname}
-                    onChange={(e) => {
-                      setFullname(e.target.value);
-                    }}
-                  />
-                  {fullnameErr !== "" ? <span>{fullnameErr}</span> : null}
-                </Form.Group>
-              </Row>
+            <div
+              className="d-flex flex flex-column justify-content-center align-items-center p-3"
+              style={{
+                backgroundImage:
+                  "url('/background/skye-avatar-background2.jpg')",
+                backgroundPosition: "center" /* Center the image */,
+                backgroundRepeat: "no-repeat" /* Do not repeat the image */,
+                backgroundSize: "cover",
+                borderRadius: "15px",
+              }}
+            >
+              <img
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  borderRadius: "50%",
+                  border: "solid #fff 4px",
+                }}
+                src={userInfor.avatar}
+              ></img>
+              <span
+                style={{ fontSize: "22px", fontWeight: "600", color: "#fff" }}
+              >
+                {userInfor.fullname}
+              </span>
+            </div>
+            <Form noValidate className="mt-4">
               <Row className="mb-3" xs={2} md={2} lg={2}>
                 <Form.Group as={Col} controlId="formGridEmail">
                   <Form.Label
@@ -150,6 +162,7 @@ const UserDetail = () => {
                     Email{" "}
                   </Form.Label>
                   <Form.Control
+                    disabled
                     type="email"
                     placeholder="Tài khoản"
                     value={email}
@@ -161,6 +174,7 @@ const UserDetail = () => {
                 <Form.Group as={Col} controlId="formGridRole">
                   <Form.Label>Chức vụ</Form.Label>
                   <Form.Select
+                    disabled
                     onChange={(e) => {
                       setRole(e.target.value);
                     }}
@@ -185,6 +199,7 @@ const UserDetail = () => {
                 <Form.Group className="mb-3" controlId="formGridAddress">
                   <Form.Label>Địa chỉ</Form.Label>
                   <Form.Control
+                    disabled
                     value={address}
                     onChange={(e) => {
                       setAddress(e.target.value);
@@ -196,6 +211,7 @@ const UserDetail = () => {
                 <Form.Group className="mb-3" controlId="formGridBirthday">
                   <Form.Label>Ngày sinh</Form.Label>
                   <Form.Control
+                    disabled
                     placeholder="VD: 18/03/2000"
                     value={
                       new Date(birthday).getDate() +
@@ -214,6 +230,7 @@ const UserDetail = () => {
                 <Form.Group className="mb-3" controlId="formGridPhone">
                   <Form.Label>Số điện thoại</Form.Label>
                   <Form.Control
+                    disabled
                     placeholder="VD: 0358489850"
                     value={phone}
                     onChange={(e) => {
@@ -224,6 +241,7 @@ const UserDetail = () => {
                 <Form.Group className="mb-3" controlId="formGridStudentClass">
                   <Form.Label>Lớp học hiện tại</Form.Label>
                   <Form.Control
+                    disabled
                     placeholder="VD: 12A1"
                     value={studentClass}
                     onChange={(e) => {

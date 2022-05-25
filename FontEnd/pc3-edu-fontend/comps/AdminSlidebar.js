@@ -13,9 +13,13 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import Link from "next/dist/client/link";
 
 const AdminSlidebar = () => {
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
   useEffect(() => {
     const listSidebar = document.querySelectorAll(".admin-slidebar-function");
     const activeItem = (itemClick) => {
@@ -41,7 +45,7 @@ const AdminSlidebar = () => {
         </div>
         <div className="admin-slidebar-content">
           <div className="admin-slidebar-user">
-            <img src="/user/default-avatar.png"></img>
+            <img src={currentUser.userInfor.avatar}></img>
             <div className="admin-slidebar-user-infor">
               <span>Trương Ngọc Trọng</span>
             </div>
@@ -53,7 +57,7 @@ const AdminSlidebar = () => {
                   <span>
                     <ion-icon name="people-outline"></ion-icon>
                   </span>
-                  <span>Quản lý người dùng</span>
+                  <span>Người dùng</span>
                 </li>
               </Link>
               <Link href="/admin/subjects">
@@ -61,7 +65,7 @@ const AdminSlidebar = () => {
                   <span>
                     <ion-icon name="book"></ion-icon>
                   </span>
-                  <span>Quản lý học tập</span>
+                  <span>Học tập</span>
                 </li>
               </Link>
               <Link href="/admin/flashcards">
@@ -69,7 +73,7 @@ const AdminSlidebar = () => {
                   <span>
                     <ion-icon name="rocket-outline"></ion-icon>
                   </span>
-                  <span>Quản lý flashcard</span>
+                  <span>Flashcard</span>
                 </li>
               </Link>
 
@@ -78,7 +82,7 @@ const AdminSlidebar = () => {
                   <span>
                     <ion-icon name="newspaper"></ion-icon>
                   </span>
-                  <span>Quản lý luyện đề</span>
+                  <span>Luyện đề</span>
                 </li>
               </Link>
               <Link href="/admin/forum">
@@ -86,7 +90,7 @@ const AdminSlidebar = () => {
                   <span>
                     <ion-icon name="people-circle-outline"></ion-icon>
                   </span>
-                  <span>Quản lý diễn Đàn</span>
+                  <span>Diễn Đàn</span>
                 </li>
               </Link>
             </ul>

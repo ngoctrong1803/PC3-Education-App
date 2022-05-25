@@ -139,6 +139,11 @@ const statisticalOfExerController = {
   getStatisticalOfExerciseByLession: async (req, res) => {
     try {
       const lessionID = req.params.id;
+
+      const contentToFind = req.body.contentToFind;
+      const currentPage = req.body.page;
+      const userInPage = 2;
+
       //list statistical of exercise
       const listStatisticalOfExercise = await StatisticalOfExercise.find({
         lessionID: lessionID,
@@ -150,7 +155,24 @@ const statisticalOfExerController = {
         return _id;
       });
       // list user infor
-      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listTotalUser = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      });
+
+      // list user infor
+      const listUserTemp = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * userInPage - userInPage)
+        .limit(userInPage);
       const listUserInfor = listUserTemp.map((item, index) => {
         return {
           _id: item._id,
@@ -186,6 +208,8 @@ const statisticalOfExerController = {
       res.status(200).json({
         message: "Lấy thống kê thành công",
         statisticalOfExercise: statisticalOfExercise,
+        totalPage: Math.ceil(listTotalUser.length / userInPage),
+        currentPage,
       });
     } catch (err) {
       res.status(400).json({
@@ -198,6 +222,11 @@ const statisticalOfExerController = {
   getStatisticalOfExerciseByUnit: async (req, res) => {
     try {
       const unitID = req.params.id;
+
+      const contentToFind = req.body.contentToFind;
+      const currentPage = req.body.page;
+      const userInPage = 5;
+
       const unitInfor = await Unit.findOne({ _id: unitID });
       const listLessionOfUnit = await Lession.find({ unitID: unitID });
       const lessionIDArray = listLessionOfUnit.map((_id) => {
@@ -212,8 +241,26 @@ const statisticalOfExerController = {
       const userIDArray = listStatisticalOfExercise.map(({ userID }) => {
         return userID;
       });
+
       // list user infor
-      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listTotalUser = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      });
+
+      // list user infor
+      const listUserTemp = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * userInPage - userInPage)
+        .limit(userInPage);
       const listUserInfor = listUserTemp.map((item, index) => {
         return {
           _id: item._id,
@@ -237,6 +284,8 @@ const statisticalOfExerController = {
       res.status(200).json({
         message: "Lấy thống kê thành công",
         statisticalOfExercise: statisticalOfExercise,
+        totalPage: Math.ceil(listTotalUser.length / userInPage),
+        currentPage,
       });
     } catch (err) {
       res.status(400).json({
@@ -248,6 +297,9 @@ const statisticalOfExerController = {
   getStatisticalOfExerciseBySubject: async (req, res) => {
     try {
       const subjectID = req.params.id;
+      const contentToFind = req.body.contentToFind;
+      const currentPage = req.body.page;
+      const userInPage = 5;
       // subject infor
       const subjectInfor = await Subject.findOne({ _id: subjectID });
       // list unit
@@ -272,7 +324,23 @@ const statisticalOfExerController = {
         return userID;
       });
       // list user infor
-      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+      const listTotalUser = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      });
+      // list user infor
+      const listUserTemp = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * userInPage - userInPage)
+        .limit(userInPage);
       const listUserInfor = listUserTemp.map((item, index) => {
         return {
           _id: item._id,
@@ -297,6 +365,8 @@ const statisticalOfExerController = {
       res.status(200).json({
         message: "Lấy thống kê thành công",
         statisticalOfExercise: statisticalOfExercise,
+        totalPage: Math.ceil(listTotalUser.length / userInPage),
+        currentPage,
       });
     } catch (err) {
       res.status(400).json({

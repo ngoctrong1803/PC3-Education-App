@@ -31,6 +31,50 @@ const flashcardController = {
       users,
     });
   },
+  //[get]/api/flashcard/list/:id
+  getFlashcardByTopicIDPagination: async (req, res) => {
+    const topicID = req.params.id;
+    const flashcardInPage = 5;
+    const currentPage = req.body.page;
+    const nameToFind = req.body.nameToFind;
+    const listTotalFlashcard = await Flashcard.find({
+      topicID: topicID,
+      $or: [
+        { meaningInEnglish: { $regex: nameToFind } },
+        { meaningInVietnamese: { $regex: nameToFind } },
+      ],
+    });
+
+    const listFlashcard = await Flashcard.find({
+      topicID: topicID,
+      $or: [
+        { meaningInEnglish: { $regex: nameToFind } },
+        { meaningInVietnamese: { $regex: nameToFind } },
+      ],
+    })
+      // .sort({
+      //   createAt: -1,
+      // })
+      .skip(currentPage * flashcardInPage - flashcardInPage)
+      .limit(flashcardInPage);
+    let totalFlashcard = listTotalFlashcard.length;
+    const topic = await Topic.findOne({
+      _id: topicID,
+    });
+    const userIDArray = listFlashcard.map(({ userID }) => userID);
+
+    const users = await User.find({ _id: { $in: userIDArray } });
+
+    console.log("flashcard ở đây:", listFlashcard);
+    res.status(200).json({
+      message: "lấy Flashcard thành công",
+      listFlashcard: listFlashcard,
+      topic: topic,
+      users,
+      totalPage: Math.ceil(totalFlashcard / flashcardInPage),
+      currentPage: currentPage,
+    });
+  },
   //[post]/api/flashcard/create
   createFlashcard: async (req, res) => {
     const {

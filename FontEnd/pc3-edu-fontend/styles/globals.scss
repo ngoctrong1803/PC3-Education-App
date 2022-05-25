@@ -2222,9 +2222,15 @@ ul.navbar-home {
   background-color: #fafbfc;
 }
 .admin-slidebar {
-  height: 700px;
+  background-image: url('/background/background-admin4.jpg');
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+  min-height: 700px;
+  border-radius: 15px;
   padding: 15px;
   background-color: #ffffff;
+  
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   .admin-slidebar-header {
     height: 50px;
@@ -2232,15 +2238,17 @@ ul.navbar-home {
     justify-content: center;
     align-items: center;
     span {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 800;
       margin-left: 5px;
-      color: #2196f3;
+      color: #ffffff;
     }
   }
   .admin-slidebar-content {
-    height: 650px;
-    border: #ffffff solid 1px;
+    border-radius: 15px;
+    padding: 10px;
+    min-height: 650px;
+    border: #ffffff solid 2px;
     .admin-slidebar-user {
       margin-top: 15px;
       margin-bottom: 35px;
@@ -2248,13 +2256,20 @@ ul.navbar-home {
       flex-direction: column;
       align-items: center;
       img {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
+        border:#ffffff solid 4px;
       }
       .admin-slidebar-user-infor {
         span {
-          font-weight: 500;
+          font-size: 18px;
+          font-weight: 700;
+          color: #ffffff;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
       }
     }
@@ -2275,14 +2290,14 @@ ul.navbar-home {
             margin-right: 5px;
             font-size: 16px;
             font-weight: 500;
-            color: rgb(100, 100, 100);
+            color: #ffffff;
           }
         }
         li:hover {
-          background-color: #e7e7e7;
+          background-color: #436efe;
         }
         li.show {
-          background-color: #027ee4d3;
+          background-color: #027ee4a2;
           span {
             color: #fff;
           }
@@ -2294,7 +2309,7 @@ ul.navbar-home {
 .admin-header {
   height: 50px;
   .admin-header-nav {
-    background-color: #027ee4d3 !important;
+    background-color: #04539f !important;
     box-shadow: 0 0.5rem 1rem rgba(60, 77, 156, 0.15) !important;
   }
   .admin-navbar-user {
@@ -2319,27 +2334,33 @@ ul.navbar-home {
   }
 }
 .admin-content {
-  background-color: #ffffff;
+  background: linear-gradient(to bottom, #d1f6ff 0%, #ffffff 118%);
+  border: #ffffffd1 solid 3px;
+  background-color: #f4f9fe9b;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  margin-top: 15px;
-  min-height: 650px;
+  margin-top: 0px;
+  min-height: 685px;
+  border-radius: 10px;
+
 }
 .admin-home-page {
   .statistical-table {
-    padding-top: 35px;
+    padding-top: 15px;
     padding-left: 15px;
     .statistical-table-title {
+      margin-bottom: 5px;
       span {
         font-size: 18px;
         font-weight: 600;
       }
     }
     .statistical-table-content {
-      border-radius: 5px;
+      border-radius: 15px;
       margin-right: 15px;
       padding-left: 8%;
-      box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
-      background-image: url("/background/background-blue.jpg");
+      border: #04539f solid 3px;
+      box-shadow: 0rem 0.3rem 0.5rem rgba(60, 78, 156, 0.438) !important;
+      background-image: url("/background/background-admin3.jpg");
       background-position: center;
       background-size: cover;
       .statistical-list-item {
@@ -2350,8 +2371,8 @@ ul.navbar-home {
           margin-top: 5px;
           margin-bottom: 5px;
           border-radius: 10px;
-          width: 150px;
-          height: 150px;
+          width: 130px;
+          height: 130px;
           background-color: rgba(208, 226, 225, 0.411);
           box-shadow: 0.05rem 0.05rem 0.05rem rgba(60, 78, 156, 0.438) !important;
           display: flex;
@@ -2362,11 +2383,12 @@ ul.navbar-home {
           .statistical-item-content {
             display: flex;
             justify-content: space-between;
-            margin-top: 45px;
+            margin-top: 50px;
             align-items: center;
             span {
               font-size: 22px;
               font-weight: 600;
+              color: #fff;
             }
           }
           .statistical-item-title {
@@ -2377,6 +2399,7 @@ ul.navbar-home {
             span {
               font-size: 22px;
               font-weight: 600;
+              color: #fff;
             }
           }
         }
@@ -2438,7 +2461,12 @@ ul.navbar-home {
     }
   }
   .admin-users-list {
+    min-height: 520px;
+    position: relative;
     .main-users-list-pagination {
+      position: absolute;
+      left: 45%;
+      bottom: 0px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -2569,10 +2597,12 @@ ul.navbar-home {
   }
   .admin-subjects-list {
     position: relative;
+    min-height: 530px;
     .main-subjects-list-pagination {
-      top: 570px;
-      left: 50%;
-      position: fixed;
+
+      position: absolute;
+      bottom:0px;
+      left: 45%;
       display: flex;
       justify-content: center;
       align-items: center;

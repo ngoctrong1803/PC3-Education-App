@@ -63,29 +63,23 @@ const Subjects = () => {
   // handle filter and pagination
   const [totalPage, setTotalPage] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => {
-    const listPagination = document.querySelectorAll(".pagination_item");
-    const activeItem = (itemClick) => {
-      listPagination.forEach((item) => {
-        item.classList.remove("active");
-      });
-      itemClick.classList.add("active");
-    };
-    listPagination.forEach((item) => {
-      item.addEventListener("click", function () {
-        activeItem(item);
-      });
-    });
-  }, [currentPage]);
+  const [currentGradeShow, setCurrentGradeShow] = useState(0);
+  const [currentSubjectName, setCurrentSubjectName] = useState("");
+
   async function getSubject(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/get-list-subject/" + page
+      const res = await axios.post(
+        "http://localhost:8000/api/subjects/get-list-subject/" + page,
+        {
+          subject_name: currentSubjectName,
+          grade: currentGradeShow,
+        }
       );
       const listTotalPage = [];
       for (let i = 0; i < res.data.totalPage; i++) {
         listTotalPage.push(i + 1);
       }
+      console.log("total page", listTotalPage.length);
       setTotalPage(listTotalPage);
       setListSubject(res.data.listSubject);
     } catch (err) {
@@ -93,6 +87,7 @@ const Subjects = () => {
       toast.error(errMessage);
     }
   }
+
   async function getGrade() {
     const res = await axios.get("http://localhost:8000/api/grade/list");
     setListGrade(res.data.listGrade);
@@ -165,6 +160,10 @@ const Subjects = () => {
     getGrade();
   }, []);
 
+  useEffect(() => {
+    getSubject(1);
+  }, [currentGradeShow, currentSubjectName]);
+
   //handle delete subject
   const [subjectIDToDelete, setSubjectIDToDelete] = useState("");
   const [showComfirmDeleteSubject, setShowConfirmDeleteSubject] =
@@ -200,15 +199,21 @@ const Subjects = () => {
               placeholder="Nhập tên môn học"
               aria-label="Recipient's username"
               aria-describedby="basic-addon2"
+              value={currentSubjectName}
+              onChange={(e) => {
+                setCurrentSubjectName(e.target.value);
+              }}
             />
             <Button variant="primary">Tìm kiếm</Button>
           </InputGroup>
           <Form.Select
             className="admin-subjects-header-role"
             aria-label="Default select example"
+            onChange={(e) => {
+              setCurrentGradeShow(e.target.value);
+            }}
           >
-            <option value="">Tìm kiếm theo Khối</option>
-            <option value="all">Tất cả các khối</option>
+            <option value="0">Tất cả các khối</option>
             <option value="10">Khối 10</option>
             <option value="11">Khối 11</option>
             <option value="12">Khối 12</option>
@@ -301,7 +306,6 @@ const Subjects = () => {
         </Table>
         <div className="main-subjects-list-pagination">
           <Pagination>
-            <Pagination.First />
             <Pagination.Prev />
             {totalPage.map((item) => {
               return (
@@ -311,6 +315,19 @@ const Subjects = () => {
                     onClick={(e) => {
                       getSubject(item);
                       setCurrentPage(item);
+                      const listPagination =
+                        document.querySelectorAll(".pagination_item");
+                      const activeItem = (itemClick) => {
+                        listPagination.forEach((item) => {
+                          item.classList.remove("active");
+                        });
+                        itemClick.classList.add("active");
+                      };
+                      listPagination.forEach((item) => {
+                        item.addEventListener("click", function () {
+                          activeItem(item);
+                        });
+                      });
                     }}
                   >
                     {item}
@@ -320,7 +337,6 @@ const Subjects = () => {
             })}
 
             <Pagination.Next />
-            <Pagination.Last />
           </Pagination>
         </div>
         {/* start modal add subject */}

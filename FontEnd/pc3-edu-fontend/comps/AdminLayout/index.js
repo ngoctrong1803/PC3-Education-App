@@ -30,7 +30,7 @@ const AdminLayout = ({ children }) => {
       <Style>
         <div className="admin-page">
           <Row>
-            <Col xs={2} md={2} lg={2}>
+            <Col xs={2} md={2} lg={2} className="p-0">
               <AdminSlidebar></AdminSlidebar>
             </Col>
             <Col xs={10} md={10} lg={10}>

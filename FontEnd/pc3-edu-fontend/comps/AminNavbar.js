@@ -69,7 +69,7 @@ const AdminNavbar = () => {
                     <span>
                       <ion-icon name="notifications-outline"></ion-icon>
                     </span>
-                    <img src="/user/default-avatar.png"></img>
+                    <img src={curentAdmin.userInfor.avatar}></img>
                   </div>
                   {/* start user menu */}
                   <div
@@ -81,7 +81,7 @@ const AdminNavbar = () => {
                   >
                     <div className="user">
                       <div className="user__avatar">
-                        <img src="/user/default-avatar.png" alt="" />
+                        <img src={curentAdmin.userInfor.avatar} alt="" />
                       </div>
                       <div className="user__info">
                         <div className="name">

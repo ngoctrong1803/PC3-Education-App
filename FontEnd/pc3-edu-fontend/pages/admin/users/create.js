@@ -161,6 +161,7 @@ const Create = () => {
       birthday: birthday,
       phone: phone,
       class: studentClass,
+      avatar: "/user/default-avatar.png",
     };
 
     // check data

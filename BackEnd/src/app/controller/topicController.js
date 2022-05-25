@@ -2,10 +2,37 @@ const Topic = require("../models/Topic");
 const topicController = {
   //[get]/api/topic/list
   getTopic: async (req, res) => {
-    const listTopic = await Topic.find({});
+    const listTopic = await Topic.find({}).sort({
+      createAt: -1,
+    });
     res.status(200).json({
-      message: "lấy chủ đề thành công",
+      message: "lấy danh sách chủ đề thành công",
       listTopic: listTopic,
+    });
+  },
+
+  //[get]/api/topic/list
+  getTopicPagination: async (req, res) => {
+    let topicInPage = 3;
+    let currentPage = req.params.page;
+    let topicName = req.body.topicName;
+    const listTotalTopic = await Topic.find({
+      topicName: { $regex: topicName },
+    });
+    const listTopic = await Topic.find({
+      topicName: { $regex: topicName },
+    })
+      // .sort({
+      //   createAt: -1,
+      // })
+      .skip(currentPage * topicInPage - topicInPage)
+      .limit(topicInPage);
+    let totalTopic = listTotalTopic.length;
+    res.status(200).json({
+      message: "lấy danh sách chủ đề thành công",
+      listTopic: listTopic,
+      totalPage: Math.ceil(totalTopic / topicInPage),
+      currentPage: currentPage,
     });
   },
   //[post]/api/topic/create

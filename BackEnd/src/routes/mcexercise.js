@@ -4,6 +4,7 @@ const mcExerciseController = require("../app/controller/mcExerciseController");
 
 router.get("/list-mcexercise", mcExerciseController.getMCExercise);
 router.get("/list/:id", mcExerciseController.getMCExerciseOfLession);
+router.post("/list/:id", mcExerciseController.getMCExerciseOfLessionPagination);
 router.get(
   "/mcexercise-by-lession/:id",
   mcExerciseController.getMCExerciseOfLession

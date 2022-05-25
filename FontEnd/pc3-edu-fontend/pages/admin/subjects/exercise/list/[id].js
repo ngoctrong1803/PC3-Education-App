@@ -32,19 +32,35 @@ const ListMCExercise = () => {
   const handleCloseComfirmDeleteExer = () => setConfirmDeleteExer(false);
   const handleShowConfirmDeleteExer = () => setConfirmDeleteExer(true);
 
-  async function getListMCExercise() {
+  //handle filter and pagination
+  const [cateToFind, setCateToFind] = useState("");
+  const [contentToFind, setContentToFind] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+
+  async function getListMCExercise(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/mcexercise/list/" + lessionID
+      const res = await axios.post(
+        "http://localhost:8000/api/mcexercise/list/" + lessionID,
+        {
+          page: page,
+          contentToFind: contentToFind,
+          cateToFind: cateToFind,
+        }
       );
       console.log("list exercise: ", res.data);
       setListMCExercise(res.data.listMCExercise);
       setListCategory(res.data.categoryOfExercise);
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
     }
   }
+
   async function handleDeleteExercise() {
     console.log("xóa câu hỏi:", exerciseID);
     if (exerciseID) {
@@ -53,7 +69,7 @@ const ListMCExercise = () => {
           "http://localhost:8000/api/mcexercise/delete/" + exerciseID
         );
         toast.success("xóa thành công bài tập");
-        getListMCExercise();
+        getListMCExercise(1);
         handleCloseComfirmDeleteExer();
       } catch (err) {
         const errMessage = err.response.data.message;
@@ -63,11 +79,11 @@ const ListMCExercise = () => {
   }
 
   useEffect(() => {
-    getListMCExercise();
-    const script = document.createElement("script");
-    script.src =
-      "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-  }, []);
+    getListMCExercise(1);
+    // const script = document.createElement("script");
+    // script.src =
+    //   "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+  }, [contentToFind, cateToFind]);
 
   const config = {
     loader: { load: ["input/asciimath"] },
@@ -96,9 +112,31 @@ const ListMCExercise = () => {
                   placeholder="nội dung câu hỏi"
                   aria-label="Recipient's username"
                   aria-describedby="basic-addon2"
+                  value={contentToFind}
+                  onChange={(e) => {
+                    setContentToFind(e.target.value);
+                  }}
                 />
                 <Button letiant="primary">Tìm kiếm</Button>
               </InputGroup>
+              <Form.Select
+                className="admin-subjects-header-role"
+                aria-label="Default select example"
+                onChange={(e) => {
+                  setCateToFind(e.target.value);
+                }}
+              >
+                <option value="">Tất cả thể loại</option>
+                {listCategory?.map((cateItem) => {
+                  return (
+                    <>
+                      <option value={cateItem._id}>
+                        {cateItem.description}
+                      </option>
+                    </>
+                  );
+                })}
+              </Form.Select>
               <Link href={`/admin/subjects/exercise/create/${lessionID}`}>
                 <Button
                   className="admin-subjects-header-add-user"
@@ -184,15 +222,36 @@ const ListMCExercise = () => {
             </Table>
             <div className="main-subjects-list-pagination">
               <Pagination>
-                <Pagination.First />
                 <Pagination.Prev />
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Item>{4}</Pagination.Item>
-                <Pagination.Item>{5}</Pagination.Item>
+                {totalPage?.map((item) => {
+                  return (
+                    <>
+                      <Pagination.Item
+                        className="pagination_item"
+                        onClick={(e) => {
+                          getListMCExercise(item);
+                          const listPagination =
+                            document.querySelectorAll(".pagination_item");
+                          const activeItem = (itemClick) => {
+                            listPagination.forEach((item) => {
+                              item.classList.remove("active");
+                            });
+                            itemClick.classList.add("active");
+                          };
+                          listPagination.forEach((item) => {
+                            item.addEventListener("click", function () {
+                              activeItem(item);
+                            });
+                          });
+                        }}
+                      >
+                        {item}
+                      </Pagination.Item>
+                    </>
+                  );
+                })}
+
                 <Pagination.Next />
-                <Pagination.Last />
               </Pagination>
             </div>
           </div>

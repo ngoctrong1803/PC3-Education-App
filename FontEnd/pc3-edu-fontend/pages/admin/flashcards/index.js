@@ -50,12 +50,25 @@ const Topic = () => {
       }
     }
   }
+  //handle filter and pagination
+  const [totalPage, setTotalPage] = useState([]);
+  const [nameToFind, setNameToFind] = useState("");
 
-  async function getTopic() {
+  async function getTopic(page) {
     try {
-      const res = await axios.get("http://localhost:8000/api/topic/list");
+      const res = await axios.post(
+        "http://localhost:8000/api/topic/list/" + page,
+        {
+          topicName: nameToFind,
+        }
+      );
       console.log("res", res.data.listTopic);
       setListTopic(res.data.listTopic);
+      const listTotalTopic = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalTopic.push(i + 1);
+      }
+      setTotalPage(listTotalTopic);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -63,8 +76,9 @@ const Topic = () => {
   }
 
   useEffect(() => {
-    getTopic();
-  }, []);
+    getTopic(1);
+  }, [nameToFind]);
+  useEffect(() => {}, []);
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">
@@ -77,6 +91,10 @@ const Topic = () => {
               placeholder="Nhập tên têm chủ đề"
               aria-label="Recipient's username"
               aria-describedby="basic-addon2"
+              value={nameToFind}
+              onChange={(e) => {
+                setNameToFind(e.target.value);
+              }}
             />
             <Button variant="primary">Tìm kiếm</Button>
           </InputGroup>
@@ -93,8 +111,11 @@ const Topic = () => {
           <Button
             className="admin-subjects-header-add-user"
             variant="outline-warning"
+            onClick={() => {
+              window.history.back();
+            }}
           >
-            quay lại
+            Quay lại
           </Button>
         </Link>
       </div>
@@ -123,6 +144,7 @@ const Topic = () => {
                           height: "120px",
                           width: "100px",
                           "border-radius": "10px",
+                          objectFit: "cover",
                         }}
                         src={`${item.image}`}
                       ></img>
@@ -157,15 +179,35 @@ const Topic = () => {
         </Table>
         <div className="main-subjects-list-pagination">
           <Pagination>
-            <Pagination.First />
             <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
+            {totalPage.map((item) => {
+              return (
+                <>
+                  <Pagination.Item
+                    className="pagination_item"
+                    onClick={() => {
+                      getTopic(item);
+                      const listPagination =
+                        document.querySelectorAll(".pagination_item");
+                      const activeItem = (itemClick) => {
+                        listPagination.forEach((item) => {
+                          item.classList.remove("active");
+                        });
+                        itemClick.classList.add("active");
+                      };
+                      listPagination.forEach((item) => {
+                        item.addEventListener("click", function () {
+                          activeItem(item);
+                        });
+                      });
+                    }}
+                  >
+                    {item}
+                  </Pagination.Item>
+                </>
+              );
+            })}
             <Pagination.Next />
-            <Pagination.Last />
           </Pagination>
         </div>
         {/* start modal add Topic */}

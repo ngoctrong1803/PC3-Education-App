@@ -35,25 +35,37 @@ const Statistical = () => {
     setShowDetailStatistical(false);
   };
 
-  async function getStatisticalOfUnit() {
+  // handle filter and pagination
+  const [contentToFind, setContentToFind] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+
+  async function getStatisticalOfUnit(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/statistical-of-exercise/unit/" + unitID
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exercise/unit/" + unitID,
+        {
+          page: page,
+          contentToFind: contentToFind,
+        }
       );
-      console.log("res", res.data.statisticalOfExercise);
       setUnitInfor(res.data.statisticalOfExercise.unitInfor);
       setListLession(res.data.statisticalOfExercise.listLessionOfUnit);
       setListUser(res.data.statisticalOfExercise.listUserInfor);
       setListStatistical(
         res.data.statisticalOfExercise.listStatisticalOfExercise
       );
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
     } catch (error) {
       toast.error("Đã xảy ra ngoại lệ");
     }
   }
   useEffect(() => {
-    getStatisticalOfUnit();
-  }, []);
+    getStatisticalOfUnit(1);
+  }, [contentToFind]);
 
   return (
     <div className="admin-statistical-page">
@@ -68,6 +80,10 @@ const Statistical = () => {
             placeholder="Nhập tên người dùng"
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
+            value={contentToFind}
+            onChange={(e) => {
+              setContentToFind(e.target.value);
+            }}
           />
           <Button variant="primary">Tìm kiếm</Button>
         </InputGroup>
@@ -140,15 +156,36 @@ const Statistical = () => {
         </Table>
         <div className="main-statistical-list-pagination">
           <Pagination>
-            <Pagination.First />
             <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
+            {totalPage.map((item) => {
+              return (
+                <>
+                  <Pagination.Item
+                    className="pagination_item"
+                    onClick={() => {
+                      getStatisticalOfUnit(item);
+                      const listPagination =
+                        document.querySelectorAll(".pagination_item");
+                      const activeItem = (itemClick) => {
+                        listPagination.forEach((item) => {
+                          item.classList.remove("active");
+                        });
+                        itemClick.classList.add("active");
+                      };
+                      listPagination.forEach((item) => {
+                        item.addEventListener("click", function () {
+                          activeItem(item);
+                        });
+                      });
+                    }}
+                  >
+                    {item}
+                  </Pagination.Item>
+                </>
+              );
+            })}
+
             <Pagination.Next />
-            <Pagination.Last />
           </Pagination>
           {/* start modal show detail statistical */}
           <Modal

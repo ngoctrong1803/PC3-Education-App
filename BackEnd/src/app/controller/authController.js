@@ -21,6 +21,7 @@ const authController = {
         birthday: req.body.birthday,
         phone: req.body.phone,
         class: req.body.class,
+        avatar: req.body.avatar,
       });
       try {
         const checkUser = await User.find({ email: user.email });

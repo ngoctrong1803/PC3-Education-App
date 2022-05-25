@@ -34,6 +34,102 @@ const userController = {
       listUser: listUserToClient,
     });
   },
+  //[get]/api/user/list-user
+  getUserPagination: async (req, res) => {
+    const contentToFind = req.body.contentToFind;
+    const roleToFind = req.body.roleToFind;
+    const currentPage = req.body.page;
+
+    const userInPage = 6;
+
+    if (roleToFind == "all") {
+      const listTotalUser = await User.find({
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { email: { $regex: contentToFind } },
+          { phone: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+          { address: { $regex: contentToFind } },
+        ],
+      });
+
+      const listUser = await User.find({
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { email: { $regex: contentToFind } },
+          { phone: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+          { address: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * userInPage - userInPage)
+        .limit(userInPage);
+
+      const listUserToClient = listUser.map((userItem, index) => {
+        return {
+          _id: userItem._id,
+          fullname: userItem.fullname,
+          email: userItem.email,
+          role: userItem.role,
+          address: userItem.address,
+          birthday: userItem.birthday,
+          phone: userItem.phone,
+          class: userItem.class,
+          avatar: userItem.avatar,
+        };
+      });
+      res.status(200).json({
+        message: "lấy danh sách người dùng thành công",
+        listUser: listUserToClient,
+        totalPage: Math.ceil(listTotalUser.length / userInPage),
+        currentPage,
+      });
+    } else if (roleToFind != "all") {
+      const listTotalUser = await User.find({
+        role: roleToFind,
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { email: { $regex: contentToFind } },
+          { phone: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+          { address: { $regex: contentToFind } },
+        ],
+      });
+
+      const listUser = await User.find({
+        role: roleToFind,
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { email: { $regex: contentToFind } },
+          { phone: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+          { address: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * userInPage - userInPage)
+        .limit(userInPage);
+
+      const listUserToClient = listUser.map((userItem, index) => {
+        return {
+          _id: userItem._id,
+          fullname: userItem.fullname,
+          email: userItem.email,
+          role: userItem.role,
+          address: userItem.address,
+          birthday: userItem.birthday,
+          phone: userItem.phone,
+          class: userItem.class,
+          avatar: userItem.avatar,
+        };
+      });
+      res.status(200).json({
+        message: "lấy danh sách người dùng thành công",
+        listUser: listUserToClient,
+        totalPage: Math.ceil(listTotalUser.length / userInPage),
+        currentPage,
+      });
+    }
+  },
   getUserByID: async (req, res) => {
     try {
       const userID = req.params.id;

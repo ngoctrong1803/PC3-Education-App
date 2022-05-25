@@ -35,22 +35,100 @@ const subjectController = {
   },
   //[get]/api/subejct/get-list-subject/:page
   getListSubjectPagination: async (req, res) => {
-    let subjectInPage = 5;
-    let currentPage = req.params.page;
-    console.log("page đã lấy được là:", currentPage);
-    const listSubject = await Subject.find({})
-      .sort({
-        gradeID: -1,
-      })
-      .skip(currentPage * subjectInPage - subjectInPage)
-      .limit(subjectInPage);
-    let totalSubject = await Subject.countDocuments();
-    res.status(200).json({
-      message: "lấy danh sách môn học thành công",
-      listSubject: listSubject,
-      totalPage: Math.ceil(totalSubject / subjectInPage),
-      currentPage: currentPage,
-    });
+    try {
+      let subjectInPage = 3;
+      let currentPage = req.params.page;
+      let subjectName = req.body.subject_name;
+      let grade = req.body.grade;
+
+      const subjectToFind = await Subject.find({
+        name: { $regex: subjectName },
+      });
+
+      const gradeToFind = await Grade.findOne({ _id: grade });
+
+      if (!subjectToFind[0] && !gradeToFind) {
+        // !subject && !grade
+        const listSubject = await Subject.find({})
+          .sort({
+            gradeID: -1,
+          })
+          .skip(currentPage * subjectInPage - subjectInPage)
+          .limit(subjectInPage);
+        let totalSubject = await Subject.countDocuments();
+        res.status(200).json({
+          message: "lấy danh sách môn học thành công",
+          listSubject: listSubject,
+          totalPage: Math.ceil(totalSubject / subjectInPage),
+          currentPage: currentPage,
+        });
+      } else if (!subjectToFind[0] && gradeToFind) {
+        // !subject && grade
+        const listTotalSubject = await Subject.find({
+          gradeID: gradeToFind._id,
+        });
+        const listSubject = await Subject.find({ gradeID: gradeToFind._id })
+          .sort({
+            gradeID: -1,
+          })
+          .skip(currentPage * subjectInPage - subjectInPage)
+          .limit(subjectInPage);
+        let totalSubject = listTotalSubject.length;
+
+        res.status(200).json({
+          message: "lấy danh sách môn học thành công",
+          listSubject: listSubject,
+          totalPage: Math.ceil(totalSubject / subjectInPage),
+          currentPage: currentPage,
+        });
+      } else if (subjectToFind[0] && !gradeToFind) {
+        // subject && !grade
+        const listTotalSubject = await Subject.find({
+          name: { $regex: subjectName },
+        });
+        const listSubject = await Subject.find({
+          name: { $regex: subjectName },
+        })
+          .sort({
+            gradeID: -1,
+          })
+          .skip(currentPage * subjectInPage - subjectInPage)
+          .limit(subjectInPage);
+        let totalSubject = listTotalSubject.length;
+        res.status(200).json({
+          message: "lấy danh sách môn học thành công",
+          listSubject: listSubject,
+          totalPage: Math.ceil(totalSubject / subjectInPage),
+          currentPage: currentPage,
+        });
+      } else if (subjectToFind[0] && gradeToFind) {
+        // subject && !grade
+        const listTotalSubject = await Subject.find({
+          name: { $regex: subjectName },
+          gradeID: gradeToFind._id,
+        });
+        const listSubject = await Subject.find({
+          name: { $regex: subjectName },
+          gradeID: gradeToFind._id,
+        })
+          .sort({
+            gradeID: -1,
+          })
+          .skip(currentPage * subjectInPage - subjectInPage)
+          .limit(subjectInPage);
+        let totalSubject = listTotalSubject.length;
+        res.status(200).json({
+          message: "lấy danh sách môn học thành công",
+          listSubject: listSubject,
+          totalPage: Math.ceil(totalSubject / subjectInPage),
+          currentPage: currentPage,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Lỗi server",
+      });
+    }
   },
   //[get]/api/subjects/content
   getContentOfSubject: async (req, res) => {

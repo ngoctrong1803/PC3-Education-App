@@ -13,7 +13,7 @@ router.get(
   //authMiddleware.checkAdmin,
   subjectController.getSubjectByGradeID
 );
-router.get(
+router.post(
   "/get-list-subject/:page",
   //authMiddleware.checkAdmin,
   subjectController.getListSubjectPagination

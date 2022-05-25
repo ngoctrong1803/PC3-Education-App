@@ -28,6 +28,66 @@ const mcExerciseController = {
       lession,
     });
   },
+  //[get]/api/mcexercise/list/:lessionid
+  getMCExerciseOfLessionPagination: async (req, res) => {
+    const lessionID = req.params.id;
+
+    const cateToFind = req.body.cateToFind;
+    const contentToFind = req.body.contentToFind;
+    const currentPage = req.body.page;
+
+    let mcExerciseInPage = 5;
+
+    if (cateToFind == "") {
+      const listTotalMCExercise = await MCExercise.find({
+        lessionID: lessionID,
+        question: { $regex: contentToFind },
+      });
+
+      const listMCExercise = await MCExercise.find({
+        lessionID: lessionID,
+        question: { $regex: contentToFind },
+      })
+        .skip(currentPage * mcExerciseInPage - mcExerciseInPage)
+        .limit(mcExerciseInPage);
+      let totalPage = listTotalMCExercise.length;
+
+      const lession = await Lession.findOne({ _id: lessionID });
+      const categoryOfExercise = await CategoryExercise.find();
+      res.status(200).json({
+        message: "thành công truy cập get list exercise",
+        listMCExercise,
+        categoryOfExercise,
+        lession,
+        totalPage: Math.ceil(totalPage / mcExerciseInPage),
+      });
+    } else if (cateToFind != "") {
+      const listTotalMCExercise = await MCExercise.find({
+        lessionID: lessionID,
+        catExeID: cateToFind,
+        question: { $regex: contentToFind },
+      });
+
+      const listMCExercise = await MCExercise.find({
+        lessionID: lessionID,
+        catExeID: cateToFind,
+        question: { $regex: contentToFind },
+      })
+        .skip(currentPage * mcExerciseInPage - mcExerciseInPage)
+        .limit(mcExerciseInPage);
+      let totalPage = listTotalMCExercise.length;
+
+      const lession = await Lession.findOne({ _id: lessionID });
+      const categoryOfExercise = await CategoryExercise.find();
+      res.status(200).json({
+        message: "thành công truy cập get list exercise",
+        listMCExercise,
+        categoryOfExercise,
+        lession,
+        totalPage: Math.ceil(totalPage / mcExerciseInPage),
+      });
+    }
+  },
   //[get]/api/mcexercise/detail/:id
   getMCExerciseByID: async (req, res) => {
     const mcExerciseID = req.params.id;

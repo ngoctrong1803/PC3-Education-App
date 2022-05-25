@@ -11,11 +11,11 @@ router.get(
   "/list-statistical-result-of-subject/:slug",
   statisticalOfExerController.getStatisticalResultOfSubject
 );
-router.get(
+router.post(
   "/lession/:id",
   statisticalOfExerController.getStatisticalOfExerciseByLession
 );
-router.get(
+router.post(
   "/unit/:id",
   statisticalOfExerController.getStatisticalOfExerciseByUnit
 );
@@ -23,7 +23,7 @@ router.get(
   "/user/:id",
   statisticalOfExerController.getStatisticalOfExerciseByUser
 );
-router.get(
+router.post(
   "/subject/:id",
   statisticalOfExerController.getStatisticalOfExerciseBySubject
 );

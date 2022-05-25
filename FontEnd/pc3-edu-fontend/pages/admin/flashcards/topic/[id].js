@@ -69,11 +69,20 @@ const Flashcard = () => {
     setFlashcardID(flashcardID);
   }
 
-  async function getFlashcard() {
+  // handle pagination
+  const [totalPage, setTotalPage] = useState([]);
+  const [nameToFind, setNameToFind] = useState("");
+  async function getFlashcard(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/flashcard/list/" + topicID
+      const res = await axios.post(
+        "http://localhost:8000/api/flashcard/list/" + topicID,
+        { page: page, nameToFind: nameToFind }
       );
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
       setListFlashcard(res.data.listFlashcard);
       console.log("list flash card:", res.data.listFlashcard);
       setTopic(res.data.topic);
@@ -106,7 +115,7 @@ const Flashcard = () => {
         );
         toast.success("thêm mới flashcard thành công");
         handleCloseAddFlashcard();
-        getFlashcard();
+        getFlashcard(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -131,7 +140,7 @@ const Flashcard = () => {
         );
         toast.success("cập nhật flashcard thành công");
         handleCloseUpdateFlashcard();
-        getFlashcard();
+        getFlashcard(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -145,7 +154,7 @@ const Flashcard = () => {
       );
       toast.success("đã xóa flashcard");
       handleCloseConfirmDeleteFlashcard();
-      getFlashcard();
+      getFlashcard(1);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -272,14 +281,14 @@ const Flashcard = () => {
     } else {
       toast.error("Danh sách các flashcard hợp lệ rỗng!");
     }
-    getFlashcard();
+    getFlashcard(1);
     setUploadFile(false);
     uploadFileInput.current.value = "";
   }
 
   useEffect(() => {
-    getFlashcard();
-  }, []);
+    getFlashcard(1);
+  }, [nameToFind]);
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">
@@ -292,6 +301,10 @@ const Flashcard = () => {
               placeholder="Nhập nghĩa tiếng anh"
               aria-label="Recipient's username"
               aria-describedby="basic-addon2"
+              value={nameToFind}
+              onChange={(e) => {
+                setNameToFind(e.target.value);
+              }}
             />
             <Button variant="primary">Tìm kiếm</Button>
           </InputGroup>
@@ -318,14 +331,16 @@ const Flashcard = () => {
             </Button>
           </a>
         </div>
-        <Link href="/admin">
-          <Button
-            className="admin-subjects-header-add-user"
-            variant="outline-warning"
-          >
-            quay lại
-          </Button>
-        </Link>
+
+        <Button
+          className="admin-subjects-header-add-user"
+          variant="outline-warning"
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          Quay lại
+        </Button>
       </div>
       <div className="admin-subjects-list">
         {!uploadFile ? (
@@ -392,15 +407,35 @@ const Flashcard = () => {
             </Table>{" "}
             <div className="main-subjects-list-pagination">
               <Pagination>
-                <Pagination.First />
                 <Pagination.Prev />
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Item>{4}</Pagination.Item>
-                <Pagination.Item>{5}</Pagination.Item>
+                {totalPage.map((item) => {
+                  return (
+                    <>
+                      <Pagination.Item
+                        className="pagination_item"
+                        onClick={(e) => {
+                          getFlashcard(item);
+                          const listPagination =
+                            document.querySelectorAll(".pagination_item");
+                          const activeItem = (itemClick) => {
+                            listPagination.forEach((item) => {
+                              item.classList.remove("active");
+                            });
+                            itemClick.classList.add("active");
+                          };
+                          listPagination.forEach((item) => {
+                            item.addEventListener("click", function () {
+                              activeItem(item);
+                            });
+                          });
+                        }}
+                      >
+                        {item}
+                      </Pagination.Item>
+                    </>
+                  );
+                })}
                 <Pagination.Next />
-                <Pagination.Last />
               </Pagination>
             </div>
           </>

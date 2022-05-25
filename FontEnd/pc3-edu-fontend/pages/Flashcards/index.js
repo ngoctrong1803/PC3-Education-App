@@ -40,6 +40,7 @@ const Flashcard = () => {
                           height: "250px",
                           borderRadius: "15px",
                           border: "2px solid #bfbfbf",
+                          objectFit: "cover",
                         }}
                       ></img>
                       <div className="flashcard-topic-item-title">
