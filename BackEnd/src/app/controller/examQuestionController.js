@@ -34,6 +34,66 @@ const examQuestionController = {
       });
     }
   },
+  //[get]/api/exam-question/list/:id
+  getExamQuestionByExamIDPagination: async (req, res) => {
+    const examID = req.params.id;
+
+    const currentPage = req.body.page;
+    const questionInPage = 5;
+    const contentToFind = req.body.contentToFind;
+    const cateQues = req.body.cateQues;
+
+    const exam = await Exam.findOne({ _id: examID });
+    if (exam) {
+      if (cateQues == "") {
+        // don't category
+        const listTotalExamQuestion = await ExamQuestion.find({
+          examID: examID,
+          question: { $regex: contentToFind },
+        });
+
+        const listExamQuestion = await ExamQuestion.find({
+          examID: examID,
+          question: { $regex: contentToFind },
+        })
+          .skip(currentPage * questionInPage - questionInPage)
+          .limit(questionInPage);
+        const listCateQues = await CategoryExercise.find({});
+        res.status(200).json({
+          message: "lấy thành công danh sách câu hỏi",
+          listExamQuestion: listExamQuestion,
+          listCateQues: listCateQues,
+          totalPage: Math.ceil(listTotalExamQuestion.length / questionInPage),
+        });
+      } else if (cateQues != "") {
+        // have category
+        const listTotalExamQuestion = await ExamQuestion.find({
+          catExeID: cateQues,
+          examID: examID,
+          question: { $regex: contentToFind },
+        });
+
+        const listExamQuestion = await ExamQuestion.find({
+          catExeID: cateQues,
+          examID: examID,
+          question: { $regex: contentToFind },
+        })
+          .skip(currentPage * questionInPage - questionInPage)
+          .limit(questionInPage);
+        const listCateQues = await CategoryExercise.find({});
+        res.status(200).json({
+          message: "lấy thành công danh sách câu hỏi",
+          listExamQuestion: listExamQuestion,
+          listCateQues: listCateQues,
+          totalPage: Math.ceil(listTotalExamQuestion.length / questionInPage),
+        });
+      }
+    } else {
+      res.status(400).json({
+        message: "không tồn tại bài kiểm tra",
+      });
+    }
+  },
   //[get]/api/exam-question/list
   getExamQuestionByQuestionID: async (req, res) => {
     const quesionID = req.params.id;

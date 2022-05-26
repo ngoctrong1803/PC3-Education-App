@@ -36,7 +36,7 @@ const Exams = () => {
                     {""}
                     <div className="exams-item">
                       <div className="exams-item-img">
-                        <img src="/user/default-avatar.png"></img>
+                        <img src={examItem.imageUrl}></img>
                       </div>
                       <div className="exams-item-description">
                         <span>{examItem.title}</span>

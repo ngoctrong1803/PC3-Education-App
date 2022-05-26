@@ -34,7 +34,7 @@ const Exams = () => {
       const res = await axios.delete(
         "http://localhost:8000/api/exam-question/delete/" + questionID
       );
-      getQuestionOfExam();
+      getQuestionOfExam(1);
       handleCloseComfirmDeleteQues();
       toast.success("xóa câu hỏi thành công");
     } catch (err) {
@@ -51,16 +51,29 @@ const Exams = () => {
     const res = await axios.get(
       "http://localhost:8000/api/category-exercise/list"
     );
-    console.log("listCatExe:", res.data.listCateExer);
     setListCatExe(res.data.listCateExer);
   }
-  async function getQuestionOfExam() {
+  // handle filter anh paginnation
+  const [contentToFind, setContentToFind] = useState("");
+  const [cateQues, setCateQues] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+  async function getQuestionOfExam(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/exam-question/list/" + examID
+      const res = await axios.post(
+        "http://localhost:8000/api/exam-question/list/" + examID,
+        {
+          contentToFind: contentToFind,
+          page: page,
+          cateQues: cateQues,
+        }
       );
-      console.log("list question:", res);
+
       setListQuestion(res.data.listExamQuestion);
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -69,8 +82,11 @@ const Exams = () => {
 
   useEffect(() => {
     getCatExe();
-    getQuestionOfExam();
+    getQuestionOfExam(1);
   }, []);
+  useEffect(() => {
+    getQuestionOfExam(1);
+  }, [contentToFind, cateQues]);
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -87,14 +103,21 @@ const Exams = () => {
                 placeholder="Nhập nội dung câu hỏi"
                 aria-label="Recipient's username"
                 aria-describedby="basic-addon2"
+                value={contentToFind}
+                onChange={(e) => {
+                  setContentToFind(e.target.value);
+                }}
               />
               <Button variant="primary">Tìm kiếm</Button>
             </InputGroup>
             <Form.Select
               className="admin-subjects-header-role"
               aria-label="Default select example"
+              onChange={(e) => {
+                setCateQues(e.target.value);
+              }}
             >
-              <option> Thể loại câu hỏi </option>
+              <option value={""}> Tất cả thể loại </option>
               {listCatExe.map((item, index) => {
                 return (
                   <>
@@ -128,8 +151,8 @@ const Exams = () => {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Nội dung</th>
-                <th>Đáp án</th>
+                <th style={{ maxWidth: "580px" }}>Nội dung</th>
+
                 <th>Thể loại</th>
                 <th>Chức năng</th>
               </tr>
@@ -140,7 +163,7 @@ const Exams = () => {
                   <>
                     <tr>
                       <td>{index + 1}</td>
-                      <td>
+                      <td style={{ maxWidth: "580px" }}>
                         <MathJax>
                           <div
                             dangerouslySetInnerHTML={{
@@ -149,16 +172,7 @@ const Exams = () => {
                           />
                         </MathJax>
                       </td>
-                      <td>
-                        {" "}
-                        <MathJax>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: questionItem?.answer,
-                            }}
-                          />
-                        </MathJax>
-                      </td>
+
                       <td>
                         {listCatExe.map((catExeItem, index) => {
                           if (questionItem.catExeID == catExeItem._id)
@@ -197,15 +211,35 @@ const Exams = () => {
           </Table>
           <div className="main-subjects-list-pagination">
             <Pagination>
-              <Pagination.First />
               <Pagination.Prev />
-              <Pagination.Item active>{1}</Pagination.Item>
-              <Pagination.Item>{2}</Pagination.Item>
-              <Pagination.Item>{3}</Pagination.Item>
-              <Pagination.Item>{4}</Pagination.Item>
-              <Pagination.Item>{5}</Pagination.Item>
+              {totalPage.map((item) => {
+                return (
+                  <>
+                    <Pagination.Item
+                      className="pagination_item"
+                      onClick={(e) => {
+                        getQuestionOfExam(item);
+                        const listPagination =
+                          document.querySelectorAll(".pagination_item");
+                        const activeItem = (itemClick) => {
+                          listPagination.forEach((item) => {
+                            item.classList.remove("active");
+                          });
+                          itemClick.classList.add("active");
+                        };
+                        listPagination.forEach((item) => {
+                          item.addEventListener("click", function () {
+                            activeItem(item);
+                          });
+                        });
+                      }}
+                    >
+                      {item}
+                    </Pagination.Item>
+                  </>
+                );
+              })}
               <Pagination.Next />
-              <Pagination.Last />
             </Pagination>
           </div>
         </div>

@@ -31,14 +31,26 @@ const Statistical = () => {
       toast.error("Không lấy được nội dung bài học");
     }
   }
-  async function getStatisticalOfExam() {
+
+  // handle filter and pagination
+  const [contentToFind, setContentToFind] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+  async function getStatisticalOfExam(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/statistical-of-exam/exam/" + examID
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exam/exam/" + examID,
+        {
+          page: page,
+          contentToFind: contentToFind,
+        }
       );
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
 
       const statisticalData = res.data.statisticalOfExam;
-      console.log("statisticalData", statisticalData);
       setListUser(statisticalData.listUserInfor);
       setListStatistical(statisticalData.listStatisticalOfExam);
     } catch (err) {
@@ -46,10 +58,11 @@ const Statistical = () => {
     }
   }
   useEffect(() => {
-    getStatisticalOfExam();
     getContentOfExam();
   }, []);
-
+  useEffect(() => {
+    getStatisticalOfExam(1);
+  }, [contentToFind]);
   return (
     <div className="admin-statistical-page">
       <div className="admin-statistical-title">
@@ -65,6 +78,10 @@ const Statistical = () => {
             placeholder="Nhập tên người dùng"
             aria-label="Recipient's username"
             aria-describedby="basic-addon2"
+            value={contentToFind}
+            onChange={(e) => {
+              setContentToFind(e.target.value);
+            }}
           />
           <Button variant="primary">Tìm kiếm</Button>
         </InputGroup>
@@ -157,15 +174,36 @@ const Statistical = () => {
         </Table>
         <div className="main-statistical-list-pagination">
           <Pagination>
-            <Pagination.First />
             <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
+            {totalPage.map((item) => {
+              return (
+                <>
+                  <Pagination.Item
+                    className="pagination_item"
+                    onClick={(e) => {
+                      getStatisticalOfExam(item);
+                      const listPagination =
+                        document.querySelectorAll(".pagination_item");
+                      const activeItem = (itemClick) => {
+                        listPagination.forEach((item) => {
+                          item.classList.remove("active");
+                        });
+                        itemClick.classList.add("active");
+                      };
+                      listPagination.forEach((item) => {
+                        item.addEventListener("click", function () {
+                          activeItem(item);
+                        });
+                      });
+                    }}
+                  >
+                    {item}
+                  </Pagination.Item>
+                </>
+              );
+            })}
+
             <Pagination.Next />
-            <Pagination.Last />
           </Pagination>
         </div>
       </div>

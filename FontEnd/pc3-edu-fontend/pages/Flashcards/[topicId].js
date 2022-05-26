@@ -42,15 +42,23 @@ const Topic = () => {
   function handleChangeShow() {
     setShowEnglish((pre) => !pre);
   }
-
+  function ramdomArray(array) {
+    const arrayResult = [];
+    const length = array.length;
+    for (var i = 0; i < length; i++) {
+      const random = Math.floor(Math.random() * array.length);
+      arrayResult.push(array[random]);
+      array.splice(random, 1);
+    }
+    return arrayResult;
+  }
   async function getFlashcardByTopicID() {
     try {
       const res = await axios.get(
         "http://localhost:8000/api/flashcard/list/" + topicID
       );
       setTopic(res.data.topic);
-      setListFlashcard(res.data.listFlashcard);
-      console.log("list flash card", res.data.listFlashcard);
+      setListFlashcard(ramdomArray(res.data.listFlashcard));
     } catch (err) {
       const errMessage = err.response.data.message ?? "Đã xảy ra ngoại lệ";
       toast.error(errMessage);
@@ -92,7 +100,7 @@ const Topic = () => {
   return (
     <div className="flashcard-detail-page-wrap">
       <Row>
-        <Col xs={3} ms={3}>
+        <Col xs={3} ms={3} className="flashcard-detail-slidebar-wrap">
           <div className="flashcard-detail-slidebar">
             <div className="flashcard-detail-title">
               <span>Flash Card</span>
@@ -104,42 +112,42 @@ const Topic = () => {
                     setShow("flashcard");
                   }}
                 >
-                  Thẻ ghi nhớ
+                  <ion-icon name="id-card-outline"></ion-icon>&nbsp; Thẻ ghi nhớ
                 </li>
                 <li
                   onClick={() => {
                     setShow("quiz");
                   }}
                 >
-                  Trắc nghiệm
+                  <ion-icon name="grid-outline"></ion-icon>&nbsp; Trắc nghiệm
                 </li>
                 <li
                   onClick={() => {
                     setShow("write");
                   }}
                 >
-                  Viết từ
+                  <ion-icon name="pencil-outline"></ion-icon>&nbsp; Viết từ
                 </li>
                 <li
                   onClick={() => {
                     setShow("match");
                   }}
                 >
-                  Ghép thẻ
+                  <ion-icon name="wallet-outline"></ion-icon>&nbsp; Ghép thẻ
                 </li>
                 <li
                   onClick={() => {
-                    setShow("game");
+                    window.history.back();
                   }}
                 >
-                  Thiên thạch
+                  <ion-icon name="log-out-outline"></ion-icon>&nbsp; Quay lại
                 </li>
               </ul>
             </div>
           </div>
         </Col>
         {show == "flashcard" ? (
-          <Col xs={9} ms={9}>
+          <Col xs={9} ms={9} className="flashcard-game">
             <div
               style={{
                 marginTop: "20px",
@@ -148,7 +156,12 @@ const Topic = () => {
               }}
             >
               <span
-                style={{ color: "blue", fontSize: "22px", marginRight: "5px" }}
+                style={{
+                  color: "blue",
+                  fontSize: "22px",
+                  marginRight: "5px",
+                  paddingLeft: "15px",
+                }}
               >
                 Hiển thị:
               </span>
@@ -211,14 +224,26 @@ const Topic = () => {
                       >
                         <div className="flashcard-item-inner">
                           <div className="flashcard-front">
-                            {showEnglish
-                              ? flashcardItem.meaningInEnglish
-                              : flashcardItem.meaningInVietnamese}
+                            {showEnglish ? (
+                              <>
+                                {flashcardItem.meaningInEnglish + "."}
+                                <br></br>
+                                {flashcardItem.example}
+                              </>
+                            ) : (
+                              flashcardItem.meaningInVietnamese
+                            )}
                           </div>
                           <div className="flashcard-back">
-                            {showEnglish
-                              ? flashcardItem.meaningInVietnamese
-                              : flashcardItem.meaningInEnglish}
+                            {showEnglish ? (
+                              flashcardItem.meaningInVietnamese
+                            ) : (
+                              <>
+                                {flashcardItem.meaningInEnglish + "."}
+                                <br></br>
+                                {flashcardItem.example}
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -230,17 +255,17 @@ const Topic = () => {
           </Col>
         ) : null}
         {show == "quiz" ? (
-          <Col xs={9} ms={9}>
+          <Col xs={9} ms={9} className="flashcard-game">
             <FlashcardQuiz listFlashcard={listFlashcard}></FlashcardQuiz>
           </Col>
         ) : null}
         {show == "write" ? (
-          <Col xs={9} ms={9}>
+          <Col xs={9} ms={9} className="flashcard-game">
             <FlashcardWrite listFlashcard={listFlashcard}></FlashcardWrite>
           </Col>
         ) : null}
         {show == "match" ? (
-          <Col xs={9} ms={9}>
+          <Col xs={9} ms={9} className="flashcard-game">
             <FlashcardMatch listFlashcard={listFlashcard}></FlashcardMatch>
           </Col>
         ) : null}

@@ -13,6 +13,64 @@ const blogController = {
       listAuthor,
     });
   },
+  //[get]/api/blog/list
+  getBlogPagination: async (req, res) => {
+    const currentPage = req.body.page;
+    const contentToFind = req.body.contentToFind;
+    const cateToFind = req.body.cateToFind;
+
+    const blogInPage = 5;
+
+    if (cateToFind == "") {
+      const listTotalBlog = await Blog.find({
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      });
+      const listBlog = await Blog.find({
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * blogInPage - blogInPage)
+        .limit(blogInPage);
+      const arrayUserID = listBlog.map(({ userID }) => userID);
+      const listAuthor = await User.find({ _id: { $in: arrayUserID } });
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listBlog,
+        listAuthor,
+        totalPage: Math.ceil(listTotalBlog.length / blogInPage),
+      });
+    } else if (cateToFind != "") {
+      const listTotalBlog = await Blog.find({
+        cateBlogID: cateToFind,
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      });
+      const listBlog = await Blog.find({
+        cateBlogID: cateToFind,
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * blogInPage - blogInPage)
+        .limit(blogInPage);
+      const arrayUserID = listBlog.map(({ userID }) => userID);
+      const listAuthor = await User.find({ _id: { $in: arrayUserID } });
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listBlog,
+        listAuthor,
+        totalPage: Math.ceil(listTotalBlog.length / blogInPage),
+      });
+    }
+  },
   getBlogInForumIndex: async (req, res) => {
     const listBlog = await Blog.aggregate([
       { $sort: { createdAt: -1 } },

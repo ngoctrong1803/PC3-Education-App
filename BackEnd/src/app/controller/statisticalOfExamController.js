@@ -36,16 +36,40 @@ const statisticalOfExamController = {
   getStatisticalByExamID: async (req, res) => {
     try {
       const examID = req.params.id;
+
+      const currentPage = req.body.page;
+      const contentToFind = req.body.contentToFind;
+      const statisticalInPage = 3;
+
       const listStatisticalOfExam = await StatisticalOfExam.find({
         examID: examID,
       });
+
       const statisticalIDArray = listStatisticalOfExam.map(({ _id }) => {
         return _id;
       });
       const userIDArray = listStatisticalOfExam.map(({ userID }) => {
         return userID;
       });
-      const listUserTemp = await User.find({ _id: { $in: userIDArray } });
+
+      const listTotalUserTemp = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      });
+
+      const listUserTemp = await User.find({
+        _id: { $in: userIDArray },
+        $or: [
+          { fullname: { $regex: contentToFind } },
+          { class: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * statisticalInPage - statisticalInPage)
+        .limit(statisticalInPage);
+
       const listUserInfor = listUserTemp.map((item, index) => {
         return {
           _id: item._id,
@@ -72,6 +96,7 @@ const statisticalOfExamController = {
       res.status(200).json({
         message: "Lấy thống kê thành công",
         statisticalOfExam: dataToClient,
+        totalPage: Math.ceil(listTotalUserTemp.length / statisticalInPage),
       });
     } catch (error) {
       res.status(400).json({

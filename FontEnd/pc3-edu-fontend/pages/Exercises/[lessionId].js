@@ -216,7 +216,7 @@ const Exercise = () => {
             if (currentQuestionIndex == index)
               return (
                 <>
-                  <Col xs={5} md={5}>
+                  <Col xs={5} md={5} className="p-0">
                     <div className="exercise-guide-wrap">
                       <div className="exercise-guide-title">
                         <h4>{lession?.lessionName}</h4>
@@ -319,7 +319,7 @@ const Exercise = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col xs={7} md={7} className="ml-0">
+                  <Col xs={7} md={7} className="p-0">
                     <div className="exercise-wrap">
                       <div
                         className="exercise-type"

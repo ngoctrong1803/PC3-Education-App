@@ -16,6 +16,9 @@ import { toast } from "react-toastify";
 import Style from "./Style";
 
 const FlashcardWrite = ({ listFlashcard }) => {
+  const timeEasy = 10;
+  const timeNormal = 6;
+  const timeHard = 3;
   const [audioTrue, setAudioTrue] = useState(new Audio("/music/true.mp3"));
   const [audioFalse, setAudioFalse] = useState(new Audio("/music/false.mp3"));
   const [audioWin, setAudioWin] = useState(new Audio("/music/winner.mp3"));
@@ -45,11 +48,11 @@ const FlashcardWrite = ({ listFlashcard }) => {
 
   function resetCouter() {
     if (level == "easy") {
-      setTimerWrite(5);
+      setTimerWrite(timeEasy);
     } else if (level == "normal") {
-      setTimerWrite(4);
+      setTimerWrite(timeNormal);
     } else if (level == "hard") {
-      setTimerWrite(3);
+      setTimerWrite(timeHard);
     }
   }
   // handle reset flashcard write
@@ -297,11 +300,11 @@ const FlashcardWrite = ({ listFlashcard }) => {
                 } else {
                   handleLoadQuestion(0);
                   if (level == "easy") {
-                    setTimerWrite(5);
+                    setTimerWrite(timeEasy);
                   } else if (level == "normal") {
-                    setTimerWrite(4);
+                    setTimerWrite(timeNormal);
                   } else if (level == "hard") {
-                    setTimerWrite(3);
+                    setTimerWrite(timeHard);
                   }
                 }
               }}

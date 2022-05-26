@@ -8,6 +8,8 @@ import {
   Form,
   Pagination,
   Modal,
+  OverlayTrigger,
+  Popover,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/dist/client/link";
@@ -53,11 +55,24 @@ const Forum = () => {
       toast.error(errMessage);
     }
   }
-  async function getListBlog() {
+  // handle filter and pagination
+  const [contentBlogToFind, setContentBlogToFind] = useState("");
+  const [cateBlogToFind, setCateBlogToFind] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+  async function getListBlog(page) {
     try {
-      const res = await axios.get("http://localhost:8000/api/blog/list");
+      const res = await axios.post("http://localhost:8000/api/blog/list", {
+        page: page,
+        contentToFind: contentBlogToFind,
+        cateToFind: cateBlogToFind,
+      });
       setListBlog(res.data.listBlog);
       setListAuthor(res.data.listAuthor);
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -71,7 +86,7 @@ const Forum = () => {
         );
         handleCloseConfirmDelete();
         toast.success("Xóa bài viết thành công");
-        getListBlog();
+        getListBlog(1);
       } else {
         toast.error("Không tồn tại bài viết cần xóa");
       }
@@ -92,13 +107,29 @@ const Forum = () => {
       toast.error(errMessage);
     }
   }
-  async function getAllQuestion() {
+  // handle filter and pagination
+  const [contentQuestionToFind, setContentQuestionToFind] = useState("");
+  const [cateQuestionToFind, setCateQuestionToFind] = useState("");
+  const [totalPageQues, setTotalPageQues] = useState([]);
+
+  async function getAllQuestion(page) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/question-in-forum/list"
+      const res = await axios.post(
+        "http://localhost:8000/api/question-in-forum/list",
+        {
+          page: page,
+          contentToFind: contentQuestionToFind,
+          cateToFind: cateQuestionToFind,
+        }
       );
+
       setAllQuestion(res.data.listQuestionInForum);
       setListAuthorOfQuestion(res.data.listAuthor);
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPageQues(listTotalPage);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -110,7 +141,7 @@ const Forum = () => {
         "http://localhost:8000/api/question-in-forum/update-status/" +
           questionID
       );
-      getAllQuestion();
+      getAllQuestion(1);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -127,16 +158,20 @@ const Forum = () => {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
     }
-    getAllQuestion();
+    getAllQuestion(1);
     handleCloseConfirmDeleteQuestion();
   }
 
   useEffect(() => {
     getBlogCategory();
-    getListBlog();
     getListCateQuestion();
-    getAllQuestion();
   }, []);
+  useEffect(() => {
+    getListBlog(1);
+  }, [contentBlogToFind, cateBlogToFind]);
+  useEffect(() => {
+    getAllQuestion(1);
+  }, [contentQuestionToFind, cateQuestionToFind]);
   return (
     <div className="admin-forum-page">
       <div className="admin-forum-title">
@@ -154,14 +189,21 @@ const Forum = () => {
                 placeholder="Nhập tiêu đề bài viết"
                 aria-label="Recipient's username"
                 aria-describedby="basic-addon2"
+                value={contentBlogToFind}
+                onChange={(e) => {
+                  setContentBlogToFind(e.target.value);
+                }}
               />
               <Button variant="primary">Tìm kiếm</Button>
             </InputGroup>
             <Form.Select
               className="admin-forum-header-role"
               aria-label="Default select example"
+              onChange={(e) => {
+                setCateBlogToFind(e.target.value);
+              }}
             >
-              <option>-- Thể loại --</option>
+              <option value={""}>Tất cả thể loại</option>
               {listBlogCategory.map((cateItem, index) => {
                 return (
                   <>
@@ -179,14 +221,21 @@ const Forum = () => {
                 placeholder="Nhập tiêu đề bài viết"
                 aria-label="Recipient's username"
                 aria-describedby="basic-addon2"
+                value={contentQuestionToFind}
+                onChange={(e) => {
+                  setContentQuestionToFind(e.target.value);
+                }}
               />
               <Button variant="primary">Tìm kiếm</Button>
             </InputGroup>
             <Form.Select
               className="admin-forum-header-role"
               aria-label="Default select example"
+              onChange={(e) => {
+                setCateQuestionToFind(e.target.value);
+              }}
             >
-              <option>-- Thể loại --</option>
+              <option value={""}>Tất cả thể loại</option>
               {listCateQuestion.map((cateItem, index) => {
                 return (
                   <>
@@ -256,7 +305,7 @@ const Forum = () => {
                   <>
                     <tr>
                       <td>{index + 1}</td>
-                      <td>{blogItem.title}</td>
+                      <td style={{ maxWidth: "400px" }}>{blogItem.title}</td>
                       <td>
                         {listBlogCategory.map((cateItem, index) => {
                           if (cateItem._id == blogItem.cateBlogID) {
@@ -297,15 +346,35 @@ const Forum = () => {
           </Table>
           <div className="main-forum-list-pagination">
             <Pagination>
-              <Pagination.First />
               <Pagination.Prev />
-              <Pagination.Item active>{1}</Pagination.Item>
-              <Pagination.Item>{2}</Pagination.Item>
-              <Pagination.Item>{3}</Pagination.Item>
-              <Pagination.Item>{4}</Pagination.Item>
-              <Pagination.Item>{5}</Pagination.Item>
+              {totalPage.map((item) => {
+                return (
+                  <>
+                    <Pagination.Item
+                      className="pagination_item"
+                      onClick={(e) => {
+                        getListBlog(item);
+                        const listPagination =
+                          document.querySelectorAll(".pagination_item");
+                        const activeItem = (itemClick) => {
+                          listPagination.forEach((item) => {
+                            item.classList.remove("active");
+                          });
+                          itemClick.classList.add("active");
+                        };
+                        listPagination.forEach((item) => {
+                          item.addEventListener("click", function () {
+                            activeItem(item);
+                          });
+                        });
+                      }}
+                    >
+                      {item}
+                    </Pagination.Item>
+                  </>
+                );
+              })}
               <Pagination.Next />
-              <Pagination.Last />
             </Pagination>
           </div>
           {/* confirm delete */}
@@ -363,8 +432,74 @@ const Forum = () => {
                   <>
                     <tr>
                       <td>{index + 1}</td>
-                      <td>{questionItem.title}</td>
-                      <td>{questionItem.content}</td>
+                      <td
+                        style={{
+                          maxWidth: "220px",
+                        }}
+                      >
+                        {questionItem.title.length < 40
+                          ? questionItem.title
+                          : questionItem.title.substr(0, 40) + "..."}
+                        <OverlayTrigger
+                          trigger="hover"
+                          key={"top"}
+                          placement={"bottom"}
+                          overlay={
+                            <Popover
+                              id={`popover-positioned-top`}
+                              style={{ minWidth: "300px" }}
+                            >
+                              <Popover.Body
+                                style={{
+                                  backgroundColor: "rgba(231,231,255, 0.5)",
+                                }}
+                              >
+                                {questionItem.title}
+                              </Popover.Body>
+                            </Popover>
+                          }
+                        >
+                          <Button
+                            variant="outline-light"
+                            style={{
+                              height: "1px",
+                              justifyContent: "center",
+                            }}
+                          ></Button>
+                        </OverlayTrigger>
+                      </td>
+                      <td style={{ maxWidth: "280px" }}>
+                        {questionItem.content.length < 65
+                          ? questionItem.content
+                          : questionItem.content.substr(0, 65) + "..."}
+                        <OverlayTrigger
+                          trigger="hover"
+                          key={"top"}
+                          placement={"bottom"}
+                          overlay={
+                            <Popover
+                              id={`popover-positioned-top`}
+                              style={{ minWidth: "300px" }}
+                            >
+                              <Popover.Body
+                                style={{
+                                  backgroundColor: "rgba(231,231,255, 0.5)",
+                                }}
+                              >
+                                {questionItem.content}
+                              </Popover.Body>
+                            </Popover>
+                          }
+                        >
+                          <Button
+                            variant="outline-light"
+                            style={{
+                              height: "2px",
+                              justifyContent: "center",
+                            }}
+                          ></Button>
+                        </OverlayTrigger>
+                      </td>
                       <td>
                         {listCateQuestion.map((cateItem, index) => {
                           if (questionItem.catQueID == cateItem._id) {
@@ -430,15 +565,35 @@ const Forum = () => {
           </Table>
           <div className="main-forum-list-pagination">
             <Pagination>
-              <Pagination.First />
               <Pagination.Prev />
-              <Pagination.Item active>{1}</Pagination.Item>
-              <Pagination.Item>{2}</Pagination.Item>
-              <Pagination.Item>{3}</Pagination.Item>
-              <Pagination.Item>{4}</Pagination.Item>
-              <Pagination.Item>{5}</Pagination.Item>
+              {totalPageQues.map((item) => {
+                return (
+                  <>
+                    <Pagination.Item
+                      className="pagination_item"
+                      onClick={(e) => {
+                        getAllQuestion(item);
+                        const listPagination =
+                          document.querySelectorAll(".pagination_item");
+                        const activeItem = (itemClick) => {
+                          listPagination.forEach((item) => {
+                            item.classList.remove("active");
+                          });
+                          itemClick.classList.add("active");
+                        };
+                        listPagination.forEach((item) => {
+                          item.addEventListener("click", function () {
+                            activeItem(item);
+                          });
+                        });
+                      }}
+                    >
+                      {item}
+                    </Pagination.Item>
+                  </>
+                );
+              })}
               <Pagination.Next />
-              <Pagination.Last />
             </Pagination>
           </div>
           {/* confirm delete */}

@@ -151,7 +151,7 @@ const Statistical = () => {
           </tbody>
         </Table>
         <div className="main-statistical-list-pagination">
-          <Pagination>
+          <Pagination className="pagination-statistical">
             <Pagination.Prev />
             {totalPage.map((item) => {
               return (

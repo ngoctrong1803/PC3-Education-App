@@ -49,14 +49,26 @@ const FlashcardMatch = ({ listFlashcard }) => {
   useEffect(() => {
     const listAnswerMatchTemp = [];
     const listFlashCardMatchTemp = [];
-    for (var i = 0; i < listFlashcard.length; i++) {
-      const answer = {
-        english: listFlashcard[i].meaningInEnglish,
-        vietnamese: listFlashcard[i].meaningInVietnamese,
-      };
-      listAnswerMatchTemp.push(answer);
-      listFlashCardMatchTemp.push(listFlashcard[i].meaningInEnglish);
-      listFlashCardMatchTemp.push(listFlashcard[i].meaningInVietnamese);
+    if (listFlashcard.length > 10) {
+      for (var i = 0; i < 10; i++) {
+        const answer = {
+          english: listFlashcard[i].meaningInEnglish,
+          vietnamese: listFlashcard[i].meaningInVietnamese,
+        };
+        listAnswerMatchTemp.push(answer);
+        listFlashCardMatchTemp.push(listFlashcard[i].meaningInEnglish);
+        listFlashCardMatchTemp.push(listFlashcard[i].meaningInVietnamese);
+      }
+    } else {
+      for (var i = 0; i < listFlashcard.length; i++) {
+        const answer = {
+          english: listFlashcard[i].meaningInEnglish,
+          vietnamese: listFlashcard[i].meaningInVietnamese,
+        };
+        listAnswerMatchTemp.push(answer);
+        listFlashCardMatchTemp.push(listFlashcard[i].meaningInEnglish);
+        listFlashCardMatchTemp.push(listFlashcard[i].meaningInVietnamese);
+      }
     }
 
     setListAnswerMatch(listAnswerMatchTemp);

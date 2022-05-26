@@ -282,19 +282,24 @@ const Exam = () => {
                             <OverlayTrigger
                               trigger="click"
                               key={"top"}
-                              placement={"left"}
+                              placement={"bottom"}
                               overlay={
-                                <Popover id={`popover-positioned-top`}>
+                                <Popover
+                                  id={`popover-positioned-top`}
+                                  style={{ minWidth: "500px" }}
+                                >
                                   <Popover.Header as="h3">
                                     Lời giải
                                   </Popover.Header>
                                   <Popover.Body>
-                                    {" "}
-                                    <lable
-                                      dangerouslySetInnerHTML={{
-                                        __html: questionItem.explain,
-                                      }}
-                                    ></lable>
+                                    <MathJax>
+                                      {" "}
+                                      <lable
+                                        dangerouslySetInnerHTML={{
+                                          __html: questionItem.explain,
+                                        }}
+                                      ></lable>
+                                    </MathJax>
                                   </Popover.Body>
                                 </Popover>
                               }

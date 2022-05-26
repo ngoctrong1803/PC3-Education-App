@@ -26,6 +26,85 @@ const queInForumController = {
       listAuthor: listAuthor,
     });
   },
+  //[get]/api/question-in-forum/list
+  getQuestionInForumPagination: async (req, res) => {
+    const currentPage = req.body.page;
+    const questionInPage = 5;
+    const contentToFind = req.body.contentToFind;
+    const cateToFind = req.body.cateToFind;
+
+    if (cateToFind == "") {
+      const listTotalQuestionInForum = await QuestionInForum.find({
+        $or: [
+          { content: { $regex: contentToFind } },
+          { title: { $regex: contentToFind } },
+        ],
+      });
+
+      const listQuestionInForum = await QuestionInForum.find({
+        $or: [
+          { content: { $regex: contentToFind } },
+          { title: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * questionInPage - questionInPage)
+        .limit(questionInPage);
+
+      const authorArray = listQuestionInForum.map(({ userID }) => userID);
+      const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
+      const listAuthor = [];
+      listAuthorTemp.map((authorItem, index) => {
+        author = {
+          userID: authorItem._id,
+          fullname: authorItem.fullname,
+          email: authorItem.email,
+        };
+        listAuthor.push(author);
+      });
+      res.status(200).json({
+        message: "đã câu hỏi trong diễn đàn thành công",
+        listQuestionInForum: listQuestionInForum,
+        listAuthor: listAuthor,
+        totalPage: Math.ceil(listTotalQuestionInForum.length / questionInPage),
+      });
+    } else if (cateToFind != "") {
+      const listTotalQuestionInForum = await QuestionInForum.find({
+        catQueID: cateToFind,
+        $or: [
+          { content: { $regex: contentToFind } },
+          { title: { $regex: contentToFind } },
+        ],
+      });
+
+      const listQuestionInForum = await QuestionInForum.find({
+        catQueID: cateToFind,
+        $or: [
+          { content: { $regex: contentToFind } },
+          { title: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * questionInPage - questionInPage)
+        .limit(questionInPage);
+
+      const authorArray = listQuestionInForum.map(({ userID }) => userID);
+      const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
+      const listAuthor = [];
+      listAuthorTemp.map((authorItem, index) => {
+        author = {
+          userID: authorItem._id,
+          fullname: authorItem.fullname,
+          email: authorItem.email,
+        };
+        listAuthor.push(author);
+      });
+      res.status(200).json({
+        message: "đã câu hỏi trong diễn đàn thành công",
+        listQuestionInForum: listQuestionInForum,
+        listAuthor: listAuthor,
+        totalPage: Math.ceil(listTotalQuestionInForum.length / questionInPage),
+      });
+    }
+  },
   getQuestionInForumIndex: async (req, res) => {
     const listQuestion = await QuestionInForum.aggregate([
       { $match: { status: true } },

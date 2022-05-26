@@ -17,6 +17,13 @@ import { toast } from "react-toastify";
 const Exams = () => {
   const [showAddExam, setShowAddExam] = useState(false);
   const [showUpdateExam, setShowUpdateExam] = useState(false);
+  const listImage = [
+    { title: "Toán học", link: "/exam/de_toan.jpg" },
+    { title: "Vật lý", link: "/exam/de_vat_ly.png" },
+    { title: "Sinh học", link: "/exam/de_sinh.png" },
+    { title: "Hóa học", link: "/exam/de_hoa.jpg" },
+    { title: "Tiếng anh", link: "/exam/de_tieng_anh.jpg" },
+  ];
   //flag
   // data to create new exam
   const [title, setTitle] = useState("");
@@ -49,10 +56,24 @@ const Exams = () => {
     setShowUpdateExam(true);
   }
 
-  async function getExams() {
+  // handle filter and pagination
+  const [subjectIDToFind, setSubjectIDToFind] = useState("");
+  const [exaTypIDToFind, setExaTypIDToFind] = useState("");
+  const [contentToFind, setContentToFind] = useState("");
+  const [totalPage, setTotalPage] = useState([]);
+  async function getExams(page) {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/list");
-      console.log("list exam:", res.data.listExam);
+      const res = await axios.post("http://localhost:8000/api/exam/list", {
+        page: page,
+        contentToFind: contentToFind,
+        subjectID: subjectIDToFind,
+        exaTypID: exaTypIDToFind,
+      });
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
       setListExam(res.data.listExam);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -107,7 +128,7 @@ const Exams = () => {
         );
         toast.success("thêm mới bài kiểm tra thành công");
         handleCloseAddExam();
-        getExams();
+        getExams(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -139,7 +160,7 @@ const Exams = () => {
         );
         toast.success("cập nhật bài kiểm tra thành công");
         handleCloseUpdateExam();
-        getExams();
+        getExams(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -148,11 +169,14 @@ const Exams = () => {
   }
 
   useEffect(() => {
-    getExams();
+    getExams(1);
     getGrade();
     getExaTyp();
     getSubjects();
   }, []);
+  useEffect(() => {
+    getExams(1);
+  }, [contentToFind, subjectIDToFind, exaTypIDToFind]);
   // handle delete
   const [examIDToDelete, setExamIDToDelete] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -168,7 +192,7 @@ const Exams = () => {
         "http://localhost:8000/api/exam/delete/" + examIDToDelete
       );
       toast.success("Xóa bài kiểm tra thành công.");
-      getExams();
+      getExams(1);
       handleCloseConfirmDelete();
     } catch (error) {
       toast.error("Lỗi, xóa bài kiểm tra");
@@ -186,27 +210,21 @@ const Exams = () => {
               placeholder="Nhập tên đề thi"
               aria-label="Recipient's username"
               aria-describedby="basic-addon2"
+              value={contentToFind}
+              onChange={(e) => {
+                setContentToFind(e.target.value);
+              }}
             />
             <Button variant="primary">Tìm kiếm</Button>
           </InputGroup>
           <Form.Select
             className="admin-subjects-header-role"
             aria-label="Default select example"
+            onChange={(e) => {
+              setSubjectIDToFind(e.target.value);
+            }}
           >
-            <option> Khối </option>
-            {listGrade.map((gradeItem, index) => {
-              return (
-                <>
-                  <option value={gradeItem._id}>{gradeItem.gradeName}</option>
-                </>
-              );
-            })}
-          </Form.Select>
-          <Form.Select
-            className="admin-subjects-header-role"
-            aria-label="Default select example"
-          >
-            <option> Môn học </option>
+            <option value={""}> Tất cả môn học </option>
             {listSubject.map((subjectItem, index) => {
               return (
                 <>
@@ -220,8 +238,11 @@ const Exams = () => {
           <Form.Select
             className="admin-subjects-header-role"
             aria-label="Default select example"
+            onChange={(e) => {
+              setExaTypIDToFind(e.target.value);
+            }}
           >
-            <option> Thể loại </option>
+            <option value={""}>Tất cả thể loại </option>
             {listExaTyp.map((ExaTypItem, index) => {
               return (
                 <>
@@ -339,15 +360,36 @@ const Exams = () => {
         </Table>
         <div className="main-subjects-list-pagination">
           <Pagination>
-            <Pagination.First />
             <Pagination.Prev />
-            <Pagination.Item active>{1}</Pagination.Item>
-            <Pagination.Item>{2}</Pagination.Item>
-            <Pagination.Item>{3}</Pagination.Item>
-            <Pagination.Item>{4}</Pagination.Item>
-            <Pagination.Item>{5}</Pagination.Item>
+            {totalPage.map((item) => {
+              return (
+                <>
+                  <Pagination.Item
+                    className="pagination_item"
+                    onClick={(e) => {
+                      getExams(item);
+                      const listPagination =
+                        document.querySelectorAll(".pagination_item");
+                      const activeItem = (itemClick) => {
+                        listPagination.forEach((item) => {
+                          item.classList.remove("active");
+                        });
+                        itemClick.classList.add("active");
+                      };
+                      listPagination.forEach((item) => {
+                        item.addEventListener("click", function () {
+                          activeItem(item);
+                        });
+                      });
+                    }}
+                  >
+                    {item}
+                  </Pagination.Item>
+                </>
+              );
+            })}
+
             <Pagination.Next />
-            <Pagination.Last />
           </Pagination>
         </div>
         {/* start modal add exam */}
@@ -392,15 +434,20 @@ const Exams = () => {
                   }}
                 />
                 <Form.Label>Hình ảnh</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="/google/driver/anh.png"
-                  autoFocus
-                  value={imageUrl}
+                <Form.Select
                   onChange={(e) => {
                     setImageUrl(e.target.value);
                   }}
-                />
+                >
+                  <option value={""}>-- Hình ảnh --</option>
+                  {listImage.map(function (item, i) {
+                    return (
+                      <option value={item.link} key={i}>
+                        {item.title}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
                 <Form.Label>Môn học</Form.Label>
                 <Form.Select
                   onChange={(e) => {

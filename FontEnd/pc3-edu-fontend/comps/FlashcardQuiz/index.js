@@ -7,6 +7,9 @@ import { toast } from "react-toastify";
 import Style from "./Style";
 
 const FlashcardQuiz = ({ listFlashcard }) => {
+  const timeEasy = 10;
+  const timeNormal = 7;
+  const timeHard = 5;
   const [audioBackground, setAudioBackground] = useState(
     new Audio("/music/game.mp3")
   );
@@ -77,11 +80,11 @@ const FlashcardQuiz = ({ listFlashcard }) => {
 
   function resetCouter() {
     if (level == "easy") {
-      setTimerQuiz(5);
+      setTimerQuiz(timeEasy);
     } else if (level == "normal") {
-      setTimerQuiz(4);
+      setTimerQuiz(timeNormal);
     } else if (level == "hard") {
-      setTimerQuiz(3);
+      setTimerQuiz(timeHard);
     }
   }
   // handle reset flashcard quiz
@@ -396,11 +399,11 @@ const FlashcardQuiz = ({ listFlashcard }) => {
                 } else {
                   handleLoadQuestion(0);
                   if (level == "easy") {
-                    setTimerQuiz(5);
+                    setTimerQuiz(timeEasy);
                   } else if (level == "normal") {
-                    setTimerQuiz(4);
+                    setTimerQuiz(timeNormal);
                   } else if (level == "hard") {
-                    setTimerQuiz(3);
+                    setTimerQuiz(timeHard);
                   }
                 }
               }}
