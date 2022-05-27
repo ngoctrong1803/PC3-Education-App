@@ -14,6 +14,84 @@ const examController = {
   },
 
   //[get]/api/exam/list
+  getExamPaginationIndex: async (req, res) => {
+    const { page, contentToFind, subjectID, exaTypID } = req.body;
+    const examInPage = 8;
+    const currentPage = page;
+
+    //const listExam = [];
+    if (subjectID == "" && exaTypID != "") {
+      //all subject and choose type
+      const listTotalExam = await Exam.find({
+        exaTypID: exaTypID,
+        title: { $regex: contentToFind },
+      });
+      const listExam = await Exam.find({
+        exaTypID: exaTypID,
+        title: { $regex: contentToFind },
+      })
+        .skip(currentPage * examInPage - examInPage)
+        .limit(examInPage);
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listExam: listExam,
+        totalPage: Math.ceil(listTotalExam.length / examInPage),
+      });
+    } else if (exaTypID == "" && subjectID != "") {
+      //all type and choose subject
+      const listTotalExam = await Exam.find({
+        subjectID: subjectID,
+        title: { $regex: contentToFind },
+      });
+      const listExam = await Exam.find({
+        subjectID: subjectID,
+        title: { $regex: contentToFind },
+      })
+        .skip(currentPage * examInPage - examInPage)
+        .limit(examInPage);
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listExam: listExam,
+        totalPage: Math.ceil(listTotalExam.length / examInPage),
+      });
+    } else if (exaTypID != "" && subjectID != "") {
+      const listTotalExam = await Exam.find({
+        subjectID: subjectID,
+        exaTypID: exaTypID,
+        title: { $regex: contentToFind },
+      });
+      const listExam = await Exam.find({
+        subjectID: subjectID,
+        exaTypID: exaTypID,
+        title: { $regex: contentToFind },
+      })
+        .skip(currentPage * examInPage - examInPage)
+        .limit(examInPage);
+      console.log("list exam in here:", listExam);
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listExam: listExam,
+        totalPage: Math.ceil(listTotalExam.length / examInPage),
+      });
+      // choose subject and choose type
+    } else if (exaTypID == "" && subjectID == "") {
+      const listTotalExam = await Exam.find({
+        title: { $regex: contentToFind },
+      });
+      const listExam = await Exam.find({
+        title: { $regex: contentToFind },
+      })
+        .skip(currentPage * examInPage - examInPage)
+        .limit(examInPage);
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listExam: listExam,
+        totalPage: Math.ceil(listTotalExam.length / examInPage),
+      });
+    }
+  },
+
+  //[get]/api/exam/list
   getExamPagination: async (req, res) => {
     const { page, contentToFind, subjectID, exaTypID } = req.body;
     const examInPage = 3;

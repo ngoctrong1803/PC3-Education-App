@@ -4,22 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/dist/client/link";
 
-const Exams = () => {
-  const [listExam, setListExam] = useState([]);
-
-  async function getExam() {
-    try {
-      const res = await axios.get("http://localhost:8000/api/exam/list");
-      console.log("exam", res.data.listExam);
-      setListExam(res.data.listExam);
-    } catch (err) {
-      const errMessage = err?.response.data.message;
-      toast.error(errMessage);
-    }
-  }
-  useEffect(() => {
-    getExam();
-  }, []);
+const Exams = (props) => {
+  const listExam = props.listExam;
   return (
     <div className="list-exams-wrap">
       <div className="list-exams-title">
@@ -49,20 +35,7 @@ const Exams = () => {
           })}
         </Row>
       </div>
-      <div className="list-exams-footer">
-        <Pagination>
-          <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Item>{4}</Pagination.Item>
-          <Pagination.Item>{5}</Pagination.Item>
-          <Pagination.Item>{6}</Pagination.Item>
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
-      </div>
+     
     </div>
   );
 };

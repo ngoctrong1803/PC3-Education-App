@@ -1,4 +1,14 @@
-import { Row, Col, SplitButton, Dropdown, Form } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  SplitButton,
+  Dropdown,
+  Form,
+  FormControl,
+  InputGroup,
+  Button,
+  Pagination,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Rank from "../../comps/Rank";
 import Exams from "../../comps/Exams";
@@ -10,43 +20,160 @@ import "swiper/css";
 import "swiper/css/grid";
 import "swiper/css/pagination";
 // import required modules
-import { Grid, Pagination } from "swiper";
-
+import { Grid } from "swiper";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import useAuth from "../../hooks/authHook";
 const Exam = () => {
+  const isAuth = useAuth();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+
+  const [listExam, setListExam] = useState([]);
+  const [listExaTyp, setListExaTyp] = useState([]);
+  const [listSubject, setListSubject] = useState([]);
+  const [totalPage, setTotalPage] = useState([]);
+
+  // hande filter and pagiantion
+  const [contentToFind, setContentToFind] = useState("");
+  const [subjectIDToFind, setSubjectIDToFind] = useState("");
+  const [typExaIDToFind, setExaTypIDToFind] = useState("");
+  async function getExaTyp() {
+    const res = await axios.get("http://localhost:8000/api/exam-type/list");
+
+    setListExaTyp(res.data.listExamType);
+  }
+  async function getSubjects() {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/subjects/get-list-subject"
+      );
+      console.log("list subject:", res.data.listSubject);
+      setListSubject(res.data.listSubject);
+    } catch (err) {
+      const errMessage = err.response.data.message;
+      toast.error(errMessage);
+    }
+  }
+  async function getExam(page) {
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/exam/list-index",
+        {
+          page: page,
+          contentToFind: contentToFind,
+          subjectID: subjectIDToFind,
+          exaTypID: typExaIDToFind,
+        }
+      );
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPage(listTotalPage);
+      console.log("list exam", res.data.listExam);
+      setListExam(res.data.listExam);
+    } catch (err) {
+      const errMessage = err?.response?.data.message;
+      toast.error(errMessage);
+    }
+  }
+  useEffect(() => {
+    if (isAuth) {
+      getExaTyp();
+      getSubjects();
+    }
+  }, []);
+  useEffect(() => {
+    if (isAuth) {
+      getExam(1);
+    }
+  }, [contentToFind, subjectIDToFind, typExaIDToFind]);
   return (
     <div className="exams-page">
       <Row>
         <Col xs={8} ms={8}>
           <div className="exams-nav">
+            <InputGroup className="mb-3 exam-index-find">
+              <FormControl
+                placeholder="Nhập tên đề thi"
+                aria-label="Recipient's username"
+                aria-describedby="basic-addon2"
+                value={contentToFind}
+                onChange={(e) => {
+                  setContentToFind(e.target.value);
+                }}
+              />
+              <Button variant="primary">Tìm kiếm</Button>
+            </InputGroup>
             <Form.Select
               className="select-exam-type"
               aria-label="Default select example"
+              onChange={(e) => {
+                setSubjectIDToFind(e.target.value);
+              }}
             >
-              <option value="1">Khối 12</option>
-              <option value="2">Khối 11</option>
-              <option value="3">Khối 10</option>
+              <option value={""}>Tất cả môn học</option>
+              {listSubject.map((item) => {
+                return (
+                  <>
+                    <option value={item._id}>{item.name}</option>
+                  </>
+                );
+              })}
             </Form.Select>
             <Form.Select
               className="select-exam-type"
               aria-label="Default select example"
+              onChange={(e) => {
+                setExaTypIDToFind(e.target.value);
+              }}
             >
-              <option>Toán Học</option>
-              <option value="1">Vật Lý</option>
-              <option value="2">Sinh Học</option>
-              <option value="3">Hóa Học</option>
-            </Form.Select>
-            <Form.Select
-              className="select-exam-type"
-              aria-label="Default select example"
-            >
-              <option>Kiểm tra 15 phút</option>
-              <option value="1">Kiểm tra 1 tiết</option>
-              <option value="2">Thi học kỳ</option>
-              <option value="3">Thi THPT quốc gia</option>
+              <option value={""}>Tất cả các thể loại</option>
+              {listExaTyp.map((item) => {
+                return (
+                  <>
+                    <option value={item._id}>{item.description}</option>
+                  </>
+                );
+              })}
             </Form.Select>
           </div>
           <div className="exams">
-            <Exams></Exams>
+            <Exams listExam={listExam}></Exams>
+            <div
+              className="list-exams-footer"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Pagination>
+                <Pagination.First />
+                <Pagination.Prev />
+                {totalPage.map((item) => {
+                  return (
+                    <>
+                      {" "}
+                      <Pagination.Item
+                        onClick={() => {
+                          getExam(item);
+                        }}
+                      >
+                        {item}
+                      </Pagination.Item>
+                    </>
+                  );
+                })}
+
+                <Pagination.Next />
+                <Pagination.Last />
+              </Pagination>
+            </div>
           </div>
         </Col>
         <Col xs={4} ms={4}>

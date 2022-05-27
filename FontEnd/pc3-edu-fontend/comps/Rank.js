@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { toast } from "react-toastify";
 
 const Rank = (props) => {
   const nameOfRank = props.name;
@@ -13,7 +14,6 @@ const Rank = (props) => {
         const res = await axios.get(
           "http://localhost:8000/api/statistical-of-exercise/list-statistical-result-of-all-subject"
         );
-        console.log("res", res);
         setListStatistical(res.data.listStatistical);
       } else if (nameOfRank == "one-subject") {
         const subjectSlug = props.subjectSlug;
@@ -37,7 +37,6 @@ const Rank = (props) => {
       }
     } catch (error) {
       const errMessage = error.response.data.message;
-      toast.error(errMessage);
     }
   }
   useEffect(() => {

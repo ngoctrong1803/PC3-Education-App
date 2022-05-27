@@ -5,6 +5,8 @@ import Rank from "../../comps/Rank";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AuthGate from "../../comps/Gate/AuthGate";
+import { useSelector } from "react-redux";
 
 const Detail = () => {
   const url = window.location.pathname;
@@ -14,6 +16,10 @@ const Detail = () => {
   const [subject, setSubject] = useState();
   const [listUnit, setListUnit] = useState([]);
   const [listLession, setListLession] = useState([]);
+
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
 
   async function getContentOfSubject() {
     console.log("slug", slugOfSubject);
@@ -32,10 +38,12 @@ const Detail = () => {
     }
   }
   useEffect(() => {
-    getContentOfSubject();
+    if (currentUser) {
+      getContentOfSubject();
+    }
   }, []);
   return (
-    <>
+    <AuthGate>
       <Row>
         <Col xs={9} md={9}>
           <div className="subject-detail-wrap">
@@ -95,7 +103,7 @@ const Detail = () => {
           </div>
         </Col>
       </Row>
-    </>
+    </AuthGate>
   );
 };
 Detail.layout = "userLayout";

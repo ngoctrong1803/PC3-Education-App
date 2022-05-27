@@ -1,8 +1,10 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import { loginReset } from "../redux/authSlice";
 
 export const createAxios = (user, dispatch, loginSuccess) => {
-  const newInstance = axios.create();
+  const host = process.env.NEXT_PUBLIC_HOST;
+  const newInstance = axios.create({ baseURL: host });
 
   function getLocalAccessToken() {
     const accessToken = window.localStorage.accesstoken;
@@ -27,13 +29,17 @@ export const createAxios = (user, dispatch, loginSuccess) => {
           return Promise.reject("lỗi newInstance:", err);
         }
       );
-      const res = await axios.post("http://localhost:8000/api/auth/refresh");
+      const res = await axios.post(host + "/api/auth/refresh");
       temp = res.data;
     } catch (err) {
+      window.localStorage.removeItem("accesstoken");
+      window.localStorage.removeItem("refreshtoken");
+      dispatch(loginReset());
       console.log("lỗi ở hàm refresh!");
     }
     return temp;
   };
+
   newInstance.interceptors.request.use(
     // before you send request with newInstance it will check content in below
     async (config) => {
@@ -44,7 +50,15 @@ export const createAxios = (user, dispatch, loginSuccess) => {
         console.log(
           "============================== reffesh token is exped (refresh token)=================================="
         );
-        const data = await refreshToken();
+        let data;
+        try {
+          data = await refreshToken();
+        } catch (e) {
+          window.localStorage.removeItem("accesstoken");
+          window.localStorage.removeItem("refreshtoken");
+          dispatch(loginReset());
+          return config;
+        }
 
         const refreshUser = {
           ...user,

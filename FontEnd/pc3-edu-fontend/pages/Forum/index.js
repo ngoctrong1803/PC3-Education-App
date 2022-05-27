@@ -15,8 +15,9 @@ import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-
+import useAuth from "../../hooks/authHook";
 const Forum = () => {
+  const isAuth = useAuth();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
@@ -145,7 +146,7 @@ const Forum = () => {
       );
       setListQuestionOfUser(res.data.listQuestionInForum);
     } catch (err) {
-      const errMessage = err.response.data.message;
+      const errMessage = err?.response?.data?.message;
       toast.error(errMessage);
     }
   }
@@ -239,15 +240,18 @@ const Forum = () => {
   // function question in forum
 
   useEffect(() => {
-    getListBlog();
-    getBlogCategory();
-    getListCateQuestion();
-    getQuestionInForumByUser();
-    getListQuestionInForum();
+    if (isAuth) {
+      getListBlog();
+      getBlogCategory();
+      getListCateQuestion();
+      getQuestionInForumByUser();
+      getListQuestionInForum();
+    }
   }, []);
   const config = {
     loader: { load: ["input/asciimath"] },
   };
+
   return (
     <>
       <MathJaxContext config={config}>

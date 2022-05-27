@@ -12,6 +12,7 @@ import { Provider } from "react-redux";
 import { store, persistor } from "../redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import Script from "next/script";
+import Authenticate from "../comps/Authenticate";
 
 const layouts = {
   userLayout: userlayout,
@@ -25,33 +26,35 @@ function MyApp({ Component, pageProps }) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ToastContainer />
-        <Layout>
-          {/* this component is render content */}
-          <Component {...pageProps}></Component>
+        <Authenticate>
+          <Layout>
+            {/* this component is render content */}
+            <Component {...pageProps}></Component>
 
-          {/* Helmet to link script file */}
-          {/* <Script
+            {/* Helmet to link script file */}
+            {/* <Script
             src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
             strategy="beforeInteractive"
           /> */}
-          <Helmet>
-            <script
-              type="module"
-              src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-              async
-            ></script>
-            <script
-              nomodule
-              src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-              async
-            ></script>
-            {/* <script
+            <Helmet>
+              <script
+                type="module"
+                src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+                async
+              ></script>
+              <script
+                nomodule
+                src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+                async
+              ></script>
+              {/* <script
               async
               type="text/javascript"
               src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
             ></script> */}
-          </Helmet>
-        </Layout>
+            </Helmet>
+          </Layout>
+        </Authenticate>
       </PersistGate>
     </Provider>
   );

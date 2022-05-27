@@ -9,6 +9,10 @@ router.post("/create", authController.resgisterUser);
 // LOGIN
 router.post("/login", authController.loginUser);
 
+router.post("/check-user", authMiddleware.verifyToken, (req, res) => {
+  res.status(200).json({ error: false });
+});
+
 //Refresh token
 router.post("/refresh", authController.requestRefreshToken);
 

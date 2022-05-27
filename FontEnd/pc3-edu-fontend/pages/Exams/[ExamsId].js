@@ -8,8 +8,10 @@ import { useSelector } from "react-redux";
 import Rank from "../../comps/Rank";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
+import CountDown from "../../comps/Timer/CountDown";
+import useAuth from "../../hooks/authHook";
 const Exam = () => {
+  const isAuth = useAuth();
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -36,6 +38,8 @@ const Exam = () => {
 
   const handleCloseConfirmSubmit = () => setShowConfirmSubmit(false);
   const handleShowConfirmSubmit = () => setShowConfirmSubmit(true);
+
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const buttonSubmit = useRef();
 
@@ -78,6 +82,7 @@ const Exam = () => {
     }
   }
   function handleAnswerOfUser() {
+    setIsSubmit(true);
     let listAnswerTemp = []; // lưu trữ danh sách câu hỏi người dùng chọn
     for (var i = 0; i < listQuestion.length; i++) {
       var radios = document.getElementById("form-for-question-" + i);
@@ -122,9 +127,11 @@ const Exam = () => {
       }
     }
     setListAnswerOfUser(listAnswerTemp);
-    setTimeDone(exam.time * 60 - timerExam);
   }
 
+  function setTimeDoneExam(time) {
+    setTimeDone(timerExam - time);
+  }
   async function handleSaveResult() {
     buttonSubmit.current.disabled = true;
     // handle save statistical to database
@@ -168,119 +175,229 @@ const Exam = () => {
     }
   }
   useEffect(() => {
-    getExam();
-    getContenOfExam();
-    getStatisticalOfExam();
+    if (isAuth) {
+      getExam();
+      getContenOfExam();
+      getStatisticalOfExam();
+    }
   }, []);
   // Effet timer
-  useEffect(() => {
-    async function handleOverTime() {
-      //handle over time
-      toast.error("Hết thời gian");
-      let listAnswerTemp = []; // lưu trữ danh sách câu hỏi người dùng chọn
-      for (var i = 0; i < listQuestion.length; i++) {
-        var radios = document.getElementById("form-for-question-" + i);
-        for (var j = 0; j < radios.length; j++) {
-          if (radios[j].checked) {
-            const userAnswer = {
-              questionID: listQuestion[i]._id,
-              answerOfUser: radios[j].value,
-            };
-            console.log("user answer:", userAnswer);
-            listAnswerTemp.push(userAnswer);
-            break;
-          }
-        }
-        if (!listAnswerTemp[i]) {
-          setCheckFull(false);
+
+  async function handleOverTime(timeDone) {
+    //handle over time
+
+    toast.error("Hết thời gian");
+    let listAnswerTemp = []; // lưu trữ danh sách câu hỏi người dùng chọn
+    for (var i = 0; i < listQuestion.length; i++) {
+      var radios = document.getElementById("form-for-question-" + i);
+      for (var j = 0; j < radios.length; j++) {
+        if (radios[j].checked) {
           const userAnswer = {
             questionID: listQuestion[i]._id,
-            answerOfUser: "",
+            answerOfUser: radios[j].value,
           };
+          console.log("user answer:", userAnswer);
           listAnswerTemp.push(userAnswer);
+          break;
         }
       }
-      //start check full
-      let counterCheckFull = 0;
-      for (var i = 0; i < listAnswerTemp.length; i++) {
-        if (listAnswerTemp[i].answerOfUser == "") {
-          counterCheckFull++;
-        }
+      if (!listAnswerTemp[i]) {
+        setCheckFull(false);
+        const userAnswer = {
+          questionID: listQuestion[i]._id,
+          answerOfUser: "",
+        };
+        listAnswerTemp.push(userAnswer);
       }
-      if (counterCheckFull == 0) {
-        setCheckFull(true);
+    }
+    //start check full
+    let counterCheckFull = 0;
+    for (var i = 0; i < listAnswerTemp.length; i++) {
+      if (listAnswerTemp[i].answerOfUser == "") {
+        counterCheckFull++;
       }
-      //end check full
-      buttonSubmit.current.disabled = true;
-      for (var i = 0; i < listQuestion.length; i++) {
-        for (var j = 0; j < listAnswerTemp.length; j++) {
-          if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
-            if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
-              setTotalAnswerTrue((pre) => pre + 1);
-            }
+    }
+    if (counterCheckFull == 0) {
+      setCheckFull(true);
+    }
+    //end check full
+    buttonSubmit.current.disabled = true;
+    for (var i = 0; i < listQuestion.length; i++) {
+      for (var j = 0; j < listAnswerTemp.length; j++) {
+        if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
+          if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
+            setTotalAnswerTrue((pre) => pre + 1);
           }
         }
       }
-      console.log(
-        "-----------------------Xử lý nộp bài khi hết giờ----------------------"
+    }
+    console.log(
+      "-----------------------Xử lý nộp bài khi hết giờ----------------------"
+    );
+    let totalAnswerTrueTemp = 0;
+    for (var i = 0; i < listQuestion.length; i++) {
+      for (var j = 0; j < listAnswerTemp.length; j++) {
+        if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
+          if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
+            totalAnswerTrueTemp++;
+          }
+        }
+      }
+    }
+    //handle save statisticalOfExam when time over
+    const statisticalOfExam = {
+      score: (totalAnswerTrueTemp / listQuestion.length) * 10,
+      isDone: true,
+      totalAnswerTrue: totalAnswerTrueTemp,
+      time: exam.time * 60 - timeDone,
+      userID: currentUser.userInfor._id,
+      examID: examID,
+    };
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/statistical-of-exam/create",
+        statisticalOfExam
       );
-      let totalAnswerTrueTemp = 0;
-      for (var i = 0; i < listQuestion.length; i++) {
-        for (var j = 0; j < listAnswerTemp.length; j++) {
-          if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
-            if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
-              totalAnswerTrueTemp++;
-            }
+      if (res.data.statisticalOfExam) {
+        for (var i = 0; i < listAnswerTemp.length; i++) {
+          //after have statistical
+          let resultOfExam = {
+            statisticalID: res.data.statisticalOfExam._id,
+            option: listAnswerTemp[i].answerOfUser,
+            exaQuesID: listAnswerTemp[i].questionID,
+          };
+          try {
+            const resResult = await axios.post(
+              "http://localhost:8000/api/result-of-exam/create",
+              resultOfExam
+            );
+          } catch (err) {
+            const errMessage = err?.response.data.message;
+            toast.error(errMessage);
           }
         }
       }
-      //handle save statisticalOfExam when time over
-      const statisticalOfExam = {
-        score: (totalAnswerTrueTemp / listQuestion.length) * 10,
-        isDone: true,
-        totalAnswerTrue: totalAnswerTrueTemp,
-        time: exam.time * 60 - timerExam,
-        userID: currentUser.userInfor._id,
-        examID: examID,
-      };
-      try {
-        const res = await axios.post(
-          "http://localhost:8000/api/statistical-of-exam/create",
-          statisticalOfExam
-        );
-        if (res.data.statisticalOfExam) {
-          for (var i = 0; i < listAnswerTemp.length; i++) {
-            //after have statistical
-            let resultOfExam = {
-              statisticalID: res.data.statisticalOfExam._id,
-              option: listAnswerTemp[i].answerOfUser,
-              exaQuesID: listAnswerTemp[i].questionID,
-            };
-            try {
-              const resResult = await axios.post(
-                "http://localhost:8000/api/result-of-exam/create",
-                resultOfExam
-              );
-            } catch (err) {
-              const errMessage = err?.response.data.message;
-              toast.error(errMessage);
-            }
-          }
-        }
-      } catch (err) {
-        const errMessage = err?.response.data.message;
-        toast.error(errMessage);
-      }
-      setTimerExam(-1);
-      router.push("/Exams/Result/" + examID);
+    } catch (err) {
+      const errMessage = err?.response.data.message;
+      toast.error(errMessage);
     }
-    if (timerExam == 0) {
-      handleOverTime();
-    }
-    const timer =
-      timerExam > 0 && setInterval(() => setTimerExam(timerExam - 1), 1000);
-    return () => clearInterval(timer);
-  }, [timerExam]);
+    setTimerExam(-1);
+    router.push("/Exams/Result/" + examID);
+  }
+  // useEffect(() => {
+  //   async function handleOverTime() {
+  //     //handle over time
+  //     toast.error("Hết thời gian");
+  //     let listAnswerTemp = []; // lưu trữ danh sách câu hỏi người dùng chọn
+  //     for (var i = 0; i < listQuestion.length; i++) {
+  //       var radios = document.getElementById("form-for-question-" + i);
+  //       for (var j = 0; j < radios.length; j++) {
+  //         if (radios[j].checked) {
+  //           const userAnswer = {
+  //             questionID: listQuestion[i]._id,
+  //             answerOfUser: radios[j].value,
+  //           };
+  //           console.log("user answer:", userAnswer);
+  //           listAnswerTemp.push(userAnswer);
+  //           break;
+  //         }
+  //       }
+  //       if (!listAnswerTemp[i]) {
+  //         setCheckFull(false);
+  //         const userAnswer = {
+  //           questionID: listQuestion[i]._id,
+  //           answerOfUser: "",
+  //         };
+  //         listAnswerTemp.push(userAnswer);
+  //       }
+  //     }
+  //     //start check full
+  //     let counterCheckFull = 0;
+  //     for (var i = 0; i < listAnswerTemp.length; i++) {
+  //       if (listAnswerTemp[i].answerOfUser == "") {
+  //         counterCheckFull++;
+  //       }
+  //     }
+  //     if (counterCheckFull == 0) {
+  //       setCheckFull(true);
+  //     }
+  //     //end check full
+  //     buttonSubmit.current.disabled = true;
+  //     for (var i = 0; i < listQuestion.length; i++) {
+  //       for (var j = 0; j < listAnswerTemp.length; j++) {
+  //         if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
+  //           if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
+  //             setTotalAnswerTrue((pre) => pre + 1);
+  //           }
+  //         }
+  //       }
+  //     }
+  //     console.log(
+  //       "-----------------------Xử lý nộp bài khi hết giờ----------------------"
+  //     );
+  //     let totalAnswerTrueTemp = 0;
+  //     for (var i = 0; i < listQuestion.length; i++) {
+  //       for (var j = 0; j < listAnswerTemp.length; j++) {
+  //         if (listQuestion[i]._id == listAnswerTemp[j].questionID) {
+  //           if (listQuestion[i].answer == listAnswerTemp[j].answerOfUser) {
+  //             totalAnswerTrueTemp++;
+  //           }
+  //         }
+  //       }
+  //     }
+  //     //handle save statisticalOfExam when time over
+  //     const statisticalOfExam = {
+  //       score: (totalAnswerTrueTemp / listQuestion.length) * 10,
+  //       isDone: true,
+  //       totalAnswerTrue: totalAnswerTrueTemp,
+  //       time: exam.time * 60 - timerExam,
+  //       userID: currentUser.userInfor._id,
+  //       examID: examID,
+  //     };
+  //     try {
+  //       const res = await axios.post(
+  //         "http://localhost:8000/api/statistical-of-exam/create",
+  //         statisticalOfExam
+  //       );
+  //       if (res.data.statisticalOfExam) {
+  //         for (var i = 0; i < listAnswerTemp.length; i++) {
+  //           //after have statistical
+  //           let resultOfExam = {
+  //             statisticalID: res.data.statisticalOfExam._id,
+  //             option: listAnswerTemp[i].answerOfUser,
+  //             exaQuesID: listAnswerTemp[i].questionID,
+  //           };
+  //           try {
+  //             const resResult = await axios.post(
+  //               "http://localhost:8000/api/result-of-exam/create",
+  //               resultOfExam
+  //             );
+  //           } catch (err) {
+  //             const errMessage = err?.response.data.message;
+  //             toast.error(errMessage);
+  //           }
+  //         }
+  //       }
+  //     } catch (err) {
+  //       const errMessage = err?.response.data.message;
+  //       toast.error(errMessage);
+  //     }
+  //     setTimerExam(-1);
+  //     router.push("/Exams/Result/" + examID);
+  //   }
+  //   console.log("Timer :)))");
+  //   const timeOut = setTimeout(() => {
+  //     setTimerExam(timerExam - 1);
+  //   }, 1000);
+  //   if (timerExam === 0) {
+  //     handleOverTime();
+  //     clearTimeout(timeOut);
+  //   }
+
+  //   // const timer =
+  //   //   timerExam > 0 && setInterval(() => setTimerExam(timerExam - 1), 1000);
+  //   return () => clearTimeout(timeOut);
+  // }, [timerExam]);
   function handleStart() {
     setStart(true);
     setTimerExam(exam.time * 60);
@@ -437,31 +554,12 @@ const Exam = () => {
                         <h4>Thời gian</h4>
                       </div>
                       <div className="timer-content">
-                        {timerExam == -1 ? <span>00:00:00</span> : null}
-                        {/* hour */}
-                        {Math.floor(timerExam / 60 / 60) < 10 &&
-                        timerExam != -1 ? (
-                          <span>0{Math.floor(timerExam / 60 / 60)}:</span>
-                        ) : timerExam != -1 ? (
-                          <span>{Math.floor(timerExam / 60 / 60)}:</span>
-                        ) : null}
-                        {/* minute */}
-                        {Math.floor(timerExam / 60) < 10 && timerExam != -1 ? (
-                          <span>0{Math.floor(timerExam / 60)}:</span>
-                        ) : timerExam != -1 ? (
-                          <span>{Math.floor(timerExam / 60)}:</span>
-                        ) : null}
-                        {/* second */}
-                        {timerExam - Math.floor(timerExam / 60) * 60 < 10 &&
-                        timerExam != -1 ? (
-                          <span>
-                            0{timerExam - Math.floor(timerExam / 60) * 60}
-                          </span>
-                        ) : timerExam != -1 ? (
-                          <span>
-                            {timerExam - Math.floor(timerExam / 60) * 60}
-                          </span>
-                        ) : null}
+                        <CountDown
+                          timer={timerExam}
+                          handleTimeout={handleOverTime}
+                          isSubmit={isSubmit}
+                          handleSubmit={setTimeDoneExam}
+                        ></CountDown>
                       </div>
                     </div>
                     <div className="button-nav mt-4">
@@ -507,7 +605,13 @@ const Exam = () => {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseConfirmSubmit}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setIsSubmit(false);
+                handleCloseConfirmSubmit();
+              }}
+            >
               Hủy
             </Button>
             <Button

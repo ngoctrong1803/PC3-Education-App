@@ -22,10 +22,14 @@ import Question from "../comps/Questions";
 import Event from "../comps/Events";
 import BlogList from "../comps/BlogList";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const [grade, setGrade] = useState(10);
-
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  console.log("user redux: ", currentUser);
   const changeGrade = (grade) => {
     setGrade(grade);
   };

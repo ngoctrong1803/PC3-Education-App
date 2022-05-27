@@ -14,18 +14,10 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
+import useAuth from "../../hooks/authHook";
 
-//const socket = io.connect("http://localhost:9000");
 const Detail = () => {
-  // const socket = useSelector((state) => {
-  //   return state.socketIO.socket;
-  // });
-
-  // function testSocket() {
-  //   socket.disconnect();
-  //   //socket.emit("send_message", { message: "hello minasan" }); // emit to server with key: "send_message" and value : object
-  // }
-
+  const isAuth = useAuth();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
@@ -140,11 +132,13 @@ const Detail = () => {
   }
 
   useEffect(() => {
-    if (type == "blog" && id != "") {
-      getContentOfBlog();
-    }
-    if (type == "question" && id != "") {
-      getContentOfQuestion();
+    if (isAuth) {
+      if (type == "blog" && id != "") {
+        getContentOfBlog();
+      }
+      if (type == "question" && id != "") {
+        getContentOfQuestion();
+      }
     }
   }, []);
   const config = {

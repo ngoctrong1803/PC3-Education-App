@@ -148,11 +148,19 @@ const Statistical = () => {
                                 <span>{Math.floor(statisItem.time / 60)}:</span>
                               ) : null}
                               {/* second */}
-                              {Math.floor(statisItem.time) < 10 &&
-                              statisItem.time != -1 ? (
-                                <span>0{Math.floor(statisItem.time)}</span>
+                              {Math.floor(statisItem.time) -
+                                Math.floor(statisItem.time / 60) * 60 <
+                                10 && statisItem.time != -1 ? (
+                                <span>
+                                  0
+                                  {Math.floor(statisItem.time) -
+                                    Math.floor(statisItem.time / 60) * 60}
+                                </span>
                               ) : statisItem.time != -1 ? (
-                                <span>{Math.floor(statisItem.time)}</span>
+                                <span>
+                                  {Math.floor(statisItem.time) -
+                                    Math.floor(statisItem.time / 60) * 60}
+                                </span>
                               ) : null}
                             </>
                           );

@@ -1617,8 +1617,11 @@ ul.navbar-home {
           text-align: center;
         }
         .exam-item-title {
-          display: flex;
-          align-items: center;
+          .exam-item-title-header{
+            display: flex;
+            align-items: center;
+          }
+     
           label{
             font-weight: 600;
             font-size: 18px;
@@ -1811,6 +1814,10 @@ ul.navbar-home {
 .exams-page {
   margin: 35px 0px 0px 35px;
   .exams-nav {
+    .exam-index-find{
+      width: 350px;
+      margin-bottom: 0px !important;
+    }
     display: flex;
     border-bottom: #555 solid 1px;
     margin-bottom: 10px;

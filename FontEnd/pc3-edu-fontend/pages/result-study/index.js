@@ -32,8 +32,9 @@ import { Grid, Pagination } from "swiper";
 import Link from "next/dist/client/link";
 import axios from "axios";
 import { useSelector } from "react-redux";
-
+import useAuth from "../../hooks/authHook";
 const Subject = () => {
+  const isAuth = useAuth();
   const [grade, setGrade] = useState(10);
   const [listSubject, setListSubject] = useState([]);
   const [listSubjectStudying, setListSubjectStudying] = useState([]);
@@ -104,8 +105,10 @@ const Subject = () => {
   }
 
   useEffect(() => {
-    getSubject();
-    getSubjectStudying();
+    if (isAuth) {
+      getSubject();
+      getSubjectStudying();
+    }
   }, [grade]);
 
   return (

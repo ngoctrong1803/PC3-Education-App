@@ -34,6 +34,7 @@ const commentRouter = require("./comment");
 const questionLikeRouter = require("./questionlike");
 const commentLikeRouter = require("./commentlike");
 const gradeRouter = require("./grade");
+const authMiddleware = require("../app/middlewares/authMiddleware");
 function route(app) {
   app.use("/api/user", userRouter);
   app.use("/api/login", loginRouter);

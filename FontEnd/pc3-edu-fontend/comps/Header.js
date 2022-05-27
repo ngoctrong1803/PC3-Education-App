@@ -46,7 +46,7 @@ const Header = () => {
           </div>
         </div>
         <div className="header__actions">
-          {currentUser?.userInfor.fullname ? (
+          {currentUser?.userInfor?.fullname ? (
             <>
               <div className="header__actions__noti">
                 <ion-icon name="notifications"></ion-icon>

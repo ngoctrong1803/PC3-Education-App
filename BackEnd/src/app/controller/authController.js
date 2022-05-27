@@ -57,7 +57,7 @@ const authController = {
   // create refresh token
   createRefreshToken: (payload) => {
     return jwt.sign(payload, process.env.JWT_KEY_REFRESHTOKEN, {
-      expiresIn: "36000s",
+      expiresIn: "3600000s",
     });
   },
 

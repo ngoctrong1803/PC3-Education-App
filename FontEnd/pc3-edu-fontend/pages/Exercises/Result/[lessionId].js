@@ -15,7 +15,9 @@ import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import useAuth from "../../../hooks/authHook";
 const Exercise = () => {
+  const isAuth = useAuth();
   const router = useRouter();
   const config = {
     loader: { load: ["input/asciimath"] },
@@ -112,8 +114,10 @@ const Exercise = () => {
   }
 
   useEffect(() => {
-    getResult();
-    getMCExercises();
+    if (isAuth) {
+      getResult();
+      getMCExercises();
+    }
   }, []);
 
   return (

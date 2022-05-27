@@ -24,8 +24,9 @@ import { toast } from "react-toastify";
 import FlashcardQuiz from "../../comps/FlashcardQuiz";
 import FlashcardWrite from "../../comps/FlashcardWrite";
 import FlashcardMatch from "../../comps/FlashcardMatch";
-
+import useAuth from "../../hooks/authHook";
 const Topic = () => {
+  const isAuth = useAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -74,7 +75,9 @@ const Topic = () => {
     }
   }
   useEffect(() => {
-    getFlashcardByTopicID();
+    if (isAuth) {
+      getFlashcardByTopicID();
+    }
   }, []);
 
   //handle speak

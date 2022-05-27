@@ -15,7 +15,9 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import useAuth from "../../../hooks/authHook";
 const Exam = () => {
+  const isAuth = useAuth();
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -117,9 +119,11 @@ const Exam = () => {
   }
 
   useEffect(() => {
-    getExam();
-    getContenOfExam();
-    getStatisticalOfExam();
+    if (isAuth) {
+      getExam();
+      getContenOfExam();
+      getStatisticalOfExam();
+    }
   }, []);
   return (
     <MathJaxContext config={config}>
@@ -138,19 +142,22 @@ const Exam = () => {
                       <div className="exam-item-wrap">
                         {/* <div className="exam-item-type">Nhận biết</div> */}
                         <div className="exam-item-title">
-                          <label>câu {index + 1}:</label>
+                          <div className="exam-item-title-header">
+                            <label>câu {index + 1}:</label>
+                            <div className="result-exam-question-type">
+                              {listCateQues.map((cateQuesItem, index) => {
+                                if (questionItem.catExeID == cateQuesItem._id) {
+                                  return <>{cateQuesItem.description}</>;
+                                }
+                              })}
+                            </div>
+                          </div>
+
                           <p
                             dangerouslySetInnerHTML={{
                               __html: questionItem.question,
                             }}
                           />
-                          <div className="result-exam-question-type">
-                            {listCateQues.map((cateQuesItem, index) => {
-                              if (questionItem.catExeID == cateQuesItem._id) {
-                                return <>{cateQuesItem.description}</>;
-                              }
-                            })}
-                          </div>
                         </div>
                         <div className="exam-item-content">
                           <Form
@@ -348,10 +355,18 @@ const Exam = () => {
                         <span>{Math.floor(timeDone / 60)}:</span>
                       ) : null}
                       {/* second */}
-                      {Math.floor(timeDone) < 10 && timeDone != -1 ? (
-                        <span>0{Math.floor(timeDone)}</span>
+                      {Math.floor(timeDone) - Math.floor(timeDone / 60) * 60 <
+                        10 && timeDone != -1 ? (
+                        <span>
+                          0
+                          {Math.floor(timeDone) -
+                            Math.floor(timeDone / 60) * 60}
+                        </span>
                       ) : timeDone != -1 ? (
-                        <span>{Math.floor(timeDone)}</span>
+                        <span>
+                          {Math.floor(timeDone) -
+                            Math.floor(timeDone / 60) * 60}
+                        </span>
                       ) : null}
                     </div>
                   </div>

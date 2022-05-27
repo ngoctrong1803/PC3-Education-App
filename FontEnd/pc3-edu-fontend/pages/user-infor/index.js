@@ -6,7 +6,9 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { updateCurrentUserFunc } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
+import useAuth from "../../hooks/authHook";
 const UserInfor = () => {
+  const isAuth = useAuth();
   const PASS_REGEX = /[a-z0-9]{8,32}/;
   const PHONE_REGEX =
     /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
@@ -80,9 +82,11 @@ const UserInfor = () => {
 
   // set data
   useEffect(() => {
-    setUserAddress(currentUser.userInfor.address);
-    setUserClass(currentUser.userInfor.class);
-    setUserPhone(currentUser.userInfor.phone);
+    if (isAuth) {
+      setUserAddress(currentUser.userInfor.address);
+      setUserClass(currentUser.userInfor.class);
+      setUserPhone(currentUser.userInfor.phone);
+    }
   }, []);
   async function handleUploadUserInfor() {
     if (
@@ -182,6 +186,7 @@ const UserInfor = () => {
       }
     }
   }
+  if (!isAuth) return null;
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { Col, Row, Button, Form, Modal } from "react-bootstrap";
+import { Col, Row, Button, Form, Modal, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/link";
 import Rank from "../../comps/Rank";
@@ -7,7 +7,9 @@ import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import useAuth from "../../hooks/authHook";
 const Exercise = () => {
+  const isAuth = useAuth();
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -179,15 +181,18 @@ const Exercise = () => {
     }
   }
 
-  function backToLearning() {}
-
   // Third Attempts
   useEffect(() => {
-    const time = setInterval(() => setTimer(timer + 1), 1000);
-    return () => clearInterval(time);
+    if (isAuth) {
+      const time = setInterval(() => setTimer(timer + 1), 1000);
+      return () => clearInterval(time);
+    }
   }, [timer]);
+
   useEffect(() => {
-    getMCExercises();
+    if (isAuth) {
+      getMCExercises();
+    }
   }, []);
 
   // handle UI
@@ -211,250 +216,274 @@ const Exercise = () => {
   return (
     <>
       <MathJaxContext config={config}>
-        <Row>
-          {listMCExercise.map((mcexerciseItem, index) => {
-            if (currentQuestionIndex == index)
-              return (
-                <>
-                  <Col xs={5} md={5} className="p-0">
-                    <div className="exercise-guide-wrap">
-                      <div className="exercise-guide-title">
-                        <h4>{lession?.lessionName}</h4>
-                      </div>
-                      <div className="exercise-guide-nav">
-                        <ul>
-                          <li className="btn-nav">
-                            <button
-                              onClick={() => {
-                                setExerciseGuideNav("description");
-                              }}
-                            >
-                              Mô tả
-                            </button>
-                          </li>
+        <Container>
+          <Row>
+            {listMCExercise.map((mcexerciseItem, index) => {
+              if (currentQuestionIndex == index)
+                return (
+                  <>
+                    <Col xs={5} md={5} className="p-0">
+                      <div className="exercise-guide-wrap">
+                        <div className="exercise-guide-title">
+                          <h4>{lession?.lessionName}</h4>
+                        </div>
+                        <div className="exercise-guide-nav">
+                          <ul>
+                            <li className="btn-nav">
+                              <button
+                                onClick={() => {
+                                  setExerciseGuideNav("description");
+                                }}
+                              >
+                                Mô tả
+                              </button>
+                            </li>
 
-                          <li className="btn-nav">
-                            <button
+                            <li className="btn-nav">
+                              <button
+                                onClick={() => {
+                                  setExerciseGuideNav("help");
+                                }}
+                              >
+                                Trợ giúp
+                              </button>
+                            </li>
+                          </ul>
+                          {exerciseGuideNav == "description" ? (
+                            <div className="exercise-guide-description p-2">
+                              đây là phần mô tả bài tập
+                            </div>
+                          ) : null}
+                          {exerciseGuideNav == "rank" ? (
+                            <div className="exercise-guide-rank p-2">
+                              đây là phần bảng xếp hạng
+                            </div>
+                          ) : null}
+                          {exerciseGuideNav == "help" ? (
+                            <div className="exercise-guide-help p-2">
+                              đây là phần trợ giúp
+                            </div>
+                          ) : null}
+                        </div>
+                        <div className="exercise-guide-current-result">
+                          <Row>
+                            <Col xs={4} md={4}>
+                              <div className="exercise-mark">
+                                <div className="top" style={{ color: "#fff" }}>
+                                  Điểm
+                                </div>
+                                <div className="bottom">
+                                  {score}/{listMCExercise.length * 10}
+                                </div>
+                              </div>
+                            </Col>
+                            <Col xs={4} md={4}>
+                              <div className="exercise-answered">
+                                <div className="top" style={{ color: "#fff" }}>
+                                  Hoàn thành
+                                </div>
+                                <div className="bottom">
+                                  {currentQuestionIndex <=
+                                  listMCExercise.length - 1
+                                    ? currentQuestionIndex
+                                    : currentQuestionIndex + 1}
+                                  /{listMCExercise.length}
+                                </div>
+                              </div>
+                            </Col>
+                            <Col xs={4} md={4}>
+                              <div className="exercise-timer">
+                                <div className="top" style={{ color: "#fff" }}>
+                                  Thời gian
+                                </div>
+                                <div className="bottom">
+                                  {Math.floor(timer / 60 / 60) < 10 ? (
+                                    <span>0{Math.floor(timer / 60 / 60)}</span>
+                                  ) : (
+                                    <span>{Math.floor(timer / 60 / 60)}</span>
+                                  )}
+                                  :
+                                  {Math.floor(timer / 60) < 10 ? (
+                                    <span>0{Math.floor(timer / 60)}</span>
+                                  ) : (
+                                    <span>{Math.floor(timer / 60)}</span>
+                                  )}
+                                  :
+                                  {timer - Math.floor(timer / 60) * 60 < 10 ? (
+                                    <span>
+                                      0{timer - Math.floor(timer / 60) * 60}
+                                    </span>
+                                  ) : (
+                                    <span>
+                                      {timer - Math.floor(timer / 60) * 60}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col xs={7} md={7} className="p-0">
+                      <div className="exercise-wrap">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          {" "}
+                          <div
+                            className="exercise-type"
+                            style={{
+                              width: "130px",
+                              padding: "4px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {listCatExe.map((catExeItem, index) => {
+                              if (catExeItem._id == mcexerciseItem.catExeID)
+                                return <span>{catExeItem.description}</span>;
+                            })}
+                          </div>
+                          <Button
+                            variant="outline-warning"
+                            onClick={() => {
+                              window.history.back();
+                            }}
+                          >
+                            Quay lại
+                          </Button>
+                        </div>
+
+                        <div className="exercise-title mt-4">
+                          <h5>
+                            <MathJax>
+                              câu {index + 1}:
+                              <p
+                                className="mt-2"
+                                dangerouslySetInnerHTML={{
+                                  __html: mcexerciseItem?.question,
+                                }}
+                              />
+                            </MathJax>
+                          </h5>
+                        </div>
+                        <div className="exercise-content">
+                          <Form className="answers-of-question">
+                            <div className="answer">
+                              <Form.Check
+                                inline
+                                name="answerOfMCExercise"
+                                type="radio"
+                                id={`option1`}
+                              />
+                              <label style={{ marginTop: "15px" }}>
+                                {" "}
+                                <MathJax>
+                                  <p
+                                    dangerouslySetInnerHTML={{
+                                      __html: mcexerciseItem?.option1,
+                                    }}
+                                  />
+                                </MathJax>
+                              </label>
+                            </div>
+                            <div className="answer">
+                              <Form.Check
+                                inline
+                                name="answerOfMCExercise"
+                                type="radio"
+                                id={`option2`}
+                              />
+                              <label style={{ marginTop: "15px" }}>
+                                {" "}
+                                <MathJax>
+                                  <p
+                                    dangerouslySetInnerHTML={{
+                                      __html: mcexerciseItem?.option2,
+                                    }}
+                                  />
+                                </MathJax>
+                              </label>
+                            </div>
+                            <div className="answer">
+                              <Form.Check
+                                inline
+                                name="answerOfMCExercise"
+                                type="radio"
+                                id={`option3`}
+                              />
+                              <label style={{ marginTop: "15px" }}>
+                                {" "}
+                                <MathJax>
+                                  <p
+                                    dangerouslySetInnerHTML={{
+                                      __html: mcexerciseItem?.option3,
+                                    }}
+                                  />
+                                </MathJax>
+                              </label>
+                            </div>
+                            <div className="answer">
+                              <Form.Check
+                                inline
+                                name="answerOfMCExercise"
+                                type="radio"
+                                id={`option3`}
+                              />
+                              <label style={{ marginTop: "15px" }}>
+                                {" "}
+                                <MathJax>
+                                  <p
+                                    dangerouslySetInnerHTML={{
+                                      __html: mcexerciseItem?.option4,
+                                    }}
+                                  />
+                                </MathJax>
+                              </label>
+                            </div>
+                          </Form>
+                        </div>
+                        <div className="exercise-footer">
+                          <Button variant="warning">
+                            <ion-icon name="sunny-outline"></ion-icon>
+                            <span>Gợi ý</span>
+                          </Button>
+                          {currentQuestionIndex == listMCExercise.length - 1 ? (
+                            <Button
+                              variant="success"
                               onClick={() => {
-                                setExerciseGuideNav("help");
+                                handleAnswer();
                               }}
                             >
-                              Trợ giúp
-                            </button>
-                          </li>
-                        </ul>
-                        {exerciseGuideNav == "description" ? (
-                          <div className="exercise-guide-description p-2">
-                            đây là phần mô tả bài tập
-                          </div>
-                        ) : null}
-                        {exerciseGuideNav == "rank" ? (
-                          <div className="exercise-guide-rank p-2">
-                            đây là phần bảng xếp hạng
-                          </div>
-                        ) : null}
-                        {exerciseGuideNav == "help" ? (
-                          <div className="exercise-guide-help p-2">
-                            đây là phần trợ giúp
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="exercise-guide-current-result">
-                        <Row>
-                          <Col xs={4} md={4}>
-                            <div className="exercise-mark">
-                              <div className="top" style={{ color: "#fff" }}>
-                                Điểm
-                              </div>
-                              <div className="bottom">
-                                {score}/{listMCExercise.length * 10}
-                              </div>
-                            </div>
-                          </Col>
-                          <Col xs={4} md={4}>
-                            <div className="exercise-answered">
-                              <div className="top" style={{ color: "#fff" }}>
-                                Hoàn thành
-                              </div>
-                              <div className="bottom">
-                                {currentQuestionIndex <=
-                                listMCExercise.length - 1
-                                  ? currentQuestionIndex
-                                  : currentQuestionIndex + 1}
-                                /{listMCExercise.length}
-                              </div>
-                            </div>
-                          </Col>
-                          <Col xs={4} md={4}>
-                            <div className="exercise-timer">
-                              <div className="top" style={{ color: "#fff" }}>
-                                Thời gian
-                              </div>
-                              <div className="bottom">
-                                {Math.floor(timer / 60 / 60) < 10 ? (
-                                  <span>0{Math.floor(timer / 60 / 60)}</span>
-                                ) : (
-                                  <span>{Math.floor(timer / 60 / 60)}</span>
-                                )}
-                                :
-                                {Math.floor(timer / 60) < 10 ? (
-                                  <span>0{Math.floor(timer / 60)}</span>
-                                ) : (
-                                  <span>{Math.floor(timer / 60)}</span>
-                                )}
-                                :
-                                {timer - Math.floor(timer / 60) * 60 < 10 ? (
-                                  <span>
-                                    0{timer - Math.floor(timer / 60) * 60}
-                                  </span>
-                                ) : (
-                                  <span>
-                                    {timer - Math.floor(timer / 60) * 60}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col xs={7} md={7} className="p-0">
-                    <div className="exercise-wrap">
-                      <div
-                        className="exercise-type"
-                        style={{ width: "130px", padding: "4px" }}
-                      >
-                        {listCatExe.map((catExeItem, index) => {
-                          if (catExeItem._id == mcexerciseItem.catExeID)
-                            return <span>{catExeItem.description}</span>;
-                        })}
-                      </div>
-                      <div className="exercise-title mt-4">
-                        <h5>
-                          <MathJax>
-                            câu {index + 1}:
-                            <p
-                              className="mt-2"
-                              dangerouslySetInnerHTML={{
-                                __html: mcexerciseItem?.question,
+                              Hoàn thành
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="success"
+                              onClick={() => {
+                                if (
+                                  currentQuestionIndex <
+                                  listMCExercise.length - 1
+                                ) {
+                                  handleAnswer();
+                                }
                               }}
-                            />
-                          </MathJax>
-                        </h5>
+                            >
+                              Câu tiếp theo
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="exercise-content">
-                        <Form className="answers-of-question">
-                          <div className="answer">
-                            <Form.Check
-                              inline
-                              name="answerOfMCExercise"
-                              type="radio"
-                              id={`option1`}
-                            />
-                            <label style={{ marginTop: "15px" }}>
-                              {" "}
-                              <MathJax>
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: mcexerciseItem?.option1,
-                                  }}
-                                />
-                              </MathJax>
-                            </label>
-                          </div>
-                          <div className="answer">
-                            <Form.Check
-                              inline
-                              name="answerOfMCExercise"
-                              type="radio"
-                              id={`option2`}
-                            />
-                            <label style={{ marginTop: "15px" }}>
-                              {" "}
-                              <MathJax>
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: mcexerciseItem?.option2,
-                                  }}
-                                />
-                              </MathJax>
-                            </label>
-                          </div>
-                          <div className="answer">
-                            <Form.Check
-                              inline
-                              name="answerOfMCExercise"
-                              type="radio"
-                              id={`option3`}
-                            />
-                            <label style={{ marginTop: "15px" }}>
-                              {" "}
-                              <MathJax>
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: mcexerciseItem?.option3,
-                                  }}
-                                />
-                              </MathJax>
-                            </label>
-                          </div>
-                          <div className="answer">
-                            <Form.Check
-                              inline
-                              name="answerOfMCExercise"
-                              type="radio"
-                              id={`option3`}
-                            />
-                            <label style={{ marginTop: "15px" }}>
-                              {" "}
-                              <MathJax>
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: mcexerciseItem?.option4,
-                                  }}
-                                />
-                              </MathJax>
-                            </label>
-                          </div>
-                        </Form>
-                      </div>
-                      <div className="exercise-footer">
-                        <Button variant="warning">
-                          <ion-icon name="sunny-outline"></ion-icon>
-                          <span>Gợi ý</span>
-                        </Button>
-                        {currentQuestionIndex == listMCExercise.length - 1 ? (
-                          <Button
-                            variant="success"
-                            onClick={() => {
-                              handleAnswer();
-                            }}
-                          >
-                            Hoàn thành
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="success"
-                            onClick={() => {
-                              if (
-                                currentQuestionIndex <
-                                listMCExercise.length - 1
-                              ) {
-                                handleAnswer();
-                              }
-                            }}
-                          >
-                            Câu tiếp theo
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                </>
-              );
-          })}
-        </Row>
+                    </Col>
+                  </>
+                );
+            })}
+          </Row>
+        </Container>
       </MathJaxContext>
       <Modal
         show={modalShow}

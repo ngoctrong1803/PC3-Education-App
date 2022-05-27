@@ -7,18 +7,26 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import AuthGate from "../../comps/Gate/AuthGate";
+import withAuth from "../../comps/HOC/withAuth";
+import useAuth from "../../hooks/authHook";
 const Learning = () => {
+  const isAuth = useAuth();
+
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const router = useRouter();
+  const lessionID = router.query.lessionId;
 
   const config = {
     loader: { load: ["input/asciimath"] },
   };
-  const url = window.location.pathname;
-  const arrayTemp = url.split("/");
-  const position = arrayTemp.length - 1;
-  const lessionID = arrayTemp[position];
+  // const url = window.location.pathname;
+  // const arrayTemp = url.split("/");
+  // const position = arrayTemp.length - 1;
+  // const lessionID = arrayTemp[position];
   let subjectTemp = {};
 
   const [subject, setSubject] = useState([]);
@@ -28,7 +36,7 @@ const Learning = () => {
   const [listLession, setListLession] = useState([]);
   const [statistical, setStatistical] = useState(null);
   const [changeLession, setChangeLession] = useState(false);
-
+  const [isLoaded, setIsLoaded] = useState(false);
   async function getContentOfSubject(subjectTemp) {
     try {
       if (subjectTemp.slug) {
@@ -62,7 +70,6 @@ const Learning = () => {
     }
   }
   async function getStatistical() {
-    console.log("lession ID:", lessionID);
     if (lessionID) {
       try {
         const dataToFind = {
@@ -73,29 +80,46 @@ const Learning = () => {
           "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
           dataToFind
         );
+        console.log("đã lấy thống kê", res.data);
         if (res.data.statisticalOfExercise) {
+          console.log("có thống kê");
           setStatistical(res.data.statisticalOfExercise);
         } else {
+          console.log("không có thống kê");
           setStatistical(false);
         }
+        setIsLoaded(true);
       } catch (err) {
-        const errMessage = err?.response.data.message;
-        toast.error(errMessage);
+        console.log("err: ", err);
+        const errMessage = err?.response?.data?.message;
+        toast.error(errMessage || "Đã xảy ra ngoại lệ ");
+        setIsLoaded(true);
       }
     }
   }
+
   function handleChangeLession() {
     setChangeLession(true);
   }
 
   useEffect(() => {
-    getStatistical();
-  }, [changeLession]);
-  useEffect(() => {
-    getContentOfLession();
+    if (isAuth) {
+      console.log("lấy thống kê");
+      getStatistical();
+    }
   }, [lessionID]);
+  useEffect(() => {
+    if (isAuth) {
+      getContentOfLession();
+    }
+  }, [lessionID]);
+  if (!isAuth) {
+    return null;
+  }
+  if (!isLoaded) return null;
   return (
     <>
+      {/* <AuthGate> */}
       <MathJaxContext config={config}>
         <Row>
           <Col xs={9} md={9}>
@@ -181,6 +205,7 @@ const Learning = () => {
           </Col>
         </Row>
       </MathJaxContext>
+      {/* </AuthGate> */}
     </>
   );
 };

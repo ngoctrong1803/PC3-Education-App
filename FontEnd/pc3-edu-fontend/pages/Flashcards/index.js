@@ -4,8 +4,9 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import useAuth from "../../hooks/authHook";
 const Flashcard = () => {
+  const isAuth = useAuth();
   const [listTopic, setListTopic] = useState([]);
   async function getTopics() {
     try {
@@ -17,7 +18,9 @@ const Flashcard = () => {
     }
   }
   useEffect(() => {
-    getTopics();
+    if (isAuth) {
+      getTopics();
+    }
   }, []);
 
   return (
