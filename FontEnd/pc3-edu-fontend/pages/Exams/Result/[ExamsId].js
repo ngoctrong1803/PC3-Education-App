@@ -13,9 +13,11 @@ import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import useAuth from "../../../hooks/authHook";
+import { loginSuccess } from "../../../redux/authSlice";
+import { createAxios } from "../../../helper/axiosJWT";
 const Exam = () => {
   const isAuth = useAuth();
   const config = {
@@ -31,6 +33,8 @@ const Exam = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [timeDone, setTimeDone] = useState(-1);
   const [statisticalOfExam, setStatisticalOfExam] = useState({});
@@ -50,8 +54,8 @@ const Exam = () => {
         userID: currentUser.userInfor._id,
         examID: examID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/get-by-user-and-exam",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/get-by-user-and-exam",
         dataToFind
       );
 
@@ -61,8 +65,8 @@ const Exam = () => {
 
         const statisticalID = res.data.statistical._id;
         try {
-          const resOfResult = await axios.get(
-            "http://localhost:8000/api/result-of-exam/" + statisticalID
+          const resOfResult = await axiosJWT.get(
+            "/api/result-of-exam/" + statisticalID
           );
           setListAnswerOfUser(resOfResult.data.listResultOfExam);
         } catch (err) {
@@ -77,7 +81,7 @@ const Exam = () => {
 
   async function getExam() {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/" + examID);
+      const res = await axiosJWT.get("/api/exam/" + examID);
       setExam(res.data.exam);
     } catch (err) {
       const errMessage = err?.response.data.message;
@@ -87,9 +91,7 @@ const Exam = () => {
 
   async function getContenOfExam() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/exam-question/list/" + examID
-      );
+      const res = await axiosJWT.get("/api/exam-question/list/" + examID);
       console.log("content of exam:", res.data.listExamQuestion);
       setListQuestion(res.data.listExamQuestion);
       setListCateQues(res.data.listCateQues);
@@ -105,8 +107,8 @@ const Exam = () => {
         userID: currentUser.userInfor._id,
         examID: examID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/delete/by-user-and-exam",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/delete/by-user-and-exam",
         dataToDelete
       );
       setTimeout(() => {

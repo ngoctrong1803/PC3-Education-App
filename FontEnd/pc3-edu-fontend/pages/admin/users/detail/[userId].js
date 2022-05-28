@@ -5,6 +5,10 @@ import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import { useRouter } from "next/router";
 import Link from "next/dist/client/link";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 
 const EMAIL_REGEX = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 const PASS_REGEX = /[a-z0-9]/;
@@ -12,11 +16,17 @@ const PHONE_REGEX =
   /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
 
 const UserDetail = () => {
+  const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const userID = arrayTemp[position];
   const router = useRouter();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [userInfor, setUserInfor] = useState({});
 
@@ -61,7 +71,7 @@ const UserDetail = () => {
   const [listRole, setListRole] = useState([]);
   async function getListRole() {
     try {
-      const res = await axios.get("http://localhost:8000/api/role/list");
+      const res = await axiosJWT.get("/api/role/list");
       setListRole(res.data.listRole);
     } catch (err) {
       const errMsg = err.response.data.message;
@@ -70,9 +80,7 @@ const UserDetail = () => {
   }
   async function getUserByID() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/user/get-user-by-id/" + userID
-      );
+      const res = await axiosJWT.get("/api/user/get-user-by-id/" + userID);
       console.log("user infor", res.data.user);
       setUserInfor(res.data.user);
     } catch (err) {
@@ -82,17 +90,21 @@ const UserDetail = () => {
   }
 
   useEffect(() => {
-    getListRole();
-    getUserByID();
+    if (isTeacher) {
+      getListRole();
+      getUserByID();
+    }
   }, []);
   useEffect(() => {
-    setFullname(userInfor.fullname);
-    setEmail(userInfor.email);
-    setRole(userInfor.role);
-    setAddress(userInfor.address);
-    setPhone(userInfor.phone);
-    setBirthday(userInfor.birthday);
-    setStudentClass(userInfor.class);
+    if (isTeacher) {
+      setFullname(userInfor.fullname);
+      setEmail(userInfor.email);
+      setRole(userInfor.role);
+      setAddress(userInfor.address);
+      setPhone(userInfor.phone);
+      setBirthday(userInfor.birthday);
+      setStudentClass(userInfor.class);
+    }
   }, [userInfor]);
 
   return (
@@ -127,8 +139,7 @@ const UserDetail = () => {
             <div
               className="d-flex flex flex-column justify-content-center align-items-center p-3"
               style={{
-                backgroundImage:
-                  "url('/background/skye-avatar-background2.jpg')",
+                backgroundImage: "url('/background/background-avatar2.jpg')",
                 backgroundPosition: "center" /* Center the image */,
                 backgroundRepeat: "no-repeat" /* Do not repeat the image */,
                 backgroundSize: "cover",
@@ -140,12 +151,16 @@ const UserDetail = () => {
                   width: "200px",
                   height: "200px",
                   borderRadius: "50%",
-                  border: "solid #fff 4px",
+                  border: "solid #1493fe 4px",
                 }}
                 src={userInfor.avatar}
               ></img>
               <span
-                style={{ fontSize: "22px", fontWeight: "600", color: "#fff" }}
+                style={{
+                  fontSize: "28px",
+                  fontWeight: "700",
+                  color: "#1493fe",
+                }}
               >
                 {userInfor.fullname}
               </span>

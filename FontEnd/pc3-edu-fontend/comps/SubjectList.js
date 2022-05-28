@@ -15,12 +15,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/dist/client/link";
 
 const SubjectList = (props) => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const grade = props.grade;
   const [listSubject, setListSubject] = useState([]);
   async function getListSubject() {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/subjects/list-subject-by-grade/" + grade
+        host + "/api/subjects/list-subject-by-grade/" + grade
       );
       console.log("subject list:", res.data);
       setListSubject(res.data.listSubject);

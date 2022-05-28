@@ -14,7 +14,7 @@ const AuthGateAdmin = ({ children }) => {
     console.log(user);
     if (!user?.userInfor?.role || user?.userInfor?.role !== "admin") {
       router.replace("/");
-      toast.error("Bạn không có quyền truy cập!");
+      toast.warning("Bạn không có quyền truy cập!");
       return;
     }
     setIsLoaded(true);

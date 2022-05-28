@@ -6,8 +6,18 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Link from "next/dist/client/link";
 import * as XLSX from "xlsx";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateExercise = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [editorLoaded, setEditorLoaded] = useState(false);
 
   const url = window.location.pathname;
@@ -35,8 +45,8 @@ const CreateExercise = () => {
   // handel get content
   async function getInforOfLession() {
     try {
-      const url = "http://localhost:8000/api/lession/" + lessionID;
-      const res = await axios.get(url);
+      const url = "/api/lession/" + lessionID;
+      const res = await axiosJWT.get(url);
       setSubject(res.data.subjectOfUnit);
       setUnit(res.data.unitOfLession);
       setLession(res.data.lession);
@@ -47,9 +57,7 @@ const CreateExercise = () => {
   }
   async function getListMCExercise() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/mcexercise/list/" + lessionID
-      );
+      const res = await axiosJWT.get("/api/mcexercise/list/" + lessionID);
       setListMCExercise(res.data.listMCExercise);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -58,8 +66,8 @@ const CreateExercise = () => {
   }
   async function getCategoryOfExercise() {
     try {
-      const url = "http://localhost:8000/api/category-exercise/list";
-      const res = await axios.get(url);
+      const url = "/api/category-exercise/list";
+      const res = await axiosJWT.get(url);
       console.log("data:", res.data.listCateExer);
       setCategoryOfExercise(res.data.listCateExer);
     } catch (err) {
@@ -91,11 +99,8 @@ const CreateExercise = () => {
         lessionID,
       };
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/mcexercise/create",
-          newExercise
-        );
-        toast.message("thêm mới bài tập thành công");
+        const res = await axiosJWT.post("/api/mcexercise/create", newExercise);
+        toast.success("thêm mới bài tập thành công");
       } catch (err) {
         const errMessage = err.response?.data.message;
         toast.error(errMessage);
@@ -127,10 +132,12 @@ const CreateExercise = () => {
   ]);
 
   useEffect(() => {
-    getInforOfLession();
-    getCategoryOfExercise();
-    getListMCExercise();
-    setEditorLoaded(true);
+    if (isTeacher) {
+      getInforOfLession();
+      getCategoryOfExercise();
+      getListMCExercise();
+      setEditorLoaded(true);
+    }
   }, []);
 
   // handle upload file excel
@@ -257,8 +264,8 @@ const CreateExercise = () => {
       let checkError = false;
       for (let i = 0; i < listQuestionInExcelValid.length; i++) {
         try {
-          const res = await axios.post(
-            "http://localhost:8000/api/mcexercise/create",
+          const res = await axiosJWT.post(
+            "/api/mcexercise/create",
             listQuestionInExcelValid[i]
           );
           counter++;

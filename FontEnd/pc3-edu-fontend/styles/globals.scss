@@ -904,12 +904,14 @@ ul.navbar-home {
       list-style: none;
       margin-top: 10px;
       .rank-item {
+        padding: 7px;
+        border-radius: 5px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-right: 15px;
         border-bottom: rgba(196, 196, 196, 0.5) solid 0.5px;
-        background-color: #ffffff;
+        background-color: #fcffff;
         padding-left: 5px;
         padding-bottom: 7px;
         .rank-item-user {
@@ -3588,6 +3590,25 @@ body{
       border-radius: 25px;
       padding-right: 35px;
      font-weight: 500;
+    }
+  }
+}
+.students-top-content{
+  table{
+    align-items: center;
+    tr {
+      th {
+        text-align: center;
+        background-color: #0d6efd;
+        color: #fff;
+      }
+      td {
+        text-align: center;
+        vertical-align: middle;
+        button {
+          margin: 3px;
+        }
+      }
     }
   }
 }

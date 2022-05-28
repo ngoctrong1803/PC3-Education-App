@@ -4,17 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Rank from "../../comps/Rank";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import CountDown from "../../comps/Timer/CountDown";
 import useAuth from "../../hooks/authHook";
+import { loginSuccess } from "../../redux/authSlice";
+import { createAxios } from "../../helper/axiosJWT";
 const Exam = () => {
   const isAuth = useAuth();
   const config = {
     loader: { load: ["input/asciimath"] },
   };
+
   const [listQuestion, setListQuestion] = useState([]);
   const [exam, setExam] = useState({});
   const url = window.location.pathname;
@@ -25,6 +28,8 @@ const Exam = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const router = useRouter();
 
   const [timerExam, setTimerExam] = useState(-1);
@@ -49,8 +54,8 @@ const Exam = () => {
         userID: currentUser.userInfor._id,
         examID: examID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/get-by-user-and-exam",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/get-by-user-and-exam",
         dataToFind
       );
       if (res.data.statistical) {
@@ -61,7 +66,7 @@ const Exam = () => {
 
   async function getExam() {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/" + examID);
+      const res = await axiosJWT.get("/api/exam/" + examID);
       setExam(res.data.exam);
     } catch (err) {
       const errMessage = err?.response.data.message;
@@ -71,9 +76,7 @@ const Exam = () => {
 
   async function getContenOfExam() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/exam-question/list/" + examID
-      );
+      const res = await axiosJWT.get("/api/exam-question/list/" + examID);
       console.log("content of exam:", res.data.listExamQuestion);
       setListQuestion(res.data.listExamQuestion);
     } catch (err) {
@@ -144,8 +147,8 @@ const Exam = () => {
       examID: examID,
     };
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/create",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/create",
         statisticalOfExam
       );
       if (res.data.statisticalOfExam) {
@@ -157,8 +160,8 @@ const Exam = () => {
             exaQuesID: listAnswerOfUser[i].questionID,
           };
           try {
-            const resResult = await axios.post(
-              "http://localhost:8000/api/result-of-exam/create",
+            const resResult = await axiosJWT.post(
+              "/api/result-of-exam/create",
               resultOfExam
             );
           } catch (err) {
@@ -254,8 +257,8 @@ const Exam = () => {
       examID: examID,
     };
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/create",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/create",
         statisticalOfExam
       );
       if (res.data.statisticalOfExam) {
@@ -267,8 +270,8 @@ const Exam = () => {
             exaQuesID: listAnswerTemp[i].questionID,
           };
           try {
-            const resResult = await axios.post(
-              "http://localhost:8000/api/result-of-exam/create",
+            const resResult = await axiosJWT.post(
+              "/api/result-of-exam/create",
               resultOfExam
             );
           } catch (err) {

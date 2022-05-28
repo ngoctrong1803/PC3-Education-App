@@ -13,7 +13,12 @@ import Link from "next/dist/client/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Statistical = () => {
+  const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -22,9 +27,15 @@ const Statistical = () => {
   const [listStatistical, setListStatistical] = useState([]);
   const [contentOfExam, setContentOfExam] = useState({});
 
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
+
   async function getContentOfExam() {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/" + examID);
+      const res = await axiosJWT.get("/api/exam/" + examID);
       console.log("res", res.data);
       setContentOfExam(res.data.exam);
     } catch (error) {
@@ -37,8 +48,8 @@ const Statistical = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getStatisticalOfExam(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/exam/" + examID,
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/exam/" + examID,
         {
           page: page,
           contentToFind: contentToFind,
@@ -58,10 +69,14 @@ const Statistical = () => {
     }
   }
   useEffect(() => {
-    getContentOfExam();
+    if (isTeacher) {
+      getContentOfExam();
+    }
   }, []);
   useEffect(() => {
-    getStatisticalOfExam(1);
+    if (isTeacher) {
+      getStatisticalOfExam(1);
+    }
   }, [contentToFind]);
   return (
     <div className="admin-statistical-page">

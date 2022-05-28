@@ -14,13 +14,23 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useTeacherAuth from "../../../hooks/authTeacherHook";
 const Topic = () => {
+  const isTeacher = useTeacherAuth();
   const [listTopic, setListTopic] = useState([]);
 
   const [showAddTopic, setShowAddTopic] = useState(false);
   const [topicName, setTopicName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   function handleCloseAddTopic() {
     setShowAddTopic(false);
@@ -38,10 +48,7 @@ const Topic = () => {
       toast.error("thông tin chưa đầy đủ để tạo chủ đề");
     } else {
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/topic/create",
-          newTopic
-        );
+        const res = await axiosJWT.post("/api/topic/create", newTopic);
         toast.success("thêm mới chủ đề thành công");
         handleCloseAddTopic();
       } catch (err) {
@@ -56,12 +63,9 @@ const Topic = () => {
 
   async function getTopic(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/topic/list/" + page,
-        {
-          topicName: nameToFind,
-        }
-      );
+      const res = await axiosJWT.post("/api/topic/list/" + page, {
+        topicName: nameToFind,
+      });
       console.log("res", res.data.listTopic);
       setListTopic(res.data.listTopic);
       const listTotalTopic = [];
@@ -76,9 +80,10 @@ const Topic = () => {
   }
 
   useEffect(() => {
-    getTopic(1);
+    if (isTeacher) {
+      getTopic(1);
+    }
   }, [nameToFind]);
-  useEffect(() => {}, []);
   return (
     <div className="admin-subjects-page">
       <div className="admin-subjects-title">

@@ -45,7 +45,7 @@ const AdminNavbar = () => {
                 navbarScroll
               >
                 <span
-                  style={{ fontSize: "18px", color: "#fff", fontWeight: "600" }}
+                  style={{ fontSize: "18px", color: "#fff", fontWeight: "700" }}
                 >
                   Trường THPT Phù Cát 3
                 </span>
@@ -53,11 +53,16 @@ const AdminNavbar = () => {
               <Form className="d-flex">
                 <FormControl
                   type="search"
-                  placeholder="Search"
+                  placeholder="Tìm kiếm"
                   className="me-2"
                   aria-label="Search"
                 />
-                <Button variant="outline-light">Search</Button>
+                <Button
+                  variant="outline-light"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <ion-icon name="search-outline"></ion-icon>
+                </Button>
               </Form>
               {curentAdmin ? (
                 <>

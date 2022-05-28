@@ -5,10 +5,11 @@ import Link from "next/link";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Event = () => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [listBLog, setListBLog] = useState([]);
   async function getListBLog() {
     try {
-      const res = await axios.get("http://localhost:8000/api/blog/list-index");
+      const res = await axios.get(host + "/api/blog/list-index");
       setListBLog(res.data.listBlog);
       console.log("res blog", res.data.listBlog);
     } catch (error) {

@@ -15,11 +15,22 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Exams = () => {
+  const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const examID = arrayTemp[position];
+
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [questionID, setQuestionID] = useState();
   const [comfirmDeleteQues, setComfirmDeleteQues] = useState(false);
@@ -31,8 +42,8 @@ const Exams = () => {
   };
   async function handleDeleteQuestion() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/exam-question/delete/" + questionID
+      const res = await axiosJWT.delete(
+        "/api/exam-question/delete/" + questionID
       );
       getQuestionOfExam(1);
       handleCloseComfirmDeleteQues();
@@ -48,9 +59,7 @@ const Exams = () => {
   const [listQuestion, setListQuestion] = useState([]);
 
   async function getCatExe() {
-    const res = await axios.get(
-      "http://localhost:8000/api/category-exercise/list"
-    );
+    const res = await axiosJWT.get("/api/category-exercise/list");
     setListCatExe(res.data.listCateExer);
   }
   // handle filter anh paginnation
@@ -59,14 +68,11 @@ const Exams = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getQuestionOfExam(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/exam-question/list/" + examID,
-        {
-          contentToFind: contentToFind,
-          page: page,
-          cateQues: cateQues,
-        }
-      );
+      const res = await axiosJWT.post("/api/exam-question/list/" + examID, {
+        contentToFind: contentToFind,
+        page: page,
+        cateQues: cateQues,
+      });
 
       setListQuestion(res.data.listExamQuestion);
       const listTotalPage = [];
@@ -81,11 +87,15 @@ const Exams = () => {
   }
 
   useEffect(() => {
-    getCatExe();
-    getQuestionOfExam(1);
+    if (isTeacher) {
+      getCatExe();
+      getQuestionOfExam(1);
+    }
   }, []);
   useEffect(() => {
-    getQuestionOfExam(1);
+    if (isTeacher) {
+      getQuestionOfExam(1);
+    }
   }, [contentToFind, cateQues]);
   const config = {
     loader: { load: ["input/asciimath"] },

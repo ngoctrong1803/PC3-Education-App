@@ -13,9 +13,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import useAuth from "../../../hooks/authHook";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
 const Exercise = () => {
   const isAuth = useAuth();
   const router = useRouter();
@@ -42,6 +44,8 @@ const Exercise = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   async function getResult() {
     const dataToFind = {
@@ -49,20 +53,16 @@ const Exercise = () => {
       lessionID: lessionID,
     };
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/by-user-and-lession",
         dataToFind
       );
 
       if (res.data.statisticalOfExercise._id) {
         const statisticalID = res.data.statisticalOfExercise._id;
         try {
-          const resOfResult = await axios.get(
-            "http://localhost:8000/api/result-of-exercise/" + statisticalID
-          );
-          console.log(
-            "danh sách câu trả lời user:",
-            resOfResult.data.listResultOfExercise
+          const resOfResult = await axiosJWT.get(
+            "/api/result-of-exercise/" + statisticalID
           );
           setListAnswerOfUser(resOfResult.data.listResultOfExercise);
         } catch (err) {
@@ -81,9 +81,8 @@ const Exercise = () => {
   async function getMCExercises() {
     if (lessionID) {
       try {
-        const res = await axios.get(
-          "http://localhost:8000/api/mcexercise/mcexercise-by-lession/" +
-            lessionID
+        const res = await axiosJWT.get(
+          "/api/mcexercise/mcexercise-by-lession/" + lessionID
         );
         setLession(res.data.lession);
         console.log("bài học:", res.data.lession);
@@ -102,8 +101,8 @@ const Exercise = () => {
         userID: currentUser.userInfor._id,
         lessionID: lessionID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/delete/by-user-and-lession",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/delete/by-user-and-lession",
         dataToFind
       );
       router.push("/Learning/" + lessionID);

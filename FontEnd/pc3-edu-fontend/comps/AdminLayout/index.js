@@ -26,21 +26,21 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <AuthGateAdmin>
-      <Style>
-        <div className="admin-page">
-          <Row>
-            <Col xs={2} md={2} lg={2} className="p-0">
-              <AdminSlidebar></AdminSlidebar>
-            </Col>
-            <Col xs={10} md={10} lg={10}>
-              <AdminNavbar></AdminNavbar>
-              <div className="admin-content">{children}</div>
-            </Col>
-          </Row>
-        </div>
-      </Style>
-    </AuthGateAdmin>
+    // <AuthGateAdmin>
+    <Style>
+      <div className="admin-page">
+        <Row>
+          <Col xs={2} md={2} lg={2} className="p-0">
+            <AdminSlidebar></AdminSlidebar>
+          </Col>
+          <Col xs={10} md={10} lg={10}>
+            <AdminNavbar></AdminNavbar>
+            <div className="admin-content">{children}</div>
+          </Col>
+        </Row>
+      </div>
+    </Style>
+    // </AuthGateAdmin>
   );
 };
 export default AdminLayout;

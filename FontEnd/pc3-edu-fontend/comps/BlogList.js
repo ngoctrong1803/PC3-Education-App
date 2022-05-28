@@ -15,12 +15,11 @@ import Link from "next/link";
 import { Navigation, Scrollbar } from "swiper";
 
 const BlogList = () => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [listBlog, setListBlog] = useState([]);
   async function getListBlog() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/blog/list-blog-index"
-      );
+      const res = await axios.get(host + "/api/blog/list-blog-index");
       console.log("blog list:", res.data);
       setListBlog(res.data.listBlog);
     } catch (error) {

@@ -15,7 +15,17 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Statistical = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -41,8 +51,8 @@ const Statistical = () => {
 
   async function getStatisticalOfUnit(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/unit/" + unitID,
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/unit/" + unitID,
         {
           page: page,
           contentToFind: contentToFind,
@@ -64,7 +74,9 @@ const Statistical = () => {
     }
   }
   useEffect(() => {
-    getStatisticalOfUnit(1);
+    if (isTeacher) {
+      getStatisticalOfUnit(1);
+    }
   }, [contentToFind]);
 
   return (

@@ -5,12 +5,20 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import useAuth from "../../hooks/authHook";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Flashcard = () => {
   const isAuth = useAuth();
   const [listTopic, setListTopic] = useState([]);
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   async function getTopics() {
     try {
-      const res = await axios.get("http://localhost:8000/api/topic/list");
+      const res = await axiosJWT.get("/api/topic/list");
       setListTopic(res.data.listTopic);
     } catch (err) {
       const errMessage = err?.response?.data.message ?? "xảy ra ngoại lệ";

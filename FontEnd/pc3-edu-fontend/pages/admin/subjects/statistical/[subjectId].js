@@ -16,7 +16,17 @@ import Link from "next/dist/client/link";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Statistical = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -32,9 +42,8 @@ const Statistical = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getStatisticalOfSubject(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/subject/" +
-          subjectID,
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/subject/" + subjectID,
         {
           page: page,
           contentToFind: contentToFind,
@@ -56,7 +65,9 @@ const Statistical = () => {
     }
   }
   useEffect(() => {
-    getStatisticalOfSubject(1);
+    if (isTeacher) {
+      getStatisticalOfSubject(1);
+    }
   }, [contentToFind]);
   const [userIDShowDetail, setUserIDShowDetail] = useState("");
   const [showDetailStatiscal, setShowDetailStatistical] = useState(false);

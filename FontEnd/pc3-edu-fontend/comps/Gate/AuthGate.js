@@ -15,7 +15,7 @@ const AuthGate = ({ children }) => {
   useEffect(() => {
     if (!user?.userInfor?.role) {
       router.replace("/");
-      toast.error("Bạn không có quyền truy cập!");
+      toast.info("Vui lòng đăng nhập để tiếp tục!");
       return <div></div>;
     }
     setIsLoaded(true);

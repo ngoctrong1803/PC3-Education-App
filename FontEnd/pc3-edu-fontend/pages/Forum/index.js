@@ -14,13 +14,17 @@ import Link from "next/dist/client/link";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Forum = () => {
   const isAuth = useAuth();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [show, setShow] = useState("event");
   //blog
   const [listBlog, setListBlog] = useState([]);
@@ -64,9 +68,7 @@ const Forum = () => {
 
   async function getBlogCategory() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-blog/list"
-      );
+      const res = await axiosJWT.get("/api/category-blog/list");
       setListCateBlog(res.data.listCateBlog);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -75,7 +77,7 @@ const Forum = () => {
   }
   async function getListBlog() {
     try {
-      const res = await axios.get("http://localhost:8000/api/blog/list");
+      const res = await axiosJWT.get("/api/blog/list");
 
       const arrayDate = [];
       // date create
@@ -106,9 +108,7 @@ const Forum = () => {
   // function question in forum
   async function getListQuestionInForum() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/question-in-forum/list"
-      );
+      const res = await axiosJWT.get("/api/question-in-forum/list");
 
       const arrayDate = [];
       // date create
@@ -140,9 +140,8 @@ const Forum = () => {
   // function question in forum
   async function getQuestionInForumByUser() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/question-in-forum/user/" +
-          currentUser.userInfor._id
+      const res = await axiosJWT.get(
+        "/api/question-in-forum/user/" + currentUser.userInfor._id
       );
       setListQuestionOfUser(res.data.listQuestionInForum);
     } catch (err) {
@@ -161,8 +160,8 @@ const Forum = () => {
           userID: currentUser.userInfor._id,
           catQueID: questionCateID,
         };
-        const res = await axios.post(
-          "http://localhost:8000/api/question-in-forum/create",
+        const res = await axiosJWT.post(
+          "/api/question-in-forum/create",
           dataToAdd
         );
         toast.success(
@@ -193,9 +192,8 @@ const Forum = () => {
         catQueID: questionCateID,
       };
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/question-in-forum/update/" +
-            questionIDToUpdate,
+        const res = await axiosJWT.put(
+          "/api/question-in-forum/update/" + questionIDToUpdate,
           dataToUpdate
         );
         toast.success(
@@ -212,9 +210,8 @@ const Forum = () => {
 
   async function handleDeleteQuestion() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/question-in-forum/delete/" +
-          questionIDToDelete
+      const res = await axiosJWT.delete(
+        "/api/question-in-forum/delete/" + questionIDToDelete
       );
       toast.success("Xóa câu hỏi thành công");
     } catch (err) {
@@ -228,9 +225,7 @@ const Forum = () => {
 
   async function getListCateQuestion() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-question/list"
-      );
+      const res = await axiosJWT.get("/api/category-question/list");
       setListCateQuestion(res.data.listCateQuestion);
     } catch (err) {
       const errMessage = err.response.data.message;

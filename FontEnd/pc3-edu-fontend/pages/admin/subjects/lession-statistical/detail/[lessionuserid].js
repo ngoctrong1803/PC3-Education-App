@@ -13,13 +13,22 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 const Exercise = () => {
+  const isTeacher = useTeacherAuth();
   const router = useRouter();
   const config = {
     loader: { load: ["input/asciimath"] },
   };
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -47,8 +56,8 @@ const Exercise = () => {
       lessionID: lessionID,
     };
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/by-user-and-lession",
         dataToFind
       );
       setStatisticalInfor(res.data);
@@ -56,8 +65,8 @@ const Exercise = () => {
       if (res.data.statisticalOfExercise._id) {
         const statisticalID = res.data.statisticalOfExercise._id;
         try {
-          const resOfResult = await axios.get(
-            "http://localhost:8000/api/result-of-exercise/" + statisticalID
+          const resOfResult = await axiosJWT.get(
+            "/api/result-of-exercise/" + statisticalID
           );
           setListAnswerOfUser(resOfResult.data.listResultOfExercise);
         } catch (err) {
@@ -76,9 +85,8 @@ const Exercise = () => {
   async function getMCExercises() {
     if (lessionID) {
       try {
-        const res = await axios.get(
-          "http://localhost:8000/api/mcexercise/mcexercise-by-lession/" +
-            lessionID
+        const res = await axiosJWT.get(
+          "/api/mcexercise/mcexercise-by-lession/" + lessionID
         );
         setLession(res.data.lession);
 
@@ -92,8 +100,10 @@ const Exercise = () => {
   }
 
   useEffect(() => {
-    getResult();
-    getMCExercises();
+    if (isTeacher) {
+      getResult();
+      getMCExercises();
+    }
   }, []);
 
   return (

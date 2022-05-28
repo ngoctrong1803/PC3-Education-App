@@ -25,6 +25,9 @@ import FlashcardQuiz from "../../comps/FlashcardQuiz";
 import FlashcardWrite from "../../comps/FlashcardWrite";
 import FlashcardMatch from "../../comps/FlashcardMatch";
 import useAuth from "../../hooks/authHook";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Topic = () => {
   const isAuth = useAuth();
   const url = window.location.pathname;
@@ -32,6 +35,11 @@ const Topic = () => {
   const position = arrayTemp.length - 1;
   const topicID = arrayTemp[position];
   //const listVoices = window.speechSynthesis.getVoices();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [show, setShow] = useState("flashcard");
 
@@ -55,9 +63,7 @@ const Topic = () => {
   }
   async function getFlashcardByTopicID() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/flashcard/list/" + topicID
-      );
+      const res = await axiosJWT.get("/api/flashcard/list/" + topicID);
       setTopic(res.data.topic);
       setListFlashcard(ramdomArray(res.data.listFlashcard));
     } catch (err) {

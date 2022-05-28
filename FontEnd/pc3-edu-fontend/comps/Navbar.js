@@ -6,8 +6,10 @@ import { useEffect, useState, useRef } from "react";
 import Head from "next/head";
 import { Helmet } from "react-helmet";
 import { useHistory, useLocation } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 const Navbar = () => {
+  const { asPath } = useRouter();
   const sidebarRef = useRef();
   const homeButton = useRef();
   const learningButton = useRef();
@@ -21,6 +23,7 @@ const Navbar = () => {
   const handleMenuToggleClick = () => {
     sidebarRef.current.classList.toggle("open");
   };
+
   useEffect(() => {
     const listSidebar = document.querySelectorAll(".sidebar__item");
     const activeItem = (itemClick) => {
@@ -36,8 +39,7 @@ const Navbar = () => {
     });
   }, []);
   useEffect(() => {
-    const url = window.location.pathname;
-
+    const url = asPath;
     if (
       url.includes("Subjects") ||
       url.includes("Learning") ||

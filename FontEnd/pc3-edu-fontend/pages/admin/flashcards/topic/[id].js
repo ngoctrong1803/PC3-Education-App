@@ -14,9 +14,13 @@ import Link from "next/dist/client/link";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Flashcard = () => {
+  const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
@@ -37,6 +41,11 @@ const Flashcard = () => {
   const [meaningInVietnamese, setMeaningInVietnamese] = useState("");
   const [explain, setExplain] = useState("");
   const [example, setExample] = useState("");
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   function handleCloseAddFlashcard() {
     setShowAddFlashcard(false);
@@ -74,10 +83,10 @@ const Flashcard = () => {
   const [nameToFind, setNameToFind] = useState("");
   async function getFlashcard(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/flashcard/list/" + topicID,
-        { page: page, nameToFind: nameToFind }
-      );
+      const res = await axiosJWT.post("/api/flashcard/list/" + topicID, {
+        page: page,
+        nameToFind: nameToFind,
+      });
       const listTotalPage = [];
       for (let i = 0; i < res.data.totalPage; i++) {
         listTotalPage.push(i + 1);
@@ -109,10 +118,7 @@ const Flashcard = () => {
       toast.error("thông tin chưa đầy đủ để tạo Flashcard");
     } else {
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/flashcard/create",
-          newFlashcard
-        );
+        const res = await axiosJWT.post("/api/flashcard/create", newFlashcard);
         toast.success("thêm mới flashcard thành công");
         handleCloseAddFlashcard();
         getFlashcard(1);
@@ -134,8 +140,8 @@ const Flashcard = () => {
       toast.error("vui lòng nhập đầy đủ thông tin Flashcard");
     } else {
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/flashcard/update/" + flashcardID,
+        const res = await axiosJWT.put(
+          "/api/flashcard/update/" + flashcardID,
           updateFlashcard
         );
         toast.success("cập nhật flashcard thành công");
@@ -149,9 +155,7 @@ const Flashcard = () => {
   }
   async function handleDeleteFlashcard() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/flashcard/delete/" + flashcardID
-      );
+      const res = await axiosJWT.delete("/api/flashcard/delete/" + flashcardID);
       toast.success("đã xóa flashcard");
       handleCloseConfirmDeleteFlashcard();
       getFlashcard(1);
@@ -261,8 +265,8 @@ const Flashcard = () => {
       let checkError = false;
       for (let i = 0; i < listFlashcardInExcelValid.length; i++) {
         try {
-          const res = await axios.post(
-            "http://localhost:8000/api/flashcard/create",
+          const res = await axiosJWT.post(
+            "/api/flashcard/create",
             listFlashcardInExcelValid[i]
           );
           counter++;
@@ -287,7 +291,9 @@ const Flashcard = () => {
   }
 
   useEffect(() => {
-    getFlashcard(1);
+    if (isTeacher) {
+      getFlashcard(1);
+    }
   }, [nameToFind]);
   return (
     <div className="admin-subjects-page">

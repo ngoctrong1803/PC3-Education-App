@@ -31,8 +31,10 @@ import "swiper/css/pagination";
 import { Grid, Pagination } from "swiper";
 import Link from "next/dist/client/link";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Subject = () => {
   const isAuth = useAuth();
   const [grade, setGrade] = useState(10);
@@ -46,14 +48,16 @@ const Subject = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const changeGrade = (grade) => {
     setGrade(grade);
   };
   async function getSubject() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/list-subject-by-grade/" + grade
+      const res = await axiosJWT.get(
+        "/api/subjects/list-subject-by-grade/" + grade
       );
       console.log("danh sách môn học:", res.data);
       setListSubject(res.data.listSubject);
@@ -64,9 +68,8 @@ const Subject = () => {
   }
   async function getSubjectStudying() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/statistical-of-exercise/user/" +
-          currentUser.userInfor._id
+      const res = await axiosJWT.get(
+        "/api/statistical-of-exercise/user/" + currentUser.userInfor._id
       );
       setListSubjectStudying(res.data.listSubject);
     } catch (error) {
@@ -75,9 +78,7 @@ const Subject = () => {
   }
   async function getCurrentSubject(subjectSlug) {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/content/" + subjectSlug
-      );
+      const res = await axiosJWT.get("/api/subjects/content/" + subjectSlug);
       setCurrentSubject(res.data.subject);
       setCurrentListLession(res.data.lessions);
       setCurrentListUnit(res.data.units);
@@ -92,8 +93,8 @@ const Subject = () => {
         userID: currentUser.userInfor._id,
         subjectID: subjectID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/by-user-and-subject",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/by-user-and-subject",
         dataToSend
       );
       console.log("đã lấy data statistical:", res.data);

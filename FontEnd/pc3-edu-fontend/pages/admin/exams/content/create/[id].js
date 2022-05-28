@@ -5,8 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import * as XLSX from "xlsx";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateQuestion = () => {
+  const isTeacher = useTeacherAuth();
   const [editorLoaded, setEditorLoaded] = useState(false);
 
   const url = window.location.pathname;
@@ -25,12 +30,16 @@ const CreateQuestion = () => {
   const [cateExerID, setCateExerID] = useState("");
   const [recommend, setRecommend] = useState("");
   const [explain, setExplain] = useState("");
-
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   // handel get content
   async function getInforOfExam() {
     try {
-      const url = "http://localhost:8000/api/exam/" + examID;
-      const res = await axios.get(url);
+      const url = "/api/exam/" + examID;
+      const res = await axiosJWT.get(url);
       setExam(res.data.exam);
     } catch (err) {
       const errMessage = err.response?.data.message;
@@ -39,8 +48,8 @@ const CreateQuestion = () => {
   }
   async function getCategoryOfQuestion() {
     try {
-      const url = "http://localhost:8000/api/category-exercise/list";
-      const res = await axios.get(url);
+      const url = "/api/category-exercise/list";
+      const res = await axiosJWT.get(url);
       setCategoryOfQuestion(res.data.listCateExer);
     } catch (err) {
       const errMessage = err.response?.data.message;
@@ -73,8 +82,8 @@ const CreateQuestion = () => {
         examID,
       };
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/exam-question/create",
+        const res = await axiosJWT.post(
+          "/api/exam-question/create",
           newQuestion
         );
         toast.success("thêm mới câu hỏi thành công");
@@ -88,7 +97,7 @@ const CreateQuestion = () => {
   const [listExam, setListExam] = useState([]);
   async function getExams() {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/list");
+      const res = await axiosJWT.get("/api/exam/list");
       console.log("list exam:", res.data.listExam);
       setListExam(res.data.listExam);
     } catch (err) {
@@ -98,9 +107,7 @@ const CreateQuestion = () => {
   }
   async function getQuestionOfExam() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/exam-question/list/" + examID
-      );
+      const res = await axiosJWT.get("/api/exam-question/list/" + examID);
       console.log("list question:", res);
       setListQuestionInExam(res.data.listExamQuestion);
     } catch (err) {
@@ -110,11 +117,13 @@ const CreateQuestion = () => {
   }
 
   useEffect(() => {
-    getInforOfExam();
-    getCategoryOfQuestion();
-    setEditorLoaded(true);
-    getExams();
-    getQuestionOfExam();
+    if (isTeacher) {
+      getInforOfExam();
+      getCategoryOfQuestion();
+      setEditorLoaded(true);
+      getExams();
+      getQuestionOfExam();
+    }
   }, []);
 
   // handle upload file excel
@@ -243,8 +252,8 @@ const CreateQuestion = () => {
       let checkError = false;
       for (let i = 0; i < listQuestionInExcelValid.length; i++) {
         try {
-          const res = await axios.post(
-            "http://localhost:8000/api/exam-question/create",
+          const res = await axiosJWT.post(
+            "/api/exam-question/create",
             listQuestionInExcelValid[i]
           );
           counter++;

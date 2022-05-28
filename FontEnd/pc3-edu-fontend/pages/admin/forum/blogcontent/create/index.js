@@ -13,9 +13,19 @@ import Editor from "../../../../../comps/Ckeditor";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useAdminAuth from "../../../../../hooks/authAdminHook";
 
 const CreateQuestion = () => {
+  const isAdmin = useAdminAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
+
   const [editorLoaded, setEditorLoaded] = useState(false);
   const curentAdmin = useSelector((state) => state.auth.login.currentUser);
 
@@ -44,14 +54,14 @@ const CreateQuestion = () => {
     setShowConfirmDeleteCategory(true);
 
   useEffect(() => {
-    setEditorLoaded(true);
-    getBlogCategory();
+    if (isAdmin) {
+      setEditorLoaded(true);
+      getBlogCategory();
+    }
   }, []);
   async function getBlogCategory() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-blog/list"
-      );
+      const res = await axiosJWT.get("/api/category-blog/list");
       setListBlogCategory(res.data.listCateBlog);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -65,10 +75,7 @@ const CreateQuestion = () => {
       const dataToAdd = {
         category: categoryName,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/category-blog/create",
-        dataToAdd
-      );
+      const res = await axiosJWT.post("/api/category-blog/create", dataToAdd);
       toast.success("Thêm mới thể loại thành công");
       getBlogCategory();
       try {
@@ -83,8 +90,8 @@ const CreateQuestion = () => {
   async function handleDeleteCategory() {
     if (categoryID != "") {
       try {
-        const res = await axios.delete(
-          "http://localhost:8000/api/category-blog/delete/" + categoryID
+        const res = await axiosJWT.delete(
+          "/api/category-blog/delete/" + categoryID
         );
         toast.success("đã xóa thể loại bài viết");
       } catch (err) {
@@ -115,10 +122,7 @@ const CreateQuestion = () => {
         userID: curentAdmin.userInfor._id,
       };
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/blog/create",
-          blog
-        );
+        const res = await axiosJWT.post("/api/blog/create", blog);
         toast.success("Thêm mới bài biết thành công");
       } catch (err) {
         const errMessage = err.response.data.message;

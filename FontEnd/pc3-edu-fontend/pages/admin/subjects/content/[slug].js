@@ -14,11 +14,21 @@ import Link from "next/dist/client/link";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Content = () => {
+  const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const slug = arrayTemp[position];
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   // property for function
   const [unitID, setUnitID] = useState();
@@ -72,13 +82,11 @@ const Content = () => {
   // handel get content
   async function getConentOfSubject() {
     try {
-      console.log("slug trong efect: ", slug);
-      const url = "http://localhost:8000/api/subjects/content/" + slug;
-      console.log("url:", url);
-      const res = await axios.get(url);
+      const url = "/api/subjects/content/" + slug;
+      const res = await axiosJWT.get(url);
       setSubject(res.data.subject);
       setUnits(res.data.units);
-      console.log("nội dung bài học:", res.data.lessions);
+
       setLessions(res.data.lessions);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -95,10 +103,7 @@ const Content = () => {
           unitName,
           slug,
         };
-        const res = await axios.post(
-          "http://localhost:8000/api/units/create",
-          newUnit
-        );
+        const res = await axiosJWT.post("/api/units/create", newUnit);
         toast.success("thêm mới chương thành công");
         handleCloseAddUnit();
         getConentOfSubject();
@@ -116,8 +121,8 @@ const Content = () => {
       toast.errror("vui lòng nhập tên chương");
     } else {
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/units/update/" + unitID,
+        const res = await axiosJWT.put(
+          "/api/units/update/" + unitID,
           updateUnit
         );
         toast.success("cập nhật chương thành công");
@@ -146,10 +151,7 @@ const Content = () => {
           lessionName,
           lessionNumber,
         };
-        const res = await axios.post(
-          "http://localhost:8000/api/lession/create",
-          newLession
-        );
+        const res = await axiosJWT.post("/api/lession/create", newLession);
         toast.success("thêm mới bài học thành công");
         handleCloseAddLession();
         getConentOfSubject();
@@ -171,8 +173,8 @@ const Content = () => {
       toast.error("vui lòng số thứ tự bài học");
     } else {
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/lession/update/" + lessionID,
+        const res = await axiosJWT.put(
+          "/api/lession/update/" + lessionID,
           updateLession
         );
         toast.success("cập nhật bài học thành công");
@@ -189,8 +191,8 @@ const Content = () => {
       toast.error("lỗi lấy id");
     } else {
       try {
-        const url = "http://localhost:8000/api/lession/delete/" + lessionID;
-        const res = await axios.delete(url);
+        const url = "/api/lession/delete/" + lessionID;
+        const res = await axiosJWT.delete(url);
         handleCloseComfirmDeleteLession();
         toast.success(res.data.message);
         getConentOfSubject();
@@ -201,9 +203,11 @@ const Content = () => {
     }
   }
   useEffect(() => {
-    getConentOfSubject();
+    if (isTeacher) {
+      getConentOfSubject();
+    }
   }, []);
-  useEffect(() => {});
+
   return (
     <div className="subject-content-page">
       <div className="subject-content-title">

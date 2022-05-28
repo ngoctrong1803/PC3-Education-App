@@ -13,15 +13,24 @@ import Editor from "../../../../../comps/Ckeditor";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useAdminAuth from "../../../../../hooks/authAdminHook";
 
 const CreateQuestion = () => {
+  const isAdmin = useAdminAuth();
   const [editorLoaded, setEditorLoaded] = useState(false);
   const curentAdmin = useSelector((state) => state.auth.login.currentUser);
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const blogID = arrayTemp[position];
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [blogTitle, setBlogTitle] = useState("");
   const [blogImage, setBlogImage] = useState("");
@@ -48,14 +57,16 @@ const CreateQuestion = () => {
     setShowConfirmDeleteCategory(true);
 
   useEffect(() => {
-    setEditorLoaded(true);
-    getBlogCategory();
-    getBlogById();
+    if (isAdmin) {
+      setEditorLoaded(true);
+      getBlogCategory();
+      getBlogById();
+    }
   }, []);
 
   async function getBlogById() {
     try {
-      const res = await axios.get("http://localhost:8000/api/blog/" + blogID);
+      const res = await axiosJWT.get("/api/blog/" + blogID);
       if (res.data.blog) {
         const blog = res.data.blog;
         setBlogTitle(blog.title);
@@ -70,9 +81,7 @@ const CreateQuestion = () => {
   }
   async function getBlogCategory() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-blog/list"
-      );
+      const res = await axiosJWT.get("/api/category-blog/list");
       setListBlogCategory(res.data.listCateBlog);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -86,10 +95,7 @@ const CreateQuestion = () => {
       const dataToAdd = {
         category: categoryName,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/category-blog/create",
-        dataToAdd
-      );
+      const res = await axiosJWT.post("/api/category-blog/create", dataToAdd);
       toast.success("Thêm mới thể loại thành công");
       getBlogCategory();
       try {
@@ -104,8 +110,8 @@ const CreateQuestion = () => {
   async function handleDeleteCategory() {
     if (categoryID != "") {
       try {
-        const res = await axios.delete(
-          "http://localhost:8000/api/category-blog/delete/" + categoryID
+        const res = await axiosJWT.delete(
+          "/api/category-blog/delete/" + categoryID
         );
         toast.success("đã xóa thể loại bài viết");
       } catch (err) {
@@ -136,10 +142,7 @@ const CreateQuestion = () => {
         userID: curentAdmin.userInfor._id,
       };
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/blog/update/" + blogID,
-          blog
-        );
+        const res = await axiosJWT.put("/api/blog/update/" + blogID, blog);
         toast.success("Cật nhật bài biết thành công");
       } catch (err) {
         const errMessage = err.response.data.message;

@@ -15,8 +15,18 @@ import Editor from "../../../../comps/Ckeditor";
 // import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../redux/authSlice";
+import useTeacherAuth from "../../../../hooks/authTeacherHook";
 
 const Theory = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [editorLoaded, setEditorLoaded] = useState(false);
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
@@ -30,8 +40,8 @@ const Theory = () => {
   const [content, setContent] = useState();
 
   async function getContentOfLession() {
-    const url = "http://localhost:8000/api/lession/" + lessionID;
-    const res = await axios.get(url);
+    const url = "/api/lession/" + lessionID;
+    const res = await axiosJWT.get(url);
     setTheory(res.data.theory);
     if (res.data.theory) {
       setContent(res.data.theory.content);
@@ -42,8 +52,10 @@ const Theory = () => {
   }
 
   useEffect(() => {
-    setEditorLoaded(true);
-    getContentOfLession();
+    if (isTeacher) {
+      setEditorLoaded(true);
+      getContentOfLession();
+    }
   }, []);
 
   async function handleAddTheory() {
@@ -53,10 +65,7 @@ const Theory = () => {
           lessionID: lession._id,
           content,
         };
-        const res = await axios.post(
-          "http://localhost:8000/api/theory/create",
-          newTheory
-        );
+        const res = await axiosJWT.post("/api/theory/create", newTheory);
 
         toast.success("thêm mới lý thuyết thành công");
       } catch (err) {
@@ -64,7 +73,7 @@ const Theory = () => {
         toast.error(errMessage);
       }
     } else {
-      alert("lỗi thêm mới lý thuyết");
+      toast.error("lỗi thêm mới lý thuyết");
     }
   }
   async function handleUpdateTheory() {
@@ -74,8 +83,8 @@ const Theory = () => {
         lessionID: lession._id,
       };
       try {
-        const url = "http://localhost:8000/api/theory/update/" + theory._id;
-        const res = await axios.put(url, theoryUpdate);
+        const url = "/api/theory/update/" + theory._id;
+        const res = await axiosJWT.put(url, theoryUpdate);
         toast.success("cập nhật lý thuyết thành công");
       } catch (err) {
         const errMessage = err.response.data.message;

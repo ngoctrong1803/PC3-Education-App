@@ -4,12 +4,11 @@ import axios from "axios";
 import Link from "next/link";
 import "bootstrap/dist/css/bootstrap.min.css";
 const Question = () => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const [listQuestion, setListQuestion] = useState([]);
   async function getListQuestion() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/question-in-forum/list-index"
-      );
+      const res = await axios.get(host + "/api/question-in-forum/list-index");
       setListQuestion(res.data.listQuestion);
       console.log("res", res.data);
     } catch (error) {

@@ -11,8 +11,38 @@ const StatisticalOfExam = require("../models/StatisticalOfExam");
 const ResultOfExam = require("../models/ResultOfExam");
 const StatisticalOfExercise = require("../models/StatisticalOfExercise");
 const ResultOfExercise = require("../models/ResultOfExercise");
+const Subject = require("../models/Subject");
+const Unit = require("../models/Unit");
+const Lession = require("../models/Lession");
+const Exam = require("../models/Exam");
 
 const userController = {
+  //[get]/api/user/list-user
+  getStatisticalOfPage: async (req, res) => {
+    const totalUser = await User.countDocuments();
+    const totalSubject = await Subject.countDocuments();
+    const totalUnit = await Unit.countDocuments();
+    const totalLession = await Lession.countDocuments();
+    const totalQuestion = await QuestionInForum.countDocuments();
+    const totalExam = await Exam.countDocuments();
+    const totalBlog = await Blog.countDocuments();
+    const totalFlascard = await Flashcard.countDocuments();
+    const data = {
+      totalUser,
+      totalSubject,
+      totalUnit,
+      totalLession,
+      totalQuestion,
+      totalExam,
+      totalBlog,
+      totalFlascard,
+    };
+    res.status(200).json({
+      message: "lấy danh sách thành công",
+      data: data,
+    });
+  },
+
   //[get]/api/user/list-user
   getUser: async (req, res) => {
     const listUser = await User.find({});

@@ -3,6 +3,10 @@ import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useTeacherAuth from "../../../hooks/authTeacherHook";
 
 const EMAIL_REGEX = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 const PASS_REGEX = /[a-z0-9]{8,32}/;
@@ -10,6 +14,12 @@ const PHONE_REGEX =
   /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
 
 const Create = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const emailRef = useRef();
   const passRef = useRef();
   const roleRef = useRef();
@@ -85,7 +95,7 @@ const Create = () => {
   const [listRole, setListRole] = useState([]);
   async function getListRole() {
     try {
-      const res = await axios.get("http://localhost:8000/api/role/list");
+      const res = await axiosJWT.get("/api/role/list");
       setListRole(res.data.listRole);
     } catch (err) {
       const errMsg = err.response.data.message;
@@ -95,7 +105,7 @@ const Create = () => {
   const [listUser, setListUser] = useState([]);
   async function getListUser() {
     try {
-      const res = await axios.get("http://localhost:8000/api/user/list-user");
+      const res = await axiosJWT.get("/api/user/list-user");
       setListUser(res.data.listUser);
       console.log("list user:", res.data.listUser);
     } catch (err) {
@@ -105,8 +115,10 @@ const Create = () => {
   }
 
   useEffect(() => {
-    getListRole();
-    getListUser();
+    if (isTeacher) {
+      getListRole();
+      getListUser();
+    }
   }, []);
   // check validate email
   useEffect(() => {
@@ -255,8 +267,8 @@ const Create = () => {
       setMatchPasswordErr("");
     }
     if (userRegister.email != "") {
-      axios
-        .post("http://localhost:8000/api/auth/create", userRegister)
+      axiosJWT
+        .post("/api/auth/create", userRegister)
         .then((res) => {
           toast.success("Thêm mới thành công");
         })
@@ -437,13 +449,9 @@ const Create = () => {
       let checkError = false;
       for (let i = 0; i < listUserValid.length; i++) {
         try {
-          const res = await axios.post(
-            "http://localhost:8000/api/user/create",
-            listUserValid[i]
-          );
+          const res = await axiosJWT.post("/api/user/create", listUserValid[i]);
           counter++;
         } catch (err) {
-          console.log("sdafkjcasdkfcsd", err);
           checkError = true;
         }
       }

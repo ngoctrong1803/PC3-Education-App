@@ -14,7 +14,12 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useTeacherAuth from "../../../hooks/authTeacherHook";
 const Exams = () => {
+  const isTeacher = useTeacherAuth();
   const [showAddExam, setShowAddExam] = useState(false);
   const [showUpdateExam, setShowUpdateExam] = useState(false);
   const listImage = [
@@ -25,6 +30,11 @@ const Exams = () => {
     { title: "Tiếng anh", link: "/exam/de_tieng_anh.jpg" },
   ];
   //flag
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   // data to create new exam
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
@@ -63,7 +73,7 @@ const Exams = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getExams(page) {
     try {
-      const res = await axios.post("http://localhost:8000/api/exam/list", {
+      const res = await axiosJWT.post("/api/exam/list", {
         page: page,
         contentToFind: contentToFind,
         subjectID: subjectIDToFind,
@@ -82,9 +92,7 @@ const Exams = () => {
   }
   async function getSubjects() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/get-list-subject"
-      );
+      const res = await axiosJWT.get("/api/subjects/get-list-subject");
       console.log("list subject:", res.data.listSubject);
       setListSubject(res.data.listSubject);
     } catch (err) {
@@ -93,12 +101,11 @@ const Exams = () => {
     }
   }
   async function getGrade() {
-    const res = await axios.get("http://localhost:8000/api/grade/list");
+    const res = await axiosJWT.get("/api/grade/list");
     setListGrade(res.data.listGrade);
   }
   async function getExaTyp() {
-    const res = await axios.get("http://localhost:8000/api/exam-type/list");
-
+    const res = await axiosJWT.get("/api/exam-type/list");
     setListExaTyp(res.data.listExamType);
   }
 
@@ -122,10 +129,7 @@ const Exams = () => {
         subjectID,
       };
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/exam/create",
-          newExam
-        );
+        const res = await axiosJWT.post("/api/exam/create", newExam);
         toast.success("thêm mới bài kiểm tra thành công");
         handleCloseAddExam();
         getExams(1);
@@ -154,8 +158,8 @@ const Exams = () => {
         subjectID,
       };
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/exam/update/" + ExamID,
+        const res = await axiosJWT.put(
+          "/api/exam/update/" + ExamID,
           updateExam
         );
         toast.success("cập nhật bài kiểm tra thành công");
@@ -169,13 +173,17 @@ const Exams = () => {
   }
 
   useEffect(() => {
-    getExams(1);
-    getGrade();
-    getExaTyp();
-    getSubjects();
+    if (isTeacher) {
+      getExams(1);
+      getGrade();
+      getExaTyp();
+      getSubjects();
+    }
   }, []);
   useEffect(() => {
-    getExams(1);
+    if (isTeacher) {
+      getExams(1);
+    }
   }, [contentToFind, subjectIDToFind, exaTypIDToFind]);
   // handle delete
   const [examIDToDelete, setExamIDToDelete] = useState("");
@@ -188,9 +196,7 @@ const Exams = () => {
   };
   async function handleDeleteExam() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/exam/delete/" + examIDToDelete
-      );
+      const res = await axiosJWT.delete("/api/exam/delete/" + examIDToDelete);
       toast.success("Xóa bài kiểm tra thành công.");
       getExams(1);
       handleCloseConfirmDelete();

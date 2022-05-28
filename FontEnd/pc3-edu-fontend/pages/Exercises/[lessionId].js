@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Exercise = () => {
   const isAuth = useAuth();
   const config = {
@@ -21,6 +23,8 @@ const Exercise = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [modalShow, setModalShow] = useState(false);
 
@@ -132,8 +136,8 @@ const Exercise = () => {
 
     try {
       // save statistical
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exercise/create",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exercise/create",
         statisticalOfExercise
       );
       // save answer of exercise
@@ -146,8 +150,8 @@ const Exercise = () => {
           };
           console.log(` ----------result[${i}]:`, resultOfExercise);
           try {
-            const resResult = await axios.post(
-              "http://localhost:8000/api/result-of-exercise/create",
+            const resResult = await axiosJWT.post(
+              "/api/result-of-exercise/create",
               resultOfExercise
             );
           } catch (err) {
@@ -166,9 +170,8 @@ const Exercise = () => {
   async function getMCExercises() {
     if (lessionID) {
       try {
-        const res = await axios.get(
-          "http://localhost:8000/api/mcexercise/mcexercise-by-lession/" +
-            lessionID
+        const res = await axiosJWT.get(
+          "/api/mcexercise/mcexercise-by-lession/" + lessionID
         );
         console.log("res data:", res.data);
         setLession(res.data.lession);

@@ -16,7 +16,17 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useAdminAuth from "../../../hooks/authAdminHook";
 const Forum = () => {
+  const isAdmin = useAdminAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [show, setShow] = useState("blog");
   const [listBlogCategory, setListBlogCategory] = useState([]);
   const [listBlog, setListBlog] = useState([]);
@@ -46,9 +56,7 @@ const Forum = () => {
   };
   async function getBlogCategory() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-blog/list"
-      );
+      const res = await axiosJWT.get("/api/category-blog/list");
       setListBlogCategory(res.data.listCateBlog);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -61,7 +69,7 @@ const Forum = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getListBlog(page) {
     try {
-      const res = await axios.post("http://localhost:8000/api/blog/list", {
+      const res = await axiosJWT.post("/api/blog/list", {
         page: page,
         contentToFind: contentBlogToFind,
         cateToFind: cateBlogToFind,
@@ -81,9 +89,7 @@ const Forum = () => {
   async function handleDeleteBlog() {
     try {
       if (blogIDToDelete) {
-        const res = await axios.delete(
-          "http://localhost:8000/api/blog/delete/" + blogIDToDelete
-        );
+        const res = await axiosJWT.delete("/api/blog/delete/" + blogIDToDelete);
         handleCloseConfirmDelete();
         toast.success("Xóa bài viết thành công");
         getListBlog(1);
@@ -98,9 +104,7 @@ const Forum = () => {
 
   async function getListCateQuestion() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/category-question/list"
-      );
+      const res = await axiosJWT.get("/api/category-question/list");
       setListCateQuestion(res.data.listCateQuestion);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -114,14 +118,11 @@ const Forum = () => {
 
   async function getAllQuestion(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/question-in-forum/list",
-        {
-          page: page,
-          contentToFind: contentQuestionToFind,
-          cateToFind: cateQuestionToFind,
-        }
-      );
+      const res = await axiosJWT.post("/api/question-in-forum/list", {
+        page: page,
+        contentToFind: contentQuestionToFind,
+        cateToFind: cateQuestionToFind,
+      });
 
       setAllQuestion(res.data.listQuestionInForum);
       setListAuthorOfQuestion(res.data.listAuthor);
@@ -137,9 +138,8 @@ const Forum = () => {
   }
   async function handleChangeStatus(questionID) {
     try {
-      const res = await axios.put(
-        "http://localhost:8000/api/question-in-forum/update-status/" +
-          questionID
+      const res = await axiosJWT.put(
+        "/api/question-in-forum/update-status/" + questionID
       );
       getAllQuestion(1);
     } catch (err) {
@@ -149,9 +149,8 @@ const Forum = () => {
   }
   async function handleDeleteQuestion() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/question-in-forum/delete/" +
-          questionIDToDelete
+      const res = await axiosJWT.delete(
+        "/api/question-in-forum/delete/" + questionIDToDelete
       );
       toast.success("Xóa câu hỏi thành công");
     } catch (err) {
@@ -163,14 +162,20 @@ const Forum = () => {
   }
 
   useEffect(() => {
-    getBlogCategory();
-    getListCateQuestion();
+    if (isAdmin) {
+      getBlogCategory();
+      getListCateQuestion();
+    }
   }, []);
   useEffect(() => {
-    getListBlog(1);
+    if (isAdmin) {
+      getListBlog(1);
+    }
   }, [contentBlogToFind, cateBlogToFind]);
   useEffect(() => {
-    getAllQuestion(1);
+    if (isAdmin) {
+      getAllQuestion(1);
+    }
   }, [contentQuestionToFind, cateQuestionToFind]);
   return (
     <div className="admin-forum-page">

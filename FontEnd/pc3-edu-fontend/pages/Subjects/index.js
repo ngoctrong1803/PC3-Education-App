@@ -17,8 +17,10 @@ import "swiper/css/pagination";
 import { Grid, Pagination } from "swiper";
 import Link from "next/dist/client/link";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AuthGate from "../../comps/Gate/AuthGate";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 
 const Subject = () => {
   const [grade, setGrade] = useState(10);
@@ -28,14 +30,16 @@ const Subject = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const changeGrade = (grade) => {
     setGrade(grade);
   };
   async function getSubject() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/list-subject-by-grade/" + grade
+      const res = await axiosJWT.get(
+        "/api/subjects/list-subject-by-grade/" + grade
       );
       console.log("danh sách môn học:", res.data);
       setListSubject(res.data.listSubject);
@@ -46,9 +50,8 @@ const Subject = () => {
   }
   async function getSubjectStudying() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/statistical-of-exercise/user/" +
-          currentUser.userInfor._id
+      const res = await axiosJWT.get(
+        "/api/statistical-of-exercise/user/" + currentUser.userInfor._id
       );
       setListSubjectStudying(res.data.listSubject);
     } catch (error) {

@@ -58,7 +58,7 @@ const Home = () => {
           <div className={styles.content}>
             <div className="selection_list">
               <h5>Học tập</h5>
-              <Card>
+              <Card style={{ minHeight: "280px" }}>
                 <Card.Header>
                   <Nav variant="tabs" defaultActiveKey="#first">
                     <Nav.Item>
@@ -93,7 +93,7 @@ const Home = () => {
                     </Nav.Item>
                   </Nav>
                 </Card.Header>
-                <Card.Body className="pb-5">
+                <Card.Body className="pb-5" style={{ minHeight: "230px" }}>
                   {/* start swiper */}
                   <div className="selection_list_title mb-2 mt-1">
                     <h5>Môn học khối {grade}</h5>

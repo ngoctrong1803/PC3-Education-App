@@ -4,9 +4,21 @@ import Editor from "../../../../../comps/Ckeditor";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateExercise = () => {
+  const isTeacher = useTeacherAuth();
   const [editorLoaded, setEditorLoaded] = useState(false);
+
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
@@ -35,8 +47,8 @@ const CreateExercise = () => {
 
   async function getInforExercise() {
     try {
-      const url = "http://localhost:8000/api/mcexercise/detail/" + exerciseID;
-      const res = await axios.get(url);
+      const url = "/api/mcexercise/detail/" + exerciseID;
+      const res = await axiosJWT.get(url);
       setExercise(res.data.mcExercise);
       setContentOfExercise(res.data.mcExercise.question);
       setOption1(res.data.mcExercise.option1);
@@ -64,8 +76,8 @@ const CreateExercise = () => {
 
   async function getCategoryOfExercise() {
     try {
-      const url = "http://localhost:8000/api/category-exercise/list";
-      const res = await axios.get(url);
+      const url = "/api/category-exercise/list";
+      const res = await axiosJWT.get(url);
       console.log("data:", res.data.listCateExer);
       setCategoryOfExercise(res.data.listCateExer);
     } catch (err) {
@@ -97,8 +109,8 @@ const CreateExercise = () => {
       };
       console.log("update exercise:", newExercise);
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/mcexercise/update/" + exerciseID,
+        const res = await axiosJWT.put(
+          "/api/mcexercise/update/" + exerciseID,
           newExercise
         );
         toast.success("cập nhật bài tập thành công");
@@ -120,7 +132,6 @@ const CreateExercise = () => {
       recommend,
       explain,
     };
-    console.log("new exercise:", newExercise);
   }, [
     contentOfExercise,
     option1,
@@ -134,9 +145,11 @@ const CreateExercise = () => {
   ]);
 
   useEffect(() => {
-    getInforExercise();
-    getCategoryOfExercise();
-    setEditorLoaded(true);
+    if (isTeacher) {
+      getInforExercise();
+      getCategoryOfExercise();
+      setEditorLoaded(true);
+    }
   }, []);
 
   const onChangeEditor = () => {};

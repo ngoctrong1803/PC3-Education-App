@@ -6,17 +6,22 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import AuthGate from "../../comps/Gate/AuthGate";
 import withAuth from "../../comps/HOC/withAuth";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Learning = () => {
   const isAuth = useAuth();
 
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
+
   const router = useRouter();
   const lessionID = router.query.lessionId;
 
@@ -40,8 +45,8 @@ const Learning = () => {
   async function getContentOfSubject(subjectTemp) {
     try {
       if (subjectTemp.slug) {
-        const res = await axios.get(
-          "http://localhost:8000/api/subjects/content/" + subjectTemp.slug
+        const res = await axiosJWT.get(
+          "/api/subjects/content/" + subjectTemp.slug
         );
         setSubject(res.data.subjectTemp);
         setListUnit(res.data.units);
@@ -55,8 +60,8 @@ const Learning = () => {
   async function getContentOfLession() {
     if (lessionID) {
       try {
-        const url = "http://localhost:8000/api/lession/" + lessionID;
-        const res = await axios.get(url);
+        const url = "/api/lession/" + lessionID;
+        const res = await axiosJWT.get(url);
 
         setLession(res.data.lession);
         setTheory(res.data.theory);
@@ -76,8 +81,8 @@ const Learning = () => {
           userID: currentUser.userInfor._id,
           lessionID: lessionID,
         };
-        const res = await axios.post(
-          "http://localhost:8000/api/statistical-of-exercise/by-user-and-lession",
+        const res = await axiosJWT.post(
+          "/api/statistical-of-exercise/by-user-and-lession",
           dataToFind
         );
         console.log("đã lấy thống kê", res.data);

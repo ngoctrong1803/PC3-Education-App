@@ -93,8 +93,8 @@ const Header = () => {
                     </li>
                   </Link>
 
-                  {currentUser?.userInfor.role == "admin" ||
-                  currentUser?.userInfor.role == "teacher" ? (
+                  {currentUser?.userInfor?.role == "admin" ||
+                  currentUser?.userInfor?.role == "teacher" ? (
                     <Link href="/admin">
                       <li
                         className="list__item"

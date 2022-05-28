@@ -12,15 +12,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 
 const Detail = () => {
   const isAuth = useAuth();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [showComment, setShowComment] = useState(false);
   const handelShowComment = () => {
     setShowComment(!showComment);
@@ -57,7 +61,7 @@ const Detail = () => {
   }
   async function getContentOfBlog() {
     try {
-      const res = await axios.get("http://localhost:8000/api/blog/" + id);
+      const res = await axiosJWT.get("/api/blog/" + id);
       console.log("res", res);
       setAuthor(res.data.author[0]);
       setContentOfBlog(res.data.blog);
@@ -79,9 +83,7 @@ const Detail = () => {
 
   async function getContentOfQuestion() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/question-in-forum/content/" + id
-      );
+      const res = await axiosJWT.get("/api/question-in-forum/content/" + id);
       const content = {
         questionContent: res.data.questionInForum,
         questionAuthor: res.data.author,
@@ -106,8 +108,8 @@ const Detail = () => {
         userID: currentUser.userInfor._id,
       };
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/comment/create",
+        const res = await axiosJWT.post(
+          "/api/comment/create",
           dataToAddComment
         );
         getContentOfQuestion();
@@ -119,8 +121,8 @@ const Detail = () => {
   }
   async function handleDeleteComment() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/comment/delete/" + commentIDToDelete
+      const res = await axiosJWT.delete(
+        "/api/comment/delete/" + commentIDToDelete
       );
       toast.success("Đã xóa bình luận!");
     } catch (err) {

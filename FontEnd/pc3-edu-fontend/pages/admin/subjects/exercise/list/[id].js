@@ -17,8 +17,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const ListMCExercise = () => {
+  const isTeacher = useTeacherAuth();
   const [listMCExercise, setListMCExercise] = useState([]);
   const [listCategory, setListCategory] = useState();
   const [exerciseID, setExerciseID] = useState("");
@@ -26,6 +31,11 @@ const ListMCExercise = () => {
   const arrayTemp = url.split("/");
   const position = arrayTemp.length - 1;
   const lessionID = arrayTemp[position];
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [comfirmDeleteExer, setConfirmDeleteExer] = useState(false);
   // hadle modal on off
@@ -39,14 +49,11 @@ const ListMCExercise = () => {
 
   async function getListMCExercise(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/mcexercise/list/" + lessionID,
-        {
-          page: page,
-          contentToFind: contentToFind,
-          cateToFind: cateToFind,
-        }
-      );
+      const res = await axiosJWT.post("/api/mcexercise/list/" + lessionID, {
+        page: page,
+        contentToFind: contentToFind,
+        cateToFind: cateToFind,
+      });
       console.log("list exercise: ", res.data);
       setListMCExercise(res.data.listMCExercise);
       setListCategory(res.data.categoryOfExercise);
@@ -62,11 +69,10 @@ const ListMCExercise = () => {
   }
 
   async function handleDeleteExercise() {
-    console.log("xóa câu hỏi:", exerciseID);
     if (exerciseID) {
       try {
-        const res = await axios.delete(
-          "http://localhost:8000/api/mcexercise/delete/" + exerciseID
+        const res = await axiosJWT.delete(
+          "/api/mcexercise/delete/" + exerciseID
         );
         toast.success("xóa thành công bài tập");
         getListMCExercise(1);
@@ -79,10 +85,9 @@ const ListMCExercise = () => {
   }
 
   useEffect(() => {
-    getListMCExercise(1);
-    // const script = document.createElement("script");
-    // script.src =
-    //   "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    if (isTeacher) {
+      getListMCExercise(1);
+    }
   }, [contentToFind, cateToFind]);
 
   const config = {

@@ -14,7 +14,17 @@ import Link from "next/dist/client/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useTeacherAuth from "../../../hooks/authTeacherHook";
 const Subjects = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [listImage, setListImage] = useState([
     {
       name: "Toán Học",
@@ -68,8 +78,8 @@ const Subjects = () => {
 
   async function getSubject(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/subjects/get-list-subject/" + page,
+      const res = await axiosJWT.post(
+        "/api/subjects/get-list-subject/" + page,
         {
           subject_name: currentSubjectName,
           grade: currentGradeShow,
@@ -89,7 +99,7 @@ const Subjects = () => {
   }
 
   async function getGrade() {
-    const res = await axios.get("http://localhost:8000/api/grade/list");
+    const res = await axiosJWT.get("/api/grade/list");
     setListGrade(res.data.listGrade);
   }
 
@@ -110,10 +120,7 @@ const Subjects = () => {
       toast.error("vui lòng chọn hình ảnh cho môn học");
     } else {
       try {
-        const res = await axios.post(
-          "http://localhost:8000/api/subjects/create",
-          newSubject
-        );
+        const res = await axiosJWT.post("/api/subjects/create", newSubject);
         console.log("newSubject:", newSubject);
         toast.success("thêm mới môn học thành công");
         handleCloseAddSubject();
@@ -141,8 +148,8 @@ const Subjects = () => {
       toast.error("vui lòng chọn hình ảnh cho môn học");
     } else {
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/subjects/update/" + subjectID,
+        const res = await axiosJWT.put(
+          "/api/subjects/update/" + subjectID,
           updateSubject
         );
         toast.success("Cật nhật môn học thành công");
@@ -156,12 +163,16 @@ const Subjects = () => {
   }
 
   useEffect(() => {
-    getSubject(1);
-    getGrade();
+    if (isTeacher) {
+      getSubject(1);
+      getGrade();
+    }
   }, []);
 
   useEffect(() => {
-    getSubject(1);
+    if (isTeacher) {
+      getSubject(1);
+    }
   }, [currentGradeShow, currentSubjectName]);
 
   //handle delete subject
@@ -176,8 +187,8 @@ const Subjects = () => {
   };
   async function handleDeleteSubject() {
     try {
-      const res = await axios.delete(
-        "http://localhost:8000/api/subjects/delete/" + subjectIDToDelete
+      const res = await axiosJWT.delete(
+        "/api/subjects/delete/" + subjectIDToDelete
       );
       toast.success("Xóa môn học thành công");
       handleCloseComfirmDeleteSubject();
@@ -185,6 +196,9 @@ const Subjects = () => {
     } catch (error) {
       toast.error("Xóa thất bại, đã xảy ra ngoại lệ");
     }
+  }
+  if (!isTeacher) {
+    return null;
   }
 
   return (

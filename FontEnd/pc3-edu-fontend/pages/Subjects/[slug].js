@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AuthGate from "../../comps/Gate/AuthGate";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 
 const Detail = () => {
   const url = window.location.pathname;
@@ -20,13 +22,15 @@ const Detail = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   async function getContentOfSubject() {
     console.log("slug", slugOfSubject);
     if (slugOfSubject) {
       try {
-        const res = await axios.get(
-          "http://localhost:8000/api/subjects/content/" + slugOfSubject
+        const res = await axiosJWT.get(
+          "/api/subjects/content/" + slugOfSubject
         );
         setSubject(res.data.subject);
         setListUnit(res.data.units);

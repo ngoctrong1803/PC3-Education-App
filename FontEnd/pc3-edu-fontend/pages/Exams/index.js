@@ -24,13 +24,18 @@ import { Grid } from "swiper";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const Exam = () => {
   const isAuth = useAuth();
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+
+  const dispatch = useDispatch();
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [listExam, setListExam] = useState([]);
   const [listExaTyp, setListExaTyp] = useState([]);
@@ -42,33 +47,28 @@ const Exam = () => {
   const [subjectIDToFind, setSubjectIDToFind] = useState("");
   const [typExaIDToFind, setExaTypIDToFind] = useState("");
   async function getExaTyp() {
-    const res = await axios.get("http://localhost:8000/api/exam-type/list");
-
-    setListExaTyp(res.data.listExamType);
+    try {
+      const res = await axiosJWT.get("/api/exam-type/list");
+      setListExaTyp(res.data.listExamType);
+    } catch (error) {}
   }
   async function getSubjects() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/subjects/get-list-subject"
-      );
-      console.log("list subject:", res.data.listSubject);
-      setListSubject(res.data.listSubject);
+      const res = await axiosJWT.get("/api/subjects/get-list-subject");
+      setListSubject(res?.data.listSubject);
     } catch (err) {
-      const errMessage = err.response.data.message;
+      const errMessage = err.response?.data?.message;
       toast.error(errMessage);
     }
   }
   async function getExam(page) {
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/exam/list-index",
-        {
-          page: page,
-          contentToFind: contentToFind,
-          subjectID: subjectIDToFind,
-          exaTypID: typExaIDToFind,
-        }
-      );
+      const res = await axiosJWT.post("/api/exam/list-index", {
+        page: page,
+        contentToFind: contentToFind,
+        subjectID: subjectIDToFind,
+        exaTypID: typExaIDToFind,
+      });
       const listTotalPage = [];
       for (let i = 0; i < res.data.totalPage; i++) {
         listTotalPage.push(i + 1);
@@ -92,6 +92,9 @@ const Exam = () => {
       getExam(1);
     }
   }, [contentToFind, subjectIDToFind, typExaIDToFind]);
+  if (!isAuth) {
+    return null;
+  }
   return (
     <div className="exams-page">
       <Row>

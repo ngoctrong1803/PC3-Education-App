@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { updateCurrentUserFunc } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
 import useAuth from "../../hooks/authHook";
+import { createAxios } from "../../helper/axiosJWT";
+import { loginSuccess } from "../../redux/authSlice";
 const UserInfor = () => {
   const isAuth = useAuth();
   const PASS_REGEX = /[a-z0-9]{8,32}/;
@@ -22,6 +24,7 @@ const UserInfor = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const instance = axios.create();
 
@@ -38,9 +41,8 @@ const UserInfor = () => {
       // url from clouldinary
       setAvatarUpdateURL(res.data.url);
       // update avatar in database
-      await axios.put(
-        "http://localhost:8000/api/user/update-avatar/" +
-          currentUser.userInfor._id,
+      await axiosJWT.put(
+        "/api/user/update-avatar/" + currentUser.userInfor._id,
         {
           imageurl: res.data.url,
         }
@@ -109,9 +111,8 @@ const UserInfor = () => {
             userClass: userClass,
             userPhone: userPhone,
           };
-          const res = await axios.put(
-            "http://localhost:8000/api/user/update-infor/" +
-              currentUser?.userInfor?._id,
+          const res = await axiosJWT.put(
+            "/api/user/update-infor/" + currentUser?.userInfor?._id,
             dataToSend
           );
           const dataFormServer = res.data.userUpdate;
@@ -171,9 +172,8 @@ const UserInfor = () => {
           confirmNewPassword: confirmNewPassword,
         };
         console.log("vào try catch");
-        const res = await axios.put(
-          "http://localhost:8000/api/user/change-password/" +
-            currentUser.userInfor._id,
+        const res = await axiosJWT.put(
+          "/api/user/change-password/" + currentUser.userInfor._id,
           dataToSend
         );
         toast.success("Đổi mật khẩu thành công!");
@@ -234,7 +234,9 @@ const UserInfor = () => {
                   </div>
                 ) : null}
 
-                <h5 className="mt-2 mb-3">Trương Ngọc Trọng</h5>
+                <h5 className="mt-2 mb-3">
+                  {currentUser?.userInfor?.fullname}
+                </h5>
                 <Accordion
                   defaultActiveKey=""
                   className="input-file-upload-image"

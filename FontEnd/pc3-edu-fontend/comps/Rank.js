@@ -7,30 +7,33 @@ import { toast } from "react-toastify";
 const Rank = (props) => {
   const nameOfRank = props.name;
   const [listStatistical, setListStatistical] = useState([]);
-
+  const host = process.env.NEXT_PUBLIC_HOST;
   async function getRank() {
     try {
       if (nameOfRank == "all-subject") {
         const res = await axios.get(
-          "http://localhost:8000/api/statistical-of-exercise/list-statistical-result-of-all-subject"
+          host +
+            "/api/statistical-of-exercise/list-statistical-result-of-all-subject"
         );
         setListStatistical(res.data.listStatistical);
       } else if (nameOfRank == "one-subject") {
         const subjectSlug = props.subjectSlug;
         const res = await axios.get(
-          "http://localhost:8000/api/statistical-of-exercise/list-statistical-result-of-subject/" +
+          host +
+            "/api/statistical-of-exercise/list-statistical-result-of-subject/" +
             subjectSlug
         );
         setListStatistical(res.data.listStatistical);
       } else if (nameOfRank == "all-exam") {
         const res = await axios.get(
-          "http://localhost:8000/api/statistical-of-exam/exam-statistical-result-all-exam"
+          host + "/api/statistical-of-exam/exam-statistical-result-all-exam"
         );
         setListStatistical(res.data.listStatistical);
       } else if (nameOfRank == "one-exam") {
         const examID = props.examID;
         const res = await axios.get(
-          "http://localhost:8000/api/statistical-of-exam/exam-statistical-result-exam/" +
+          host +
+            "/api/statistical-of-exam/exam-statistical-result-exam/" +
             examID
         );
         setListStatistical(res.data.listStatistical);

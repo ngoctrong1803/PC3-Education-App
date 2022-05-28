@@ -14,8 +14,18 @@ import Link from "next/dist/client/link";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../helper/axiosJWT";
+import { loginSuccess } from "../../../redux/authSlice";
+import useTeacherAuth from "../../../hooks/authTeacherHook";
 
 const Users = () => {
+  const isTeacher = useTeacherAuth();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
   const [listRole, setListRole] = useState([]);
   const [listUser, setListUser] = useState([]);
   const [userIDToDelete, setUserIDToDelete] = useState("");
@@ -29,12 +39,10 @@ const Users = () => {
 
   async function getListRole() {
     try {
-      const res = await axios.get("http://localhost:8000/api/role/list");
+      const res = await axiosJWT.get("/api/role/list");
       setListRole(res.data.listRole);
-      console.log("list role:", res.data.listRole);
     } catch (err) {
       const errMsg = err.response.data.message;
-      console.log("err: ", err.response.data.message);
     }
   }
   // handle filter and pagination
@@ -43,7 +51,7 @@ const Users = () => {
   const [totalPage, setTotalPage] = useState([]);
   async function getListUser(page) {
     try {
-      const res = await axios.post("http://localhost:8000/api/user/list-user", {
+      const res = await axiosJWT.post("/api/user/list-user", {
         page: page,
         contentToFind,
         roleToFind,
@@ -60,16 +68,18 @@ const Users = () => {
     }
   }
   useEffect(() => {
-    getListRole();
+    if (isTeacher) {
+      getListRole();
+    }
   }, []);
   useEffect(() => {
-    getListUser(1);
+    if (isTeacher) {
+      getListUser(1);
+    }
   }, [contentToFind, roleToFind]);
   async function handleDeleteUser() {
     try {
-      await axios.delete(
-        "http://localhost:8000/api/user/delete/" + userIDToDelete
-      );
+      await axiosJWT.delete("/api/user/delete/" + userIDToDelete);
       toast.success("Xóa người dùng thành công!");
     } catch (err) {
       const errMessage = err.response.data.message;

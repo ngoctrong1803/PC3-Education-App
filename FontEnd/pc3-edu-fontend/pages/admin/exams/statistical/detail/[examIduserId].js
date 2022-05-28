@@ -13,12 +13,16 @@ import axios from "axios";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 const Exam = () => {
   const config = {
     loader: { load: ["input/asciimath"] },
   };
+  const isTeacher = useTeacherAuth();
   const [listQuestion, setListQuestion] = useState([]);
   const [exam, setExam] = useState({});
   const url = window.location.pathname;
@@ -36,11 +40,15 @@ const Exam = () => {
   const [listCateQues, setListCateQues] = useState([]);
   const [userInfor, setUserInfor] = useState({});
 
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
+
   async function getUserInfor() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/user/get-user-by-id/" + userID
-      );
+      const res = await axiosJWT.get("/api/user/get-user-by-id/" + userID);
       setUserInfor(res.data.user);
     } catch (error) {
       console.log("get user error!");
@@ -52,8 +60,8 @@ const Exam = () => {
         userID: userID,
         examID: examID,
       };
-      const res = await axios.post(
-        "http://localhost:8000/api/statistical-of-exam/get-by-user-and-exam",
+      const res = await axiosJWT.post(
+        "/api/statistical-of-exam/get-by-user-and-exam",
         dataToFind
       );
 
@@ -63,8 +71,8 @@ const Exam = () => {
 
         const statisticalID = res.data.statistical._id;
         try {
-          const resOfResult = await axios.get(
-            "http://localhost:8000/api/result-of-exam/" + statisticalID
+          const resOfResult = await axiosJWT.get(
+            "/api/result-of-exam/" + statisticalID
           );
           setListAnswerOfUser(resOfResult.data.listResultOfExam);
         } catch (err) {
@@ -79,7 +87,7 @@ const Exam = () => {
 
   async function getExam() {
     try {
-      const res = await axios.get("http://localhost:8000/api/exam/" + examID);
+      const res = await axiosJWT.get("/api/exam/" + examID);
       setExam(res.data.exam);
     } catch (err) {
       const errMessage = err?.response.data.message;
@@ -89,9 +97,7 @@ const Exam = () => {
 
   async function getContenOfExam() {
     try {
-      const res = await axios.get(
-        "http://localhost:8000/api/exam-question/list/" + examID
-      );
+      const res = await axiosJWT.get("/api/exam-question/list/" + examID);
       console.log("content of exam:", res.data.listExamQuestion);
       setListQuestion(res.data.listExamQuestion);
       setListCateQues(res.data.listCateQues);
@@ -102,10 +108,12 @@ const Exam = () => {
   }
 
   useEffect(() => {
-    getExam();
-    getContenOfExam();
-    getStatisticalOfExam();
-    getUserInfor();
+    if (isTeacher) {
+      getExam();
+      getContenOfExam();
+      getStatisticalOfExam();
+      getUserInfor();
+    }
   }, []);
   return (
     <MathJaxContext config={config}>

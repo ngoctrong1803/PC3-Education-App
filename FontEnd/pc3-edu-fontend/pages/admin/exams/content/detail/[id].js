@@ -4,8 +4,13 @@ import Editor from "../../../../../comps/Ckeditor";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../../../../helper/axiosJWT";
+import { loginSuccess } from "../../../../../redux/authSlice";
+import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateQuestion = () => {
+  const isTeacher = useTeacherAuth();
   const [editorLoaded, setEditorLoaded] = useState(false);
 
   const url = window.location.pathname;
@@ -17,8 +22,11 @@ const CreateQuestion = () => {
   const option2Ref = useRef();
   const option3Ref = useRef();
   const option4Ref = useRef();
-
-
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => {
+    return state.auth.login.currentUser;
+  });
+  let axiosJWT = createAxios(currentUser, dispatch, loginSuccess);
 
   const [exam, setExam] = useState();
   const [categoryOfQuestion, setCategoryOfQuestion] = useState();
@@ -36,8 +44,8 @@ const CreateQuestion = () => {
   // handel get content
   async function getInforOfQuesion() {
     try {
-      const url = "http://localhost:8000/api/exam-question/" + questionID;
-      const res = await axios.get(url);
+      const url = "/api/exam-question/" + questionID;
+      const res = await axiosJWT.get(url);
       setExam(res.data.exam);
       console.log("question:", res.data);
       setContentOfQuestion(res.data.question.question);
@@ -66,8 +74,8 @@ const CreateQuestion = () => {
   }
   async function getCategoryOfQuestion() {
     try {
-      const url = "http://localhost:8000/api/category-exercise/list";
-      const res = await axios.get(url);
+      const url = "/api/category-exercise/list";
+      const res = await axiosJWT.get(url);
       setCategoryOfQuestion(res.data.listCateExer);
     } catch (err) {
       const errMessage = err.response?.data.message;
@@ -101,8 +109,8 @@ const CreateQuestion = () => {
       };
       console.log("updateQuestion:", updateQuestion);
       try {
-        const res = await axios.put(
-          "http://localhost:8000/api/exam-question/update/" + questionID,
+        const res = await axiosJWT.put(
+          "/api/exam-question/update/" + questionID,
           updateQuestion
         );
         toast.success("cập nhật câu hỏi thành công");
@@ -114,9 +122,11 @@ const CreateQuestion = () => {
   }
 
   useEffect(() => {
-    getInforOfQuesion();
-    getCategoryOfQuestion();
-    setEditorLoaded(true);
+    if (isTeacher) {
+      getInforOfQuesion();
+      getCategoryOfQuestion();
+      setEditorLoaded(true);
+    }
   }, []);
 
   return (
@@ -311,7 +321,6 @@ const CreateQuestion = () => {
               Hủy bỏ
             </Button>
           </div>
-
         </div>
       </div>
     </div>

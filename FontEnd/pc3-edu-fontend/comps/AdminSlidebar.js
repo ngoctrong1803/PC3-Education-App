@@ -15,12 +15,23 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import Link from "next/dist/client/link";
+import axios from "axios";
 
 const AdminSlidebar = () => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
+  const [listRole, setListRole] = useState([]);
+  async function getRole() {
+    try {
+      const res = await axios.get(host + "/api/role/list");
+      console.log("kkkkkkkk", res.data.listRole);
+      setListRole(res.data.listRole);
+    } catch (error) {}
+  }
   useEffect(() => {
+    getRole();
     const listSidebar = document.querySelectorAll(".admin-slidebar-function");
     const activeItem = (itemClick) => {
       listSidebar.forEach((item) => {
@@ -37,17 +48,27 @@ const AdminSlidebar = () => {
   return (
     <>
       <div className="admin-slidebar">
-        <div className="admin-slidebar-header">
-          <span>
-            <ion-icon name="school-outline"></ion-icon>
-          </span>
-          <span>PC3 Admin</span>
-        </div>
+        <Link href={"/admin"}>
+          <div className="admin-slidebar-header">
+            <span>
+              <ion-icon name="school-outline"></ion-icon>
+            </span>
+            <span>PC3 Admin</span>
+          </div>
+        </Link>
+
         <div className="admin-slidebar-content">
           <div className="admin-slidebar-user">
-            <img src={currentUser.userInfor.avatar}></img>
+            <img src={currentUser?.userInfor?.avatar}></img>
             <div className="admin-slidebar-user-infor">
-              <span>Trương Ngọc Trọng</span>
+              <span>{currentUser?.userInfor?.fullname}</span>
+              <span style={{ color: "#fdc867", fontSize: "17px" }}>
+                {listRole.map((item) => {
+                  if (item?.roleName === currentUser?.userInfor?.role) {
+                    return <>- {item.description} -</>;
+                  }
+                })}
+              </span>
             </div>
           </div>
           <div className="admin-slidebar-functions">

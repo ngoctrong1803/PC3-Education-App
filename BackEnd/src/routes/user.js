@@ -5,6 +5,11 @@ const userController = require("../app/controller/userController");
 const authMiddleware = require("../app/middlewares/authMiddleware");
 // geting all user
 router.get("/list-user", authMiddleware.checkAdmin, userController.getUser);
+router.get(
+  "/statistical-of-page",
+  authMiddleware.checkAdmin,
+  userController.getStatisticalOfPage
+);
 router.post(
   "/list-user",
   authMiddleware.checkAdmin,
