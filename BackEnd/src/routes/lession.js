@@ -5,8 +5,20 @@ const lessionController = require("../app/controller/lessionController");
 
 router.get("/:id", lessionController.getContentLession);
 router.get("/list-lession", lessionController.getLession);
-router.post("/create", lessionController.createLession);
-router.put("/update/:id", lessionController.updateLession);
-router.delete("/delete/:id", lessionController.deleteLession);
+router.post(
+  "/create",
+  authMiddleware.checkTeacher,
+  lessionController.createLession
+);
+router.put(
+  "/update/:id",
+  authMiddleware.checkTeacher,
+  lessionController.updateLession
+);
+router.delete(
+  "/delete/:id",
+  authMiddleware.checkTeacher,
+  lessionController.deleteLession
+);
 
 module.exports = router;

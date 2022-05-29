@@ -59,7 +59,7 @@ const AdminSlidebar = () => {
 
         <div className="admin-slidebar-content">
           <div className="admin-slidebar-user">
-            <img src={currentUser?.userInfor?.avatar}></img>
+            <img src={currentUser?.userInfor?.avatar} ></img>
             <div className="admin-slidebar-user-infor">
               <span>{currentUser?.userInfor?.fullname}</span>
               <span style={{ color: "#fdc867", fontSize: "17px" }}>

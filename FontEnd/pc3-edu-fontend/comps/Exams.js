@@ -9,7 +9,7 @@ const Exams = (props) => {
   return (
     <div className="list-exams-wrap">
       <div className="list-exams-title">
-        <span>Tổng hợp đề thi THPT Toán</span>
+        <span>Tổng hợp đề thi</span>
       </div>
       <div className="list-exams-content">
         <Row className="list-exams-content-row">
@@ -25,7 +25,9 @@ const Exams = (props) => {
                         <img src={examItem.imageUrl}></img>
                       </div>
                       <div className="exams-item-description">
-                        <span>{examItem.title}</span>
+                        <span style={{ fontSize: "18px", fontWeight: "400" }}>
+                          {examItem.title}
+                        </span>
                       </div>
                     </div>
                   </Col>
@@ -35,7 +37,6 @@ const Exams = (props) => {
           })}
         </Row>
       </div>
-     
     </div>
   );
 };

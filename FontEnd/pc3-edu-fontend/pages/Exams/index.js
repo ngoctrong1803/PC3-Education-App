@@ -156,12 +156,10 @@ const Exam = () => {
               }}
             >
               <Pagination>
-                <Pagination.First />
                 <Pagination.Prev />
                 {totalPage.map((item) => {
                   return (
                     <>
-                      {" "}
                       <Pagination.Item
                         onClick={() => {
                           getExam(item);
@@ -174,7 +172,6 @@ const Exam = () => {
                 })}
 
                 <Pagination.Next />
-                <Pagination.Last />
               </Pagination>
             </div>
           </div>

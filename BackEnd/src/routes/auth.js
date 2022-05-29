@@ -4,7 +4,7 @@ const authController = require("../app/controller/authController");
 const authMiddleware = require("../app/middlewares/authMiddleware");
 
 // creating one user (REGISTER)
-router.post("/create", authController.resgisterUser);
+router.post("/create", authMiddleware.checkAdmin, authController.resgisterUser);
 
 // LOGIN
 router.post("/login", authController.loginUser);

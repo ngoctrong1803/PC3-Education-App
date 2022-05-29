@@ -93,7 +93,10 @@ const userController = {
         ],
       })
         .skip(currentPage * userInPage - userInPage)
-        .limit(userInPage);
+        .limit(userInPage)
+        .sort({
+          createdAt: -1,
+        });
 
       const listUserToClient = listUser.map((userItem, index) => {
         return {
@@ -137,7 +140,10 @@ const userController = {
         ],
       })
         .skip(currentPage * userInPage - userInPage)
-        .limit(userInPage);
+        .limit(userInPage)
+        .sort({
+          createdAt: -1,
+        });
 
       const listUserToClient = listUser.map((userItem, index) => {
         return {

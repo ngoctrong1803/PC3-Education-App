@@ -63,7 +63,8 @@ const CreateQuestion = () => {
       option2 == "" ||
       option3 == "" ||
       option4 == "" ||
-      answer == ""
+      answer == "" ||
+      cateExerID == ""
     ) {
       toast.error(
         "bài tập chưa đủ thông tin để tạo mới câu hỏi vui lòng kiểm tra lại"

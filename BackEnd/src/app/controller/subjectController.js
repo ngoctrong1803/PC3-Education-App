@@ -36,7 +36,7 @@ const subjectController = {
   //[get]/api/subejct/get-list-subject/:page
   getListSubjectPagination: async (req, res) => {
     try {
-      let subjectInPage = 3;
+      let subjectInPage = 6;
       let currentPage = req.params.page;
       let subjectName = req.body.subject_name;
       let grade = req.body.grade;
@@ -54,7 +54,10 @@ const subjectController = {
             gradeID: -1,
           })
           .skip(currentPage * subjectInPage - subjectInPage)
-          .limit(subjectInPage);
+          .limit(subjectInPage)
+          .sort({
+            createdAt: -1,
+          });
         let totalSubject = await Subject.countDocuments();
         res.status(200).json({
           message: "lấy danh sách môn học thành công",
@@ -72,7 +75,10 @@ const subjectController = {
             gradeID: -1,
           })
           .skip(currentPage * subjectInPage - subjectInPage)
-          .limit(subjectInPage);
+          .limit(subjectInPage)
+          .sort({
+            createdAt: -1,
+          });
         let totalSubject = listTotalSubject.length;
 
         res.status(200).json({
@@ -93,7 +99,10 @@ const subjectController = {
             gradeID: -1,
           })
           .skip(currentPage * subjectInPage - subjectInPage)
-          .limit(subjectInPage);
+          .limit(subjectInPage)
+          .sort({
+            createdAt: -1,
+          });
         let totalSubject = listTotalSubject.length;
         res.status(200).json({
           message: "lấy danh sách môn học thành công",
@@ -115,7 +124,10 @@ const subjectController = {
             gradeID: -1,
           })
           .skip(currentPage * subjectInPage - subjectInPage)
-          .limit(subjectInPage);
+          .limit(subjectInPage)
+          .sort({
+            createdAt: -1,
+          });
         let totalSubject = listTotalSubject.length;
         res.status(200).json({
           message: "lấy danh sách môn học thành công",

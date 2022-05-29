@@ -10,16 +10,11 @@ const queInForumController = {
   getQuestionInForum: async (req, res) => {
     const listQuestionInForum = await QuestionInForum.find({});
     const authorArray = listQuestionInForum.map(({ userID }) => userID);
-    const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
-    const listAuthor = [];
-    listAuthorTemp.map((authorItem, index) => {
-      author = {
-        userID: authorItem._id,
-        fullname: authorItem.fullname,
-        email: authorItem.email,
-      };
-      listAuthor.push(author);
-    });
+    const listAuthor = await User.find(
+      { _id: { $in: authorArray } },
+      { password: 0 }
+    );
+
     res.status(200).json({
       message: "đã câu hỏi trong diễn đàn thành công",
       listQuestionInForum: listQuestionInForum,
@@ -29,7 +24,7 @@ const queInForumController = {
   //[get]/api/question-in-forum/list
   getQuestionInForumPagination: async (req, res) => {
     const currentPage = req.body.page;
-    const questionInPage = 5;
+    const questionInPage = 6;
     const contentToFind = req.body.contentToFind;
     const cateToFind = req.body.cateToFind;
 
@@ -48,7 +43,10 @@ const queInForumController = {
         ],
       })
         .skip(currentPage * questionInPage - questionInPage)
-        .limit(questionInPage);
+        .limit(questionInPage)
+        .sort({
+          createdAt: -1,
+        });
 
       const authorArray = listQuestionInForum.map(({ userID }) => userID);
       const listAuthorTemp = await User.find({ _id: { $in: authorArray } });

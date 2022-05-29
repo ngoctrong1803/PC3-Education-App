@@ -44,6 +44,7 @@ const Content = () => {
   const [showAddLession, setShowAddLession] = useState(false);
   const [showUpdateLession, setShowUpdateLession] = useState(false);
   const [comfirmDeleteLession, setConfirmDeleteLesssion] = useState(false);
+  const [comfirmDeleteUnit, setConfirmDeleteUnit] = useState(false);
 
   // get data from server
   const [subject, setSubject] = useState({});
@@ -78,6 +79,9 @@ const Content = () => {
   // hadle modal on off
   const handleCloseComfirmDeleteLession = () => setConfirmDeleteLesssion(false);
   const handleShowConfirmDeleteLession = () => setConfirmDeleteLesssion(true);
+  // hadle modal on off
+  const handleCloseComfirmDeleteUnit = () => setConfirmDeleteUnit(false);
+  const handleShowConfirmDeleteUnit = () => setConfirmDeleteUnit(true);
 
   // handel get content
   async function getConentOfSubject() {
@@ -202,6 +206,22 @@ const Content = () => {
       }
     }
   }
+  async function handleDeleteUnit() {
+    if (!unitID) {
+      toast.error("lỗi lấy id");
+    } else {
+      try {
+        const url = "/api/units/delete/" + unitID;
+        const res = await axiosJWT.delete(url);
+        handleCloseComfirmDeleteLession();
+        toast.success(res.data.message);
+        getConentOfSubject();
+      } catch (err) {
+        const errMessage = err.response?.data?.message;
+        toast.error(errMessage);
+      }
+    }
+  }
   useEffect(() => {
     if (isTeacher) {
       getConentOfSubject();
@@ -251,7 +271,14 @@ const Content = () => {
                         ></ion-icon>
                       </span>
                       <span className="subject-content-item-unit-delete">
-                        <ion-icon name="trash-outline"></ion-icon>
+                        <ion-icon
+                          name="trash-outline"
+                          onClick={() => {
+                            //flag
+                            setUnitID(unitItem._id);
+                            handleShowConfirmDeleteUnit();
+                          }}
+                        ></ion-icon>
                       </span>
                     </div>
                     <ul>
@@ -333,7 +360,7 @@ const Content = () => {
                               marginRight: "5px",
                             }}
                           >
-                            <ion-icon name="bar-chart-outline"></ion-icon>Thống
+                            <ion-icon name="bar-chart-outline"></ion-icon> Thống
                             kê chương
                           </Button>
                         </Link>
@@ -542,6 +569,31 @@ const Content = () => {
         </Modal.Footer>
       </Modal>
       {/* end modal comfirm delete lesssion */}
+      {/* start modal comfirm delete unit */}
+      <Modal show={comfirmDeleteUnit} onHide={handleCloseComfirmDeleteUnit}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ color: "red" }}>Xóa chương</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>
+                Khi xóa bài học toàn bộ lý thuyết, bài tập và bài học của của
+                chương sẽ bị xóa. Bạn có chắc chắn muốn xóa chương này này
+              </Form.Label>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseComfirmDeleteUnit}>
+            Hủy bỏ
+          </Button>
+          <Button variant="danger" onClick={handleDeleteUnit}>
+            Đồng ý
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* end modal comfirm delete unit */}
     </div>
   );
 };

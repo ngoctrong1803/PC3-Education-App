@@ -22,10 +22,28 @@ const authMiddleware = {
       res.status(401).json("bạn cần phải đăng nhập");
     }
   },
+  checkUserChangeInfor: (req, res, next) => {
+    const userID = req.params.id;
+    authMiddleware.verifyToken(req, res, () => {
+      if (req.data._id == userID) {
+        next();
+      } else {
+        res.status(403).json("Token không hợp lệ");
+      }
+    });
+  },
   checkAdmin: (req, res, next) => {
     authMiddleware.verifyToken(req, res, () => {
-      console.log("affter verifyToken: ", req.data);
       if (req.data.role === "admin" || req.data.role === "teacher") {
+        next();
+      } else {
+        res.status(403).json("bạn không được phép truy cập");
+      }
+    });
+  },
+  checkTeacher: (req, res, next) => {
+    authMiddleware.verifyToken(req, res, () => {
+      if (req.data.role === "teacher") {
         next();
       } else {
         res.status(403).json("bạn không được phép truy cập");

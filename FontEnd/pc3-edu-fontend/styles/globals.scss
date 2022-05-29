@@ -129,11 +129,11 @@ $black-color: #000;
       justify-content: center;
       margin-left: 12px;
       border-radius: 50%;
-      border: 2px solid $primary-color;
+      border: 3px solid $primary-color;
 
       img {
-        width: 24px;
-        height: 24px;
+        width: 30px;
+        height: 30px;
         border-radius: inherit;
         object-fit: cover;
         cursor: pointer;
@@ -1198,14 +1198,15 @@ ul.navbar-home {
       .post-item-header {
         display: flex;
         align-items: center;
-        font-size: 18px;
+        font-size: 19px;
+        font-weight: 700;
         font-weight: 400;
     
         .user-avatar {
           margin-right: 5px;
           img {
-            width: 30px;
-            height: 30px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
           }
         }
@@ -1232,7 +1233,7 @@ ul.navbar-home {
     }
     .forum-question-item {
       margin: 25px 35px;
-      border-bottom: #dfe3e6 solid 1px;
+      border-bottom: #dfe3e6 solid 2px;
       .forum-question-item-header {
         display: flex;
         align-items: center;
@@ -1241,8 +1242,8 @@ ul.navbar-home {
         .user-avatar {
           margin-right: 5px;
           img {
-            width: 30px;
-            height: 30px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
           }
         }
@@ -1512,6 +1513,8 @@ ul.navbar-home {
       border: #cfcfcf solid 1px;
       margin: 0px 15px;
       .forum-question-detail-user-comment {
+        padding-left: 15px;
+        padding-right: 15px;
         display: flex;
         align-items: center;
         margin-bottom: 15px;
@@ -1791,8 +1794,14 @@ ul.navbar-home {
         flex-direction: column;
 
         .exams-item-img {
+          margin: 10px;
           img {
+            border-radius: 5px;
+            border: #c6c7ca solid 1px;
+            box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.15) !important;
             width: 100%;
+            height: 280px;
+            object-fit: cover;
           }
         }
         .exams-item-description {
@@ -2303,15 +2312,19 @@ ul.navbar-home {
 
 //-----------------------------------------------ADMIN PAGE--------------------------------------------------------------
 .admin-page {
-  margin: 15px;
+  margin: 0px 15px 5px 15px;
   background-color: #fafbfc;
+ // position: absolute;
 }
 .admin-slidebar {
+  top: 0px;
+  position: fixed;
   background-image: url('/background/background-admin4.jpg');
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
   min-height: 700px;
+  width: 17%;
   border-radius: 15px;
   padding: 15px;
   background-color: #ffffff;
@@ -2345,6 +2358,7 @@ ul.navbar-home {
         height: 150px;
         border-radius: 50%;
         border:#ffffff solid 4px;
+        object-fit: cover;
       }
       .admin-slidebar-user-infor {
         span {

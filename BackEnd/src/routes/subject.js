@@ -25,18 +25,19 @@ router.get(
 );
 router.post(
   "/create",
-  //authMiddleware.checkAdmin,
+  authMiddleware.checkTeacher,
   subjectController.createSucject
 );
 router.put(
   "/update/:id",
-  //authMiddleware.checkAdmin,
+  authMiddleware.checkTeacher,
   subjectController.updateSubject
 );
 router.delete(
   "/delete/:id",
-  //authMiddleware.checkAdmin,
+  authMiddleware.checkTeacher,
   subjectController.deleteSubject
 );
 
 module.exports = router;
+// check done

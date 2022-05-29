@@ -99,6 +99,7 @@ const Forum = () => {
       setDateWriteBlogs(arrayDate);
       setListBlog(res.data.listBlog);
       setListAuthor(res.data.listAuthor);
+      console.log("list auth", res.data.listAuthor);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -127,10 +128,11 @@ const Forum = () => {
         };
         arrayDate.push(dataToAdd);
       });
-      console.log("abc:", arrayDate);
+
       setDateWriteQuestions(arrayDate);
       setListQuestionInForum(res.data.listQuestionInForum);
       setListAuthorOfQuestionInForum(res.data.listAuthor);
+      console.log("author", res.data.listAuthor);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -288,7 +290,19 @@ const Forum = () => {
                             <div className="post-item">
                               <div className="post-item-header">
                                 <div className="user-avatar">
-                                  <img src="/user/default-avatar.png"></img>
+                                  {listAuthor.map((authorItem, index) => {
+                                    if (authorItem._id == blogItem.userID) {
+                                      return (
+                                        <img
+                                          style={{
+                                            border: "2px solid #0d6efd",
+                                            objectFit: "cover",
+                                          }}
+                                          src={authorItem.avatar}
+                                        ></img>
+                                      );
+                                    }
+                                  })}
                                 </div>
                                 <div className="user-name">
                                   {listAuthor.map((authorItem, index) => {
@@ -306,7 +320,9 @@ const Forum = () => {
                                   <MathJax>
                                     <p
                                       dangerouslySetInnerHTML={{
-                                        __html: blogItem?.content,
+                                        __html:
+                                          blogItem?.content?.substr(0, 700) +
+                                          "...xem thêm",
                                       }}
                                     />
                                   </MathJax>
@@ -353,14 +369,26 @@ const Forum = () => {
                               <div className="forum-question-item">
                                 <div className="forum-question-item-header">
                                   <div className="user-avatar">
-                                    <img src="/user/default-avatar.png"></img>
+                                    {listAuthorOfQuestionInForum.map(
+                                      (authorItem, index) => {
+                                        if (authorItem._id == quesItem.userID) {
+                                          return (
+                                            <img
+                                              style={{
+                                                border: "2px solid #0d6efd",
+                                                objectFit: "cover",
+                                              }}
+                                              src={authorItem.avatar}
+                                            ></img>
+                                          );
+                                        }
+                                      }
+                                    )}
                                   </div>
                                   <div className="user-name">
                                     {listAuthorOfQuestionInForum.map(
                                       (authorItem, index) => {
-                                        if (
-                                          authorItem.userID == quesItem.userID
-                                        ) {
+                                        if (authorItem._id == quesItem.userID) {
                                           return <>{authorItem.fullname}</>;
                                         }
                                       }
@@ -482,8 +510,7 @@ const Forum = () => {
                                         </span>
                                       )}
                                     </td>
-                                    <td style={{ minWidth: "260px" }}>
-                                      <Button>Chi tiết</Button>
+                                    <td style={{ minWidth: "170px" }}>
                                       <Button
                                         variant="warning"
                                         onClick={() => {

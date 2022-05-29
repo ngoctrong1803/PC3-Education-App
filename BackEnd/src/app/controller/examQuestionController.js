@@ -37,7 +37,6 @@ const examQuestionController = {
   //[get]/api/exam-question/list/:id
   getExamQuestionByExamIDPagination: async (req, res) => {
     const examID = req.params.id;
-
     const currentPage = req.body.page;
     const questionInPage = 5;
     const contentToFind = req.body.contentToFind;
@@ -57,7 +56,10 @@ const examQuestionController = {
           question: { $regex: contentToFind },
         })
           .skip(currentPage * questionInPage - questionInPage)
-          .limit(questionInPage);
+          .limit(questionInPage)
+          .sort({
+            createdAt: -1,
+          });
         const listCateQues = await CategoryExercise.find({});
         res.status(200).json({
           message: "lấy thành công danh sách câu hỏi",
@@ -79,7 +81,10 @@ const examQuestionController = {
           question: { $regex: contentToFind },
         })
           .skip(currentPage * questionInPage - questionInPage)
-          .limit(questionInPage);
+          .limit(questionInPage)
+          .sort({
+            createdAt: -1,
+          });
         const listCateQues = await CategoryExercise.find({});
         res.status(200).json({
           message: "lấy thành công danh sách câu hỏi",

@@ -223,7 +223,14 @@ const UserInfor = () => {
                   </>
                 ) : (
                   <>
-                    <img src={avatarUpdateURL} className="mb-0"></img>
+                    <img
+                      src={avatarUpdateURL}
+                      className="mb-0"
+                      style={{
+                        boxShadow: "0 0.2rem 0.3rem rgba(20, 30, 40, 0.95)",
+                        objectFit: "cover",
+                      }}
+                    ></img>
                   </>
                 )}
                 {isUpload ? (

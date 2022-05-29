@@ -7,6 +7,7 @@ import {
   FormControl,
   Modal,
   Table,
+  Spinner,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Editor from "../../../../../comps/Ckeditor";
@@ -105,7 +106,28 @@ const CreateQuestion = () => {
       handleCloseConfirmDeleteCategory();
     }
   }
+  const [isUpload, setIsUpload] = useState(false);
+  const instance = axios.create();
   async function handlAddBlog() {
+    let blogImageCloud = "";
+    try {
+      const formData = new FormData();
+      formData.append("file", imageSelected[0]);
+      formData.append("upload_preset", "pc3_image");
+      setIsUpload(true);
+      const res = await instance.post(
+        "https://api.cloudinary.com/v1_1/dwjhsgpt7/image/upload",
+        formData
+      );
+      // url from clouldinary
+      blogImageCloud = res.data.url;
+      setIsUpload(false);
+    } catch (error) {
+      toast.error("Lỗi tải file! Thêm mới bài viết thất bại");
+      setIsUpload(false);
+      return;
+    }
+
     if (blogTitle == "") {
       toast.error("không thể bỏ trống tiêu đề");
     } else if (blogCategoryID == "") {
@@ -115,7 +137,7 @@ const CreateQuestion = () => {
     } else {
       const blog = {
         title: blogTitle,
-        image: blogImage,
+        image: blogImageCloud,
         cateBlogID: blogCategoryID,
         content: blogContent,
         view: 0,
@@ -130,6 +152,8 @@ const CreateQuestion = () => {
       }
     }
   }
+  // handle update image
+  const [imageSelected, setImageSelected] = useState();
 
   return (
     <div className="admin-forum-blog-page">
@@ -177,18 +201,25 @@ const CreateQuestion = () => {
           <Row>
             <Col ms={6} lg={6} xs={6}>
               <div className="admin-forum-blog-content-image">
-                <Form.Label>Hình ảnh</Form.Label>
-                <InputGroup className="mb-3">
-                  <FormControl
-                    placeholder="hình ảnh"
-                    aria-label="Recipient's username"
-                    aria-describedby="basic-addon2"
-                    value={blogImage}
+                <Form.Label>Hình ảnh</Form.Label>{" "}
+                {isUpload ? (
+                  <span style={{ color: "#0d6efd" }}>
+                    <Spinner animation="border" size="sm" variant="primary" />{" "}
+                    Loading...
+                  </span>
+                ) : null}
+                <Form.Group controlId="formFile" className="mb-3">
+                  <Form.Control
+                    type="file"
+                    style={{
+                      fontSize: "15px",
+                      backgroundColor: "rgba(39, 228, 245, 0.023)",
+                    }}
                     onChange={(e) => {
-                      setBlogImage(e.target.value);
+                      setImageSelected(e.target.files);
                     }}
                   />
-                </InputGroup>
+                </Form.Group>
               </div>
             </Col>
             <Col ms={6} lg={6} xs={6}>

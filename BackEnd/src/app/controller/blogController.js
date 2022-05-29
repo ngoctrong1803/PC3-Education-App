@@ -6,7 +6,10 @@ const blogController = {
   getBlog: async (req, res) => {
     const listBlog = await Blog.find({});
     const arrayUserID = listBlog.map(({ userID }) => userID);
-    const listAuthor = await User.find({ _id: { $in: arrayUserID } });
+    const listAuthor = await User.find(
+      { _id: { $in: arrayUserID } },
+      { password: 0 }
+    );
     res.status(200).json({
       message: "đã lấy thành công",
       listBlog,
@@ -19,7 +22,7 @@ const blogController = {
     const contentToFind = req.body.contentToFind;
     const cateToFind = req.body.cateToFind;
 
-    const blogInPage = 5;
+    const blogInPage = 6;
 
     if (cateToFind == "") {
       const listTotalBlog = await Blog.find({
@@ -35,9 +38,13 @@ const blogController = {
         ],
       })
         .skip(currentPage * blogInPage - blogInPage)
-        .limit(blogInPage);
+        .limit(blogInPage)
+        .sort({ createdAt: -1 });
       const arrayUserID = listBlog.map(({ userID }) => userID);
-      const listAuthor = await User.find({ _id: { $in: arrayUserID } });
+      const listAuthor = await User.find(
+        { _id: { $in: arrayUserID } },
+        { password: 0 }
+      );
       res.status(200).json({
         message: "đã lấy thành công",
         listBlog,
@@ -62,7 +69,10 @@ const blogController = {
         .skip(currentPage * blogInPage - blogInPage)
         .limit(blogInPage);
       const arrayUserID = listBlog.map(({ userID }) => userID);
-      const listAuthor = await User.find({ _id: { $in: arrayUserID } });
+      const listAuthor = await User.find(
+        { _id: { $in: arrayUserID } },
+        { password: 0 }
+      );
       res.status(200).json({
         message: "đã lấy thành công",
         listBlog,
@@ -108,7 +118,7 @@ const blogController = {
   getBlogById: async (req, res) => {
     const blogID = req.params.id;
     const blog = await Blog.findOne({ _id: blogID });
-    const author = await User.find({ _id: blog.userID });
+    const author = await User.find({ _id: blog.userID }, { password: 0 });
     res.status(200).json({
       message: "đã lấy thành công",
       blog,

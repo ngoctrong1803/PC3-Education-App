@@ -34,7 +34,7 @@ const flashcardController = {
   //[get]/api/flashcard/list/:id
   getFlashcardByTopicIDPagination: async (req, res) => {
     const topicID = req.params.id;
-    const flashcardInPage = 5;
+    const flashcardInPage = 6;
     const currentPage = req.body.page;
     const nameToFind = req.body.nameToFind;
     const listTotalFlashcard = await Flashcard.find({
@@ -52,11 +52,12 @@ const flashcardController = {
         { meaningInVietnamese: { $regex: nameToFind } },
       ],
     })
-      // .sort({
-      //   createAt: -1,
-      // })
+
       .skip(currentPage * flashcardInPage - flashcardInPage)
-      .limit(flashcardInPage);
+      .limit(flashcardInPage)
+      .sort({
+        createdAt: -1,
+      });
     let totalFlashcard = listTotalFlashcard.length;
     const topic = await Topic.findOne({
       _id: topicID,

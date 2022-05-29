@@ -26,7 +26,10 @@ const topicController = {
       //   createAt: -1,
       // })
       .skip(currentPage * topicInPage - topicInPage)
-      .limit(topicInPage);
+      .limit(topicInPage)
+      .sort({
+        createdAt: -1,
+      });
     let totalTopic = listTotalTopic.length;
     res.status(200).json({
       message: "lấy danh sách chủ đề thành công",

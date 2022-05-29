@@ -30,17 +30,14 @@ const Banner = () => {
         className="mySwiper"
       >
         <SwiperSlide>
-          <img src="/banner2.jpg"></img>
-        </SwiperSlide>
-        {/* <SwiperSlide>
-          <img src="/hinh2.jpg"></img>
+          <img src="/banner2.png"></img>
         </SwiperSlide>
         <SwiperSlide>
-          <img src="/hinh3.jpg"></img>
+          <img src="/banner3.png"></img>
         </SwiperSlide>
         <SwiperSlide>
-          <img src="/hinh4.jpg"></img>
-        </SwiperSlide> */}
+          <img src="/banner4.png"></img>
+        </SwiperSlide>
       </Swiper>
     </>
   );

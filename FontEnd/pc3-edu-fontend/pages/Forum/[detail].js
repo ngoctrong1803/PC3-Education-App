@@ -64,6 +64,7 @@ const Detail = () => {
       const res = await axiosJWT.get("/api/blog/" + id);
       console.log("res", res);
       setAuthor(res.data.author[0]);
+      console.log("người làm", res.data.author[0]);
       setContentOfBlog(res.data.blog);
       let dateTemp = new Date(res.data.blog.createdAt);
       let year = dateTemp.getFullYear();
@@ -157,7 +158,13 @@ const Detail = () => {
               <div className="forum-event-detail">
                 <div className="forum-event-detail-title-user">
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <img src="/user/default-avatar.png"></img>
+                    <img
+                      src={author.avatar}
+                      style={{
+                        border: "2px solid #0d6efd",
+                        objectFit: "cover",
+                      }}
+                    ></img>
                     <span>{author.fullname}</span>
                   </div>
 
@@ -248,7 +255,7 @@ const Detail = () => {
                   <div className="forum-question-detail-comment">
                     <div className="forum-question-detail-user-comment">
                       <div className="forum-question-detail-user-avatar">
-                        <img src="/user/default-avatar.png"></img>
+                        <img src={currentUser?.userInfor?.avatar}></img>
                       </div>
                       <InputGroup>
                         <FormControl
@@ -369,13 +376,6 @@ const Detail = () => {
             ) : null}
           </Col>
         </Row>
-        <Button
-          onClick={() => {
-            testSocket();
-          }}
-        >
-          Test
-        </Button>
       </MathJaxContext>
       <Modal
         show={showConfirmDeleteComment}

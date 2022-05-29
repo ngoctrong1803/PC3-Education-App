@@ -31,7 +31,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
@@ -48,7 +51,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
@@ -66,7 +72,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       console.log("list exam in here:", listExam);
       res.status(200).json({
         message: "đã lấy thành công",
@@ -82,7 +91,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
@@ -94,7 +106,7 @@ const examController = {
   //[get]/api/exam/list
   getExamPagination: async (req, res) => {
     const { page, contentToFind, subjectID, exaTypID } = req.body;
-    const examInPage = 3;
+    const examInPage = 6;
     const currentPage = page;
 
     //const listExam = [];
@@ -109,7 +121,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
@@ -126,7 +141,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
@@ -144,7 +162,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       console.log("list exam in here:", listExam);
       res.status(200).json({
         message: "đã lấy thành công",
@@ -160,7 +181,10 @@ const examController = {
         title: { $regex: contentToFind },
       })
         .skip(currentPage * examInPage - examInPage)
-        .limit(examInPage);
+        .limit(examInPage)
+        .sort({
+          createdAt: -1,
+        });
       res.status(200).json({
         message: "đã lấy thành công",
         listExam: listExam,
