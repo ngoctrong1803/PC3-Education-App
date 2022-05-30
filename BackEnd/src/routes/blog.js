@@ -4,6 +4,10 @@ const blogController = require("../app/controller/blogController");
 const authMiddleware = require("../app/middlewares/authMiddleware");
 
 router.get("/list", blogController.getBlog);
+router.post(
+  "/list-in-forum-index",
+  blogController.getBlogPaginationInForumIndex
+);
 router.post("/list", blogController.getBlogPagination);
 router.get("/list-index", blogController.getBlogInForumIndex);
 router.get("/list-blog-index", blogController.getListBlogInForumIndex);

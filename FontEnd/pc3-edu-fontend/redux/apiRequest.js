@@ -11,9 +11,10 @@ import {
 
 // handle login
 export const loginUser = async (user, dispatch, router) => {
+  const host = process.env.NEXT_PUBLIC_HOST;
   dispatch(loginStart());
   try {
-    const res = await axios.post("http://localhost:8000/api/auth/login", user);
+    const res = await axios.post(host + "/api/auth/login", user);
     console.log("data of user login:", res.data);
     dispatch(loginSuccess(res.data));
     router.push("/");

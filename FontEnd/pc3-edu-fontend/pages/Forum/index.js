@@ -7,6 +7,7 @@ import {
   Form,
   Table,
   Modal,
+  Pagination,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
@@ -75,9 +76,23 @@ const Forum = () => {
       toast.error(errMessage);
     }
   }
-  async function getListBlog() {
+  // total page blog
+  const [totalBlogPage, setTotalBlogPage] = useState([]);
+  const [cateBlogToFind, setCateBlogToFind] = useState("");
+  const [contentBlogToFind, setContentBlogToFind] = useState("");
+  async function getListBlog(page) {
     try {
-      const res = await axiosJWT.get("/api/blog/list");
+      const res = await axiosJWT.post("/api/blog/list-in-forum-index", {
+        page: page,
+        contentToFind: contentBlogToFind,
+        cateToFind: cateBlogToFind,
+      });
+
+      const totalListPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        totalListPage.push(i + 1);
+      }
+      setTotalBlogPage(totalListPage);
 
       const arrayDate = [];
       // date create
@@ -101,15 +116,22 @@ const Forum = () => {
       setListAuthor(res.data.listAuthor);
       console.log("list auth", res.data.listAuthor);
     } catch (err) {
-      const errMessage = err.response.data.message;
+      const errMessage = err.response?.data?.message;
       toast.error(errMessage);
     }
   }
 
-  // function question in forum
-  async function getListQuestionInForum() {
+  // function question in forum (all question)
+  const [cateOfQuestionToFind, setCateOfQuestionToFind] = useState("");
+  const [contentOfQuestionToFind, setContentOfQuestionToFind] = useState("");
+  const [totalPageOfAllQuestion, setTotalPageOfAllQuestion] = useState([]);
+  async function getListQuestionInForum(page) {
     try {
-      const res = await axiosJWT.get("/api/question-in-forum/list");
+      const res = await axiosJWT.post("/api/question-in-forum/list", {
+        page: page,
+        contentToFind: contentOfQuestionToFind,
+        cateToFind: cateOfQuestionToFind,
+      });
 
       const arrayDate = [];
       // date create
@@ -129,10 +151,14 @@ const Forum = () => {
         arrayDate.push(dataToAdd);
       });
 
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      setTotalPageOfAllQuestion(listTotalPage);
       setDateWriteQuestions(arrayDate);
       setListQuestionInForum(res.data.listQuestionInForum);
       setListAuthorOfQuestionInForum(res.data.listAuthor);
-      console.log("author", res.data.listAuthor);
     } catch (err) {
       const errMessage = err.response.data.message;
       toast.error(errMessage);
@@ -140,11 +166,22 @@ const Forum = () => {
   }
 
   // function question in forum
-  async function getQuestionInForumByUser() {
+  const [totalPageOfMyQuestion, setTotalPageOfMyQuestion] = useState([]);
+  async function getQuestionInForumByUser(page) {
     try {
       const res = await axiosJWT.get(
-        "/api/question-in-forum/user/" + currentUser.userInfor._id
+        "/api/question-in-forum/user/" +
+          currentUser.userInfor._id +
+          "?" +
+          "page=" +
+          page
       );
+      const listTotalPage = [];
+      for (let i = 0; i < res.data.totalPage; i++) {
+        listTotalPage.push(i + 1);
+      }
+      console.log("bafasdkfaldjks.f", res.data.totalPage);
+      setTotalPageOfMyQuestion(listTotalPage);
       setListQuestionOfUser(res.data.listQuestionInForum);
     } catch (err) {
       const errMessage = err?.response?.data?.message;
@@ -169,7 +206,7 @@ const Forum = () => {
         toast.success(
           "Đã gửi câu hỏi thành công. chờ quản trị viên kiểm duyệt nhé!"
         );
-        getQuestionInForumByUser();
+        getQuestionInForumByUser(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -202,7 +239,7 @@ const Forum = () => {
           "Đã cập nhật thành công! Vui lòng đợi kiểm duyệt của quản trị viên"
         );
         handleCloseUpdateQuestion();
-        getQuestionInForumByUser();
+        getQuestionInForumByUser(1);
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -221,7 +258,7 @@ const Forum = () => {
       toast.error(errMessage);
     }
 
-    getQuestionInForumByUser();
+    getQuestionInForumByUser(1);
     handleCloseConfirmDeleteQuestion();
   }
 
@@ -238,13 +275,24 @@ const Forum = () => {
 
   useEffect(() => {
     if (isAuth) {
-      getListBlog();
       getBlogCategory();
       getListCateQuestion();
-      getQuestionInForumByUser();
-      getListQuestionInForum();
+      getQuestionInForumByUser(1);
+      getListQuestionInForum(1);
     }
   }, []);
+  useEffect(() => {
+    if (isAuth) {
+      getListQuestionInForum(1);
+    }
+  }, [cateOfQuestionToFind, contentOfQuestionToFind]);
+
+  useEffect(() => {
+    if (isAuth) {
+      getListBlog(1);
+    }
+  }, [cateBlogToFind, contentBlogToFind]);
+
   const config = {
     loader: { load: ["input/asciimath"] },
   };
@@ -259,6 +307,7 @@ const Forum = () => {
                 <div className="forum-topic">
                   <ul>
                     <li
+                      className="btn"
                       onClick={() => {
                         setShow("event");
                       }}
@@ -266,6 +315,7 @@ const Forum = () => {
                       Sự Kiện
                     </li>
                     <li
+                      className="btn"
                       onClick={() => {
                         setShow("question");
                       }}
@@ -273,6 +323,7 @@ const Forum = () => {
                       Hỏi Đáp
                     </li>
                     <li
+                      className="btn"
                       onClick={() => {
                         setShow("my-question");
                       }}
@@ -280,7 +331,48 @@ const Forum = () => {
                       Câu hỏi của tôi
                     </li>
                   </ul>
+                  {show == "event" ? (
+                    <InputGroup
+                      style={{
+                        width: "350px",
+                        marginRight: "35px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <FormControl
+                        placeholder="Nhập nội dung cần tìm kiếm"
+                        aria-label="Recipient's username"
+                        aria-describedby="basic-addon2"
+                        value={contentBlogToFind}
+                        onChange={(e) => {
+                          setContentBlogToFind(e.target.value);
+                        }}
+                      />
+                      <Button variant="primary">Tìm kiếm</Button>
+                    </InputGroup>
+                  ) : null}
+                  {show == "question" ? (
+                    <InputGroup
+                      style={{
+                        width: "350px",
+                        marginRight: "35px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <FormControl
+                        placeholder="Nhập nội dung cần tìm kiếm"
+                        aria-label="Recipient's username"
+                        aria-describedby="basic-addon2"
+                        value={contentOfQuestionToFind}
+                        onChange={(e) => {
+                          setContentOfQuestionToFind(e.target.value);
+                        }}
+                      />
+                      <Button variant="primary">Tìm kiếm</Button>
+                    </InputGroup>
+                  ) : null}
                 </div>
+
                 {show == "event" ? (
                   <div className="forum-event-wrap">
                     {listBlog.map((blogItem, index) => {
@@ -317,7 +409,7 @@ const Forum = () => {
                                   <h5>{blogItem.title}</h5>
                                 </div>
                                 <div className="post-content">
-                                  <MathJax>
+                                  {blogItem?.content ? (
                                     <p
                                       dangerouslySetInnerHTML={{
                                         __html:
@@ -325,7 +417,9 @@ const Forum = () => {
                                           "...xem thêm",
                                       }}
                                     />
-                                  </MathJax>
+                                  ) : (
+                                    <div>... is loading</div>
+                                  )}
                                   <img src={`${blogItem.image}`}></img>
                                 </div>
                               </div>
@@ -544,6 +638,107 @@ const Forum = () => {
                     </div>
                   </div>
                 ) : null}
+                <div className="forum-blog-pagination">
+                  {show == "event" ? (
+                    <Pagination>
+                      <Pagination.Prev />
+                      {totalBlogPage.map((item) => {
+                        return (
+                          <>
+                            <Pagination.Item
+                              className="pagination_item"
+                              onClick={(e) => {
+                                getListBlog(item);
+                                const listPagination =
+                                  document.querySelectorAll(".pagination_item");
+                                const activeItem = (itemClick) => {
+                                  listPagination.forEach((item) => {
+                                    item.classList.remove("active");
+                                  });
+                                  itemClick.classList.add("active");
+                                };
+                                listPagination.forEach((item) => {
+                                  item.addEventListener("click", function () {
+                                    activeItem(item);
+                                  });
+                                });
+                              }}
+                            >
+                              {item}
+                            </Pagination.Item>
+                          </>
+                        );
+                      })}
+                      <Pagination.Next />
+                    </Pagination>
+                  ) : null}
+                  {show == "question" ? (
+                    <Pagination>
+                      <Pagination.Prev />
+                      {totalPageOfAllQuestion.map((item) => {
+                        return (
+                          <>
+                            <Pagination.Item
+                              className="pagination_item"
+                              onClick={(e) => {
+                                getListQuestionInForum(item);
+                                const listPagination =
+                                  document.querySelectorAll(".pagination_item");
+                                const activeItem = (itemClick) => {
+                                  listPagination.forEach((item) => {
+                                    item.classList.remove("active");
+                                  });
+                                  itemClick.classList.add("active");
+                                };
+                                listPagination.forEach((item) => {
+                                  item.addEventListener("click", function () {
+                                    activeItem(item);
+                                  });
+                                });
+                              }}
+                            >
+                              {item}
+                            </Pagination.Item>
+                          </>
+                        );
+                      })}
+                      <Pagination.Next />
+                    </Pagination>
+                  ) : null}
+                  {show == "my-question" ? (
+                    <Pagination>
+                      <Pagination.Prev />
+                      {totalPageOfMyQuestion.map((item) => {
+                        return (
+                          <>
+                            <Pagination.Item
+                              className="pagination_item"
+                              onClick={(e) => {
+                                getQuestionInForumByUser(item);
+                                const listPagination =
+                                  document.querySelectorAll(".pagination_item");
+                                const activeItem = (itemClick) => {
+                                  listPagination.forEach((item) => {
+                                    item.classList.remove("active");
+                                  });
+                                  itemClick.classList.add("active");
+                                };
+                                listPagination.forEach((item) => {
+                                  item.addEventListener("click", function () {
+                                    activeItem(item);
+                                  });
+                                });
+                              }}
+                            >
+                              {item}
+                            </Pagination.Item>
+                          </>
+                        );
+                      })}
+                      <Pagination.Next />
+                    </Pagination>
+                  ) : null}
+                </div>
               </div>
             </Col>
             <Col xs={4} ms={4}>
@@ -554,17 +749,71 @@ const Forum = () => {
                       <li>Chủ đề</li>
                     </ul>
                   </div>
-                  <div className="slidebar-content">
-                    {listCateBlog.map((cateItem, index) => {
-                      return (
-                        <>
-                          <div className="btn btn-light">
-                            {cateItem.category}
-                          </div>
-                        </>
-                      );
-                    })}
-                  </div>
+                  {show == "event" ? (
+                    <div className="slidebar-content">
+                      <div
+                        className="btn btn-light"
+                        onClick={() => {
+                          setCateBlogToFind("");
+                        }}
+                      >
+                        Tất cả thể loại
+                      </div>
+                      {listCateBlog.map((cateItem, index) => {
+                        return (
+                          <>
+                            <div
+                              className="btn btn-light"
+                              onClick={() => {
+                                setCateBlogToFind(cateItem._id);
+                              }}
+                            >
+                              {cateItem.category}
+                            </div>
+                          </>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                  {show == "question" ? (
+                    <div className="slidebar-content">
+                      <div
+                        className="btn btn-light"
+                        onClick={() => {
+                          setCateOfQuestionToFind("");
+                        }}
+                      >
+                        Tất cả thể loại
+                      </div>
+                      {listCateQuestion.map((cateItem, index) => {
+                        return (
+                          <>
+                            <div
+                              className="btn btn-light"
+                              onClick={() => {
+                                setCateOfQuestionToFind(cateItem._id);
+                              }}
+                            >
+                              {cateItem.catQueName}
+                            </div>
+                          </>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                  {show == "my-question" ? (
+                    <div className="slidebar-content">
+                      {listCateQuestion.map((cateItem, index) => {
+                        return (
+                          <>
+                            <div className="btn btn-light">
+                              {cateItem.catQueName}
+                            </div>
+                          </>
+                        );
+                      })}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </Col>

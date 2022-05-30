@@ -29,48 +29,46 @@ const UserInfor = () => {
   const instance = axios.create();
 
   async function uploadImage() {
-    try {
-      const formData = new FormData();
-      formData.append("file", imageSelected[0]);
-      formData.append("upload_preset", "pc3_image");
-      setIsUpload(true);
-      const res = await instance.post(
-        "https://api.cloudinary.com/v1_1/dwjhsgpt7/image/upload",
-        formData
-      );
-      // url from clouldinary
-      setAvatarUpdateURL(res.data.url);
-      // update avatar in database
-      await axiosJWT.put(
-        "/api/user/update-avatar/" + currentUser.userInfor._id,
-        {
-          imageurl: res.data.url,
-        }
-      );
+    //  try {
+    const formData = new FormData();
+    formData.append("file", imageSelected[0]);
+    formData.append("upload_preset", "pc3_image");
+    setIsUpload(true);
+    const res = await instance.post(
+      "https://api.cloudinary.com/v1_1/dwjhsgpt7/image/upload",
+      formData
+    );
+    // url from clouldinary
+    setAvatarUpdateURL(res.data.url);
+    // update avatar in database
+    await axiosJWT.put("/api/user/update-avatar/" + currentUser.userInfor._id, {
+      imageurl: res.data.url,
+    });
 
-      setIsUpload(false);
+    setIsUpload(false);
 
-      const updateCurrentUser = {
-        userInfor: {
-          _id: currentUser.userInfor._id,
-          email: currentUser.userInfor.email,
-          fullname: currentUser.userInfor.fullname,
-          role: currentUser.userInfor.role,
-          avatar: res.data.url, // change avatar
-          class: currentUser.userInfor.class,
-          birthday: currentUser.userInfor.birthday,
-          address: currentUser.userInfor.address,
-          phone: currentUser.userInfor.phone,
-        },
-        accesstoken: currentUser.accesstoken,
-        refreshtoken: currentUser.refreshtoken,
-      };
-      // handle change in redux
-      updateCurrentUserFunc(updateCurrentUser, dispatch);
-      toast.success("Cập nhật avatar thành công");
-    } catch (error) {
-      toast.error("Lỗi tải file!");
-    }
+    const updateCurrentUser = {
+      userInfor: {
+        _id: currentUser.userInfor._id,
+        email: currentUser.userInfor.email,
+        fullname: currentUser.userInfor.fullname,
+        role: currentUser.userInfor.role,
+        avatar: res.data.url, // change avatar
+        class: currentUser.userInfor.class,
+        birthday: currentUser.userInfor.birthday,
+        address: currentUser.userInfor.address,
+        phone: currentUser.userInfor.phone,
+      },
+      accesstoken: currentUser.accesstoken,
+      refreshtoken: currentUser.refreshtoken,
+    };
+    // handle change in redux
+    updateCurrentUserFunc(updateCurrentUser, dispatch);
+    toast.success("Cập nhật avatar thành công");
+    // } catch (error) {
+    //   toast.error("Lỗi tải file! Cật nhật thất bại");
+    //   setIsUpload(true);
+    // }
   }
   //handle change user infro
   const [userAddress, setUserAddress] = useState("");
@@ -116,7 +114,6 @@ const UserInfor = () => {
             dataToSend
           );
           const dataFormServer = res.data.userUpdate;
-          console.log("data from server", dataFormServer);
           const updateCurrentUser = {
             userInfor: {
               _id: dataFormServer._id,
@@ -241,9 +238,10 @@ const UserInfor = () => {
                   </div>
                 ) : null}
 
-                <h5 className="mt-2 mb-3">
+                <h5 className="mt-2 mb-3" style={{ textAlign: "center" }}>
                   {currentUser?.userInfor?.fullname}
                 </h5>
+
                 <Accordion
                   defaultActiveKey=""
                   className="input-file-upload-image"

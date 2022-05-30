@@ -81,6 +81,73 @@ const blogController = {
       });
     }
   },
+
+  //[post]/api/blog/list-in-forum-index
+  getBlogPaginationInForumIndex: async (req, res) => {
+    const currentPage = req.body.page;
+    const contentToFind = req.body.contentToFind;
+    const cateToFind = req.body.cateToFind;
+
+    const blogInPage = 3;
+
+    if (cateToFind == "") {
+      const listTotalBlog = await Blog.find({
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      });
+      const listBlog = await Blog.find({
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * blogInPage - blogInPage)
+        .limit(blogInPage)
+        .sort({ createdAt: -1 });
+      const arrayUserID = listBlog.map(({ userID }) => userID);
+      const listAuthor = await User.find(
+        { _id: { $in: arrayUserID } },
+        { password: 0 }
+      );
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listBlog,
+        listAuthor,
+        totalPage: Math.ceil(listTotalBlog.length / blogInPage),
+      });
+    } else if (cateToFind != "") {
+      const listTotalBlog = await Blog.find({
+        cateBlogID: cateToFind,
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      });
+      const listBlog = await Blog.find({
+        cateBlogID: cateToFind,
+        $or: [
+          { title: { $regex: contentToFind } },
+          { content: { $regex: contentToFind } },
+        ],
+      })
+        .skip(currentPage * blogInPage - blogInPage)
+        .limit(blogInPage);
+      const arrayUserID = listBlog.map(({ userID }) => userID);
+      const listAuthor = await User.find(
+        { _id: { $in: arrayUserID } },
+        { password: 0 }
+      );
+      res.status(200).json({
+        message: "đã lấy thành công",
+        listBlog,
+        listAuthor,
+        totalPage: Math.ceil(listTotalBlog.length / blogInPage),
+      });
+    }
+  },
+  //
   getBlogInForumIndex: async (req, res) => {
     const listBlog = await Blog.aggregate([
       { $sort: { createdAt: -1 } },
@@ -110,7 +177,7 @@ const blogController = {
       { $limit: 10 },
     ]);
     res.status(200).json({
-      message: "đã câu hỏi trong diễn đàn thành công",
+      message: "lấy bài đăng trong diễn đàn thành công",
       listBlog,
     });
   },

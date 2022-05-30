@@ -3,16 +3,21 @@ import jwt_decode from "jwt-decode";
 import { loginReset } from "../redux/authSlice";
 
 export const createAxios = (user, dispatch, loginSuccess) => {
+  console.log("tạo mới ", user);
   const host = process.env.NEXT_PUBLIC_HOST;
   const newInstance = axios.create({ baseURL: host });
 
   function getLocalAccessToken() {
-    const accessToken = window.localStorage.accesstoken;
+    //  const accessToken = window.localStorage.accesstoken;
+    const accessToken = user.accesstoken;
     console.log("getLocalAccessToken", accessToken);
     return accessToken;
   }
   function getLocalRefreshToken() {
-    const refreshToken = window.localStorage.getItem("refreshtoken");
+    // const refreshToken = window.localStorage.getItem("refreshtoken");
+    // error in here
+    const refreshToken = user.refreshtoken;
+    console.log("getLocalRefreshToken to refresh:", user.refreshtoken);
     return refreshToken;
   }
 
@@ -23,6 +28,8 @@ export const createAxios = (user, dispatch, loginSuccess) => {
       axios.interceptors.request.use(
         (config) => {
           config.headers["refreshtoken"] = "Bearer " + refreshtoken;
+          // error in here
+          console.log("data chuyể lên server:", "Bearer " + refreshtoken);
           return config;
         },
         (err) => {
@@ -45,6 +52,7 @@ export const createAxios = (user, dispatch, loginSuccess) => {
     async (config) => {
       const accessToken = getLocalAccessToken();
       const decodedToken = jwt_decode(accessToken);
+      console.log("decode:", decodedToken);
       let date = new Date();
       if (decodedToken.exp < date.getTime() / 1000) {
         console.log(
@@ -66,6 +74,7 @@ export const createAxios = (user, dispatch, loginSuccess) => {
           refreshtoken: data.refreshtoken,
         };
         dispatch(loginSuccess(refreshUser));
+        // set tonken
         window.localStorage.setItem("accesstoken", data.accesstoken);
         window.localStorage.setItem("refreshtoken", data.refreshtoken);
         config.headers["accesstoken"] = "Bearer " + data.accesstoken;

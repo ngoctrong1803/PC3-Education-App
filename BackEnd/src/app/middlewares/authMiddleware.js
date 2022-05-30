@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 const authMiddleware = {
   verifyToken: (req, res, next) => {
     const token = req.headers.accesstoken;
-    console.log(token);
     if (token) {
       const accesstoken = token.split(" ")[1];
       jwt.verify(
@@ -25,7 +24,8 @@ const authMiddleware = {
   checkUserChangeInfor: (req, res, next) => {
     const userID = req.params.id;
     authMiddleware.verifyToken(req, res, () => {
-      if (req.data._id == userID) {
+      console.log("so sánh:", req.data._id, "-", userID);
+      if (req.data._id === userID) {
         next();
       } else {
         res.status(403).json("Token không hợp lệ");

@@ -56,10 +56,10 @@ const Home = () => {
         </div>
         <div className={styles.content_wrapper}>
           <div className={styles.content}>
-            <div className="selection_list">
+            <div className="selection_list_index">
               <h5>Học tập</h5>
               <Card style={{ minHeight: "280px" }}>
-                <Card.Header>
+                <Card.Header style={{ backgroundColor: "#113685" }}>
                   <Nav variant="tabs" defaultActiveKey="#first">
                     <Nav.Item>
                       <Nav.Link
@@ -114,11 +114,13 @@ const Home = () => {
             <div className="selection_list">
               <h5>Diễn đàn</h5>
               <Card>
-                <Card.Header>
+                <Card.Header style={{ backgroundColor: "#113685" }}>
                   <Nav variant="tabs" defaultActiveKey="#blog">
                     <Nav.Item>
                       <Nav.Link href="#blog">
-                        <span>Các bài viết nổi bậc</span>
+                        <span style={{ color: "#113685" }}>
+                          Các bài viết nổi bậc
+                        </span>
                       </Nav.Link>
                     </Nav.Item>
                   </Nav>

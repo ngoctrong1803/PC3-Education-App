@@ -72,7 +72,7 @@ const Subject = () => {
           <title>Học Tập</title>
         </Head>
         <Card>
-          <Card.Header>
+          <Card.Header style={{ backgroundColor: "#113685" }}>
             <Nav variant="tabs" defaultActiveKey="#khoi-10">
               <Nav.Item>
                 <Nav.Link

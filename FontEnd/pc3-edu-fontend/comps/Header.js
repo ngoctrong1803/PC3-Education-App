@@ -27,10 +27,9 @@ const Header = () => {
     e.preventDefault();
     e.stopPropagation();
     router.push("/");
-
     loginResetFunc(dispatch);
-    localStorage.removeItem("accesstoken");
-    localStorage.removeItem("refreshtoken");
+    window.localStorage.removeItem("accesstoken");
+    window.localStorage.removeItem("refreshtoken");
   };
   return (
     <>

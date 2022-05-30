@@ -51,7 +51,7 @@ const authController = {
   // create access token
   createAccessToken: (payload) => {
     return jwt.sign(payload, process.env.JWT_KEY_ACCESSTOKEN, {
-      expiresIn: "15s",
+      expiresIn: "900s",
     });
   },
   // create refresh token
@@ -71,6 +71,7 @@ const authController = {
 
   //function hadle login
   loginUser: async (req, res) => {
+    console.log("----------------login---------------------");
     const email = req.body.email;
     const password = req.body.password;
     User.findOne({
@@ -95,6 +96,7 @@ const authController = {
                 address: data.address,
                 phone: data.phone,
               };
+              console.log("data để tạo token", dataSendToClient);
               const accesstoken =
                 authController.createAccessToken(dataSendToClient);
               const refreshToken =
@@ -126,7 +128,9 @@ const authController = {
       });
   },
   requestRefreshToken: async (req, res) => {
+    console.log("================refresh token server========================");
     let refreshtoken = req.headers.refreshtoken;
+    console.log("token nhận được:", req.headers.refreshtoken);
     refreshtoken = refreshtoken.split(" ")[1];
     if (!refreshtoken) {
       res.status(401).json({
@@ -145,6 +149,7 @@ const authController = {
           res.status(400).json({ message: err });
         }
         const { iat, exp, ...others } = payload;
+        console.log("user refresh", payload);
         const user = others;
         // await Token.deleteOne({ refreshtoken: refreshtoken });
         const newAccessToken = authController.createAccessToken(user);

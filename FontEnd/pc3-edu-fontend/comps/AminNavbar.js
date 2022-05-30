@@ -28,8 +28,8 @@ const AdminNavbar = () => {
     e.preventDefault();
     e.stopPropagation();
     loginResetFunc(dispatch);
-    localStorage.removeItem("accesstoken");
-    localStorage.removeItem("refreshtoken");
+    window.localStorage.removeItem("accesstoken");
+    window.localStorage.removeItem("refreshtoken");
     router.push("/");
   };
   return (

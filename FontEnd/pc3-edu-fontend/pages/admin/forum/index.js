@@ -514,7 +514,7 @@ const Forum = () => {
                       </td>
                       <td>
                         {listAuthorOfQuestion.map((authorItem, index) => {
-                          if (questionItem.userID == authorItem.userID) {
+                          if (questionItem.userID == authorItem._id) {
                             return <>{authorItem.fullname}</>;
                           }
                         })}

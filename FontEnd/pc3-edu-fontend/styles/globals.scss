@@ -808,6 +808,13 @@ ul.navbar-home {
   margin: 15px;
   box-shadow: 0px 4px 12px 0 rgba(0, 0, 0, 0.05);
   background: linear-gradient(to bottom, #e8fbf1 0%, #c2ebff 98%);
+  .nav-link{
+    color: #fff;
+    font-weight: 500;
+  }
+  .nav-link.active{
+    color: #113685;
+  }
 }
 .selection_list{
  
@@ -883,6 +890,7 @@ ul.navbar-home {
   width: 320px;
   min-height: 370px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  background-color: #f0f5ffe1;
 
   .rank-chart-title {
    
@@ -892,7 +900,7 @@ ul.navbar-home {
     text-align: center;
     background-color: #113685;
     color: #ffff;
-    padding: 7px;
+    padding: 10px 10px 5px 10px;
     border-radius: 10px 10px 0 0;
     h5 {
       margin-left: 3px;
@@ -904,14 +912,15 @@ ul.navbar-home {
       list-style: none;
       margin-top: 10px;
       .rank-item {
+        box-shadow: 0 0.2rem 0.2rem rgba(0, 0, 0, 0.15) !important;
         padding: 7px;
-        border-radius: 5px;
+        border-radius: 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-right: 15px;
         border-bottom: rgba(196, 196, 196, 0.5) solid 0.5px;
-        background-color: #fcffff;
+        background-color: #e7fafa;
         padding-left: 5px;
         padding-bottom: 7px;
         .rank-item-user {
@@ -1171,16 +1180,23 @@ ul.navbar-home {
   .forum-content {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     min-height: 800px;
+   
     .forum-topic {
+      border-bottom: #a8b2b8 solid 1px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+     
       ul {
         display: flex;
         flex-direction: row;
-        border-bottom: #a8b2b8 solid 1px;
-        margin: 0 35px;
+        margin: 0 0px;
+      
+     
         li {
           margin-top: 35px;
           list-style: none;
-          margin-right: 15px;
+         
           font-size: 18px;
           font-weight: 500;
           border-bottom: #ffffff solid 2px;
@@ -1360,6 +1376,15 @@ ul.navbar-home {
       }
     }
   }
+.forum-blog-pagination{
+
+ 
+  padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
 }
 // ------------------------------------end forum page --------------------------------
 //-------------------------------------start forum detail page-------------------------------------
@@ -1543,12 +1568,17 @@ ul.navbar-home {
               justify-content: space-between;
               margin-bottom: 5px;
               margin-top: 5px;
+              margin-left: 15px;
+              span {
+                font-weight: 600;
+              }
               img {
                 //avatar
                 width: 30px;
                 height: 30px;
                 border-radius: 50%;
                 margin-right: 5px;
+                object-fit: cover;
               }
               .btn-delete{
                 margin: 10px;
@@ -1557,6 +1587,11 @@ ul.navbar-home {
               }
             }
             .forum-question-detail-user-commented-content {
+              img{
+                object-fit: cover;
+              }
+              display: flex;
+              align-items: center;
               background-color: #e7e7e77e;
               border-radius: 10px;
               margin: 5px 15px;
@@ -3624,5 +3659,16 @@ body{
         }
       }
     }
+  }
+}
+.selection_list_index{
+  margin-top: 15px;
+  margin-left: 15px;
+  .nav-link{
+    color: #fff;
+    font-weight: 500;
+  }
+  .nav-link.active{
+    color: #113685;
   }
 }

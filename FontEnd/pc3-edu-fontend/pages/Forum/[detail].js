@@ -100,6 +100,7 @@ const Detail = () => {
       toast.error(errMessage);
     }
   }
+
   async function handleComment() {
     if (commentContent != "") {
       const dataToAddComment = {
@@ -114,6 +115,7 @@ const Detail = () => {
           dataToAddComment
         );
         getContentOfQuestion();
+        setCommentContent("");
       } catch (err) {
         const errMessage = err.response.data.message;
         toast.error(errMessage);
@@ -214,7 +216,13 @@ const Detail = () => {
                 <div className="forum-question-detail-title">
                   <div className="forum-question-detail-title-user">
                     <div>
-                      <img src="/user/default-avatar.png"></img>
+                      <img
+                        style={{
+                          border: "2px solid #0d6efd",
+                          objectFit: "cover",
+                        }}
+                        src={contentOfQuestion?.questionAuthor?.avatar}
+                      ></img>
                       <span>{contentOfQuestion?.questionAuthor?.fullname}</span>
                     </div>
                     <Button
@@ -266,9 +274,7 @@ const Detail = () => {
                             setCommentContent(e.target.value);
                           }}
                         />
-                        <Button variant="outline-secondary">
-                          <ion-icon name="image-outline"></ion-icon>
-                        </Button>
+
                         <Button
                           variant="primary"
                           onClick={() => {
@@ -289,12 +295,24 @@ const Detail = () => {
                                 <div className="forum-question-detail-user-commented">
                                   <div className="forum-question-detail-user-commented-title">
                                     <div>
-                                      <img src="/user/default-avatar.png"></img>
+                                      {listUserComment.map(
+                                        (authorItem, index) => {
+                                          if (
+                                            authorItem._id == commentItem.userID
+                                          )
+                                            return (
+                                              <img
+                                                src={authorItem?.avatar}
+                                              ></img>
+                                            );
+                                        }
+                                      )}
+
                                       <span>
                                         {listUserComment.map(
                                           (authorItem, index) => {
                                             if (
-                                              authorItem.userID ==
+                                              authorItem._id ==
                                               commentItem.userID
                                             )
                                               return <>{authorItem.fullname}</>;

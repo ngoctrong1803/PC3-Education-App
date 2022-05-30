@@ -49,16 +49,11 @@ const queInForumController = {
         });
 
       const authorArray = listQuestionInForum.map(({ userID }) => userID);
-      const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
-      const listAuthor = [];
-      listAuthorTemp.map((authorItem, index) => {
-        author = {
-          userID: authorItem._id,
-          fullname: authorItem.fullname,
-          email: authorItem.email,
-        };
-        listAuthor.push(author);
-      });
+      const listAuthor = await User.find(
+        { _id: { $in: authorArray } },
+        { password: 0 }
+      );
+
       res.status(200).json({
         message: "đã câu hỏi trong diễn đàn thành công",
         listQuestionInForum: listQuestionInForum,
@@ -82,19 +77,17 @@ const queInForumController = {
         ],
       })
         .skip(currentPage * questionInPage - questionInPage)
-        .limit(questionInPage);
+        .limit(questionInPage)
+        .sort({
+          createdAt: -1,
+        });
 
       const authorArray = listQuestionInForum.map(({ userID }) => userID);
-      const listAuthorTemp = await User.find({ _id: { $in: authorArray } });
-      const listAuthor = [];
-      listAuthorTemp.map((authorItem, index) => {
-        author = {
-          userID: authorItem._id,
-          fullname: authorItem.fullname,
-          email: authorItem.email,
-        };
-        listAuthor.push(author);
-      });
+      const listAuthor = await User.find(
+        { _id: { $in: authorArray } },
+        { password: 0 }
+      );
+      console.log("list author when choose category:", listAuthor);
       res.status(200).json({
         message: "đã câu hỏi trong diễn đàn thành công",
         listQuestionInForum: listQuestionInForum,
@@ -117,12 +110,23 @@ const queInForumController = {
   //[get]/api/question-in-forum/list
   getQuestionInForumByUserID: async (req, res) => {
     const userID = req.params.id;
-    const listQuestionInForum = await QuestionInForum.find({
+    const currentPage = req.query.page;
+    const quesInPage = 5;
+    const totalListQuestionInForum = await QuestionInForum.find({
       userID: userID,
     });
+    const listQuestionInForum = await QuestionInForum.find({
+      userID: userID,
+    })
+      .skip(currentPage * quesInPage - quesInPage)
+      .limit(quesInPage)
+      .sort({
+        createdAt: -1,
+      });
     res.status(200).json({
       message: "đã câu hỏi trong diễn đàn thành công",
       listQuestionInForum: listQuestionInForum,
+      totalPage: Math.ceil(totalListQuestionInForum.length / quesInPage),
     });
   },
   //[get]/api/question-in-forum/list
@@ -133,12 +137,10 @@ const queInForumController = {
         _id: questionID,
       });
       if (questionInForum) {
-        const authorTemp = await User.findOne({ _id: questionInForum.userID });
-        const author = {
-          userID: authorTemp._id,
-          fullname: authorTemp.fullname,
-          email: authorTemp.email,
-        };
+        const author = await User.findOne(
+          { _id: questionInForum.userID },
+          { password: 0 }
+        );
         const category = await CategoryQuestion.findOne({
           _id: questionInForum.catQueID,
         });
@@ -147,18 +149,12 @@ const queInForumController = {
           { createdAt: -1 }
         );
         const commentArray = await listComment.map(({ userID }) => userID);
-        const listUserCommentTemp = await User.find({
-          _id: { $in: commentArray },
-        });
-        const listUserComment = [];
-        listUserCommentTemp.map((userItem, index) => {
-          const dataToAdd = {
-            fullname: userItem.fullname,
-            email: userItem.email,
-            userID: userItem._id,
-          };
-          listUserComment.push(dataToAdd);
-        });
+        const listUserComment = await User.find(
+          {
+            _id: { $in: commentArray },
+          },
+          { password: 0 }
+        );
 
         res.status(200).json({
           message: "đã lấy câu hỏi trong diễn đàn thành công",

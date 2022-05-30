@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import Style from "./Style";
 
 const FlashcardMatch = ({ listFlashcard }) => {
+  const [totalFlashcard, setTotalFlashcard] = useState(0);
   const [timesFalse, setTimesFalse] = useState(3);
   const [listFlashCardMatch, setListFlashCardMatch] = useState([]);
   const [listAnswerMatch, setListAnswerMatch] = useState([]);
@@ -99,7 +100,6 @@ const FlashcardMatch = ({ listFlashcard }) => {
 
   function handleMatchClick(e) {
     const arrayAnswer = listAnswerMatch;
-    console.log("array answer:", listAnswerMatch);
     if (countClick == 0) {
       e.target.style.backgroundColor = "rgba(255, 255, 0, 0.5)";
       e.target.disabled = true;
@@ -253,7 +253,10 @@ const FlashcardMatch = ({ listFlashcard }) => {
     }
   }
   useEffect(() => {
-    if (totalAnswerTrueMatch == listFlashcard.length) {
+    if (
+      totalAnswerTrueMatch != 0 &&
+      totalAnswerTrueMatch == listAnswerMatch.length
+    ) {
       setTimeout(() => {
         setDone(true);
         playWin();
@@ -269,7 +272,7 @@ const FlashcardMatch = ({ listFlashcard }) => {
     }
   }, [totalAnswerFalseMatch]);
   useEffect(() => {
-    if (timerMatch == 0) {
+    if (timerMatch == 0 && !done) {
       toast.error("Hết thời gian!", {
         position: "top-right",
         autoClose: 1000,
@@ -300,10 +303,10 @@ const FlashcardMatch = ({ listFlashcard }) => {
             <div className="result-flashcard-match">
               <h4>Kết quả</h4>
               <span>
-                Hoàn thành: {totalAnswerTrueMatch}/{listFlashcard.length}
+                Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
               </span>
               <ProgressBar
-                now={(totalAnswerTrueMatch / listFlashcard.length) * 100}
+                now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
                 className="result-progress"
               />
               <span>
@@ -439,10 +442,10 @@ const FlashcardMatch = ({ listFlashcard }) => {
             <div className="result-flashcard-match-final-content">
               {" "}
               <span>
-                Hoàn thành: {totalAnswerTrueMatch}/{listFlashcard.length}
+                Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
               </span>
               <ProgressBar
-                now={(totalAnswerTrueMatch / listFlashcard.length) * 100}
+                now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
                 className="result-progress"
               />
               <span>
@@ -455,9 +458,9 @@ const FlashcardMatch = ({ listFlashcard }) => {
               />
             </div>
             <div className="result-flashcard-match-final-footer-title">
-              {totalAnswerTrueMatch == listFlashcard.length ? (
+              {totalAnswerTrueMatch == listAnswerMatch.length ? (
                 <>Bạn quá xuất sắc!</>
-              ) : totalAnswerTrueMatch > listFlashcard.length - 2 ? (
+              ) : totalAnswerTrueMatch > listAnswerMatch.length - 2 ? (
                 <>Bạn hoàn thành tốt!</>
               ) : totalAnswerFalseMatch >= totalAnswerTrueMatch ? (
                 <>Cần cố gắn thêm bạn nhé!</>
