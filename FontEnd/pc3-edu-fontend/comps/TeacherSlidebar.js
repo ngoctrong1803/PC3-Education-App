@@ -73,14 +73,6 @@ const AdminSlidebar = () => {
           </div>
           <div className="admin-slidebar-functions">
             <ul>
-              <Link href="/admin/users">
-                <li className="admin-slidebar-function">
-                  <span>
-                    <ion-icon name="people-outline"></ion-icon>
-                  </span>
-                  <span>Người dùng</span>
-                </li>
-              </Link>
               <Link href="/admin/subjects">
                 <li className="admin-slidebar-function">
                   <span>
@@ -104,22 +96,6 @@ const AdminSlidebar = () => {
                     <ion-icon name="newspaper"></ion-icon>
                   </span>
                   <span>Luyện đề</span>
-                </li>
-              </Link>
-              <Link href="/admin/forum">
-                <li className="admin-slidebar-function">
-                  <span>
-                    <ion-icon name="people-circle-outline"></ion-icon>
-                  </span>
-                  <span>Diễn Đàn</span>
-                </li>
-              </Link>
-              <Link href="/admin/banner">
-                <li className="admin-slidebar-function">
-                  <span>
-                    <ion-icon name="images-outline"></ion-icon>
-                  </span>
-                  <span>Banner</span>
                 </li>
               </Link>
             </ul>

@@ -152,6 +152,7 @@ const UserDetail = () => {
                   height: "200px",
                   borderRadius: "50%",
                   border: "solid #1493fe 4px",
+                  objectFit: "cover",
                 }}
                 src={userInfor.avatar}
               ></img>

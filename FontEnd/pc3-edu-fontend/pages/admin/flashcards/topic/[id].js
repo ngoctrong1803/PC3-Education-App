@@ -194,16 +194,16 @@ const Flashcard = () => {
         const flashcardArrayExist = [];
         const flashcardArrayInvalid = [];
 
-        console.log(flashcardArray);
+        console.log("ac", flashcardArray);
         // handle question in excel
         if (flashcardArray != 0) {
           flashcardArray.map((flashcardItem, index) => {
             let check = true;
             const dataToPush = {
-              meaningInVietnamese: flashcardItem?.meaning_in_vietnamese ?? "",
-              meaningInEnglish: flashcardItem?.meaning_in_english ?? "",
-              explain: flashcardItem?.explain ?? "",
-              example: flashcardItem?.example ?? "",
+              meaningInVietnamese: flashcardItem?.Meaning_In_Vietnamese ?? "",
+              meaningInEnglish: flashcardItem?.Meaning_In_English ?? "",
+              explain: flashcardItem?.Explain ?? "",
+              example: flashcardItem?.Example ?? "",
               star: false,
               forgetfulness: false,
               shared: false,
@@ -355,7 +355,7 @@ const Flashcard = () => {
               <thead>
                 <tr>
                   <th>STT</th>
-                  <th>Tác giả</th>
+                  {/* <th>Tác giả</th> */}
                   <th>Nghĩa anh</th>
                   <th>Nghĩa tiếng việt</th>
                   <th>Ví dụ</th>
@@ -368,13 +368,13 @@ const Flashcard = () => {
                     <>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>
+                        {/* <td>
                           {listUser.map((userItem) => {
                             if (userItem._id == item.userID) {
                               return userItem.fullname;
                             }
                           })}
-                        </td>
+                        </td> */}
                         <td>{item.meaningInEnglish}</td>
                         <td>{item.meaningInVietnamese}</td>
                         <td>{item.example}</td>
@@ -454,7 +454,7 @@ const Flashcard = () => {
               <thead>
                 <tr style={{ backgroundColor: "#198754", color: "#fff" }}>
                   <th>STT</th>
-                  <th>Tác giả</th>
+                  {/* <th>Tác giả</th> */}
                   <th>Nghĩa anh</th>
                   <th>Nghĩa tiếng việt</th>
                   <th>Ví dụ</th>
@@ -467,13 +467,13 @@ const Flashcard = () => {
                     <>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>
+                        {/* <td>
                           {listUser.map((userItem) => {
                             if (userItem._id == item.userID) {
                               return userItem.fullname;
                             }
                           })}
-                        </td>
+                        </td> */}
                         <td>{item.meaningInEnglish}</td>
                         <td>{item.meaningInVietnamese}</td>
                         <td>{item.example}</td>
@@ -525,7 +525,7 @@ const Flashcard = () => {
               <thead>
                 <tr style={{ backgroundColor: "#dc3545", color: "#fff" }}>
                   <th>STT</th>
-                  <th>Tác giả</th>
+                  {/* <th>Tác giả</th> */}
                   <th>Nghĩa anh</th>
                   <th>Nghĩa tiếng việt</th>
                   <th>Ví dụ</th>
@@ -537,13 +537,13 @@ const Flashcard = () => {
                     <>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>
+                        {/* <td>
                           {listUser.map((userItem) => {
                             if (userItem._id == item.userID) {
                               return userItem.fullname;
                             }
                           })}
-                        </td>
+                        </td> */}
                         <td>{item.meaningInEnglish}</td>
                         <td>{item.meaningInVietnamese}</td>
                         <td>{item.example}</td>
@@ -560,7 +560,7 @@ const Flashcard = () => {
               <thead>
                 <tr style={{ backgroundColor: "#dc3545", color: "#fff" }}>
                   <th>STT</th>
-                  <th>Tác giả</th>
+                  {/* <th>Tác giả</th> */}
                   <th>Nghĩa anh</th>
                   <th>Nghĩa tiếng việt</th>
                   <th>Ví dụ</th>
@@ -572,13 +572,13 @@ const Flashcard = () => {
                     <>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>
+                        {/* <td>
                           {listUser.map((userItem) => {
                             if (userItem._id == item.userID) {
                               return userItem.fullname;
                             }
                           })}
-                        </td>
+                        </td> */}
                         <td>{item.meaningInEnglish}</td>
                         <td>{item.meaningInVietnamese}</td>
                         <td>{item.example}</td>

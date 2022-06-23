@@ -34,6 +34,7 @@ const Exercise = () => {
   const [listCatExe, setListCatExe] = useState([]);
   const [listAnswerOfUser, setListAnswerOfUser] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [resultExercise, setResultExercise] = useState();
   function handleCloseConfirm() {
     setShowConfirm(false);
   }
@@ -64,6 +65,8 @@ const Exercise = () => {
           const resOfResult = await axiosJWT.get(
             "/api/result-of-exercise/" + statisticalID
           );
+          console.log("kết quả abc:", res.data);
+          setResultExercise(res.data);
           setListAnswerOfUser(resOfResult.data.listResultOfExercise);
         } catch (err) {
           const errMessage = err.response.data.message;
@@ -348,7 +351,77 @@ const Exercise = () => {
             </div>
           </Col>
           <Col lg={3} md={3} xs={3}>
-            <div className="sidebar-of-exercise-result-wrap"></div>
+            <div className="sidebar-of-exercise-result-wrap">
+              <h5>
+                {resultExercise?.userInfor?.fullname} -{" "}
+                {resultExercise?.userInfor?.class}
+              </h5>
+              <h5>kết quả</h5>
+              <h6>{resultExercise?.statisticalOfExercise?.score} điểm</h6>
+              <h6>
+                {resultExercise?.statisticalOfExercise?.totalAnswerTrue} câu
+                đúng
+              </h6>
+              <h6>
+                Thời gian: {/* hour */}
+                {Math.floor(
+                  resultExercise?.statisticalOfExercise?.time / 60 / 60
+                ) < 10 && resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    0
+                    {Math.floor(
+                      resultExercise?.statisticalOfExercise?.time / 60 / 60
+                    )}
+                    :
+                  </span>
+                ) : resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    {Math.floor(
+                      resultExercise?.statisticalOfExercise?.time / 60 / 60
+                    )}
+                    :
+                  </span>
+                ) : null}
+                {/* minute */}
+                {Math.floor(resultExercise?.statisticalOfExercise?.time / 60) <
+                  10 && resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    0
+                    {Math.floor(
+                      resultExercise?.statisticalOfExercise?.time / 60
+                    )}
+                    :
+                  </span>
+                ) : resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    {Math.floor(
+                      resultExercise?.statisticalOfExercise?.time / 60
+                    )}
+                    :
+                  </span>
+                ) : null}
+                {/* second */}
+                {Math.floor(resultExercise?.statisticalOfExercise?.time) < 10 &&
+                resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    0
+                    {Math.floor(resultExercise?.statisticalOfExercise?.time) -
+                      Math.floor(
+                        resultExercise?.statisticalOfExercise?.time / 60
+                      ) *
+                        60}
+                  </span>
+                ) : resultExercise?.statisticalOfExercise?.time != -1 ? (
+                  <span>
+                    {Math.floor(resultExercise?.statisticalOfExercise?.time) -
+                      Math.floor(
+                        resultExercise?.statisticalOfExercise?.time / 60
+                      ) *
+                        60}
+                  </span>
+                ) : null}
+              </h6>
+            </div>
           </Col>
         </Row>
       </MathJaxContext>

@@ -234,7 +234,9 @@ const Content = () => {
         <div>
           <span>Nội dung nôn học</span>
           <br></br>
-          <h6>7 chương - 32 bài học</h6>
+          <h6>
+            {units.length} chương - {lessions.length} bài học
+          </h6>
         </div>
         <Button
           style={{ "margin-right": "65px", height: "40px" }}

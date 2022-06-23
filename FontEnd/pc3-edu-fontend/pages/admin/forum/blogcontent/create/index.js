@@ -20,6 +20,10 @@ import { loginSuccess } from "../../../../../redux/authSlice";
 import useAdminAuth from "../../../../../hooks/authAdminHook";
 
 const CreateQuestion = () => {
+  console.log("editer:", Editor);
+  if (typeof Editor !== "function") {
+    window.location.reload();
+  }
   const isAdmin = useAdminAuth();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => {

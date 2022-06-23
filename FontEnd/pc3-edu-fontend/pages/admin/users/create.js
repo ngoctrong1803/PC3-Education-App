@@ -350,7 +350,6 @@ const Create = () => {
         const userExist = [];
         const userArrayInvalid = [];
 
-        console.log("user array:", userArray);
         //handle user in excel
         if (userArray != 0) {
           userArray.map((userItem, index) => {

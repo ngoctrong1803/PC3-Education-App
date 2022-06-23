@@ -74,7 +74,10 @@ const AdminNavbar = () => {
                     <span>
                       <ion-icon name="notifications-outline"></ion-icon>
                     </span>
-                    <img src={curentAdmin.userInfor.avatar}></img>
+                    <img
+                      src={curentAdmin.userInfor.avatar}
+                      style={{ objectFit: "cover" }}
+                    ></img>
                   </div>
                   {/* start user menu */}
                   <div

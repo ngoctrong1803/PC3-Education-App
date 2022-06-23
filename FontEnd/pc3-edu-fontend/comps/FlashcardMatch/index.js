@@ -7,6 +7,7 @@ import {
   ProgressBar,
   InputGroup,
   FormControl,
+  Container,
 } from "react-bootstrap";
 import { useState, useEffect, useRef } from "react";
 import { Pagination, Navigation } from "swiper";
@@ -296,192 +297,194 @@ const FlashcardMatch = ({ listFlashcard }) => {
 
   return (
     <Style>
-      <div className="flashcard-match-wrap">
-        {done == false && start ? (
-          // content of match flashcard
-          <>
-            <div className="result-flashcard-match">
-              <h4>Kết quả</h4>
-              <span>
-                Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
-              </span>
-              <ProgressBar
-                now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
-                className="result-progress"
-              />
-              <span>
-                Sai: {totalAnswerFalseMatch}/ {timesFalse}
-              </span>
-              <ProgressBar
-                variant="danger"
-                now={(totalAnswerFalseMatch / timesFalse) * 100}
-                className="result-progress"
-              />
-              <br></br>
-              <h6>Thời gian</h6>
-              <h4>{timerMatch}</h4>
-            </div>
+      <Container>
+        <div className="flashcard-match-wrap">
+          {done == false && start ? (
+            // content of match flashcard
+            <>
+              <div className="result-flashcard-match">
+                <h4>Kết quả</h4>
+                <span>
+                  Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
+                </span>
+                <ProgressBar
+                  now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
+                  className="result-progress"
+                />
+                <span>
+                  Sai: {totalAnswerFalseMatch}/ {timesFalse}
+                </span>
+                <ProgressBar
+                  variant="danger"
+                  now={(totalAnswerFalseMatch / timesFalse) * 100}
+                  className="result-progress"
+                />
+                <br></br>
+                <h6>Thời gian</h6>
+                <h4>{timerMatch}</h4>
+              </div>
 
-            <div className="content-flashcard-match">
-              <div>
-                <Row>
-                  {listFlashCardMatch.map((matchItem, index) => {
-                    return (
-                      <>
-                        <div className="content-flashcard-match-item-wrap">
-                          <button
-                            value={matchItem}
-                            className="content-flashcard-match-item"
-                            onClick={(e) => {
-                              handleMatchClick(e);
-                            }}
-                          >
-                            {matchItem}
-                          </button>
-                        </div>
-                      </>
-                    );
-                  })}
-                </Row>
+              <div className="content-flashcard-match">
+                <div>
+                  <Row>
+                    {listFlashCardMatch.map((matchItem, index) => {
+                      return (
+                        <>
+                          <div className="content-flashcard-match-item-wrap">
+                            <button
+                              value={matchItem}
+                              className="content-flashcard-match-item"
+                              onClick={(e) => {
+                                handleMatchClick(e);
+                              }}
+                            >
+                              {matchItem}
+                            </button>
+                          </div>
+                        </>
+                      );
+                    })}
+                  </Row>
+                </div>
               </div>
-            </div>
-            <ProgressBar
-              striped
-              variant="info"
-              now={
-                level == "easy"
-                  ? (timerMatch / timeEasy) * 100
-                  : level == "normal"
-                  ? (timerMatch / timeNormal) * 100
-                  : level == "hard"
-                  ? (timerMatch / timeHard) * 100
-                  : 0
-              }
-              className="timrer-match"
-            />
-          </>
-        ) : null}
-
-        {!start ? (
-          <>
-            {" "}
-            <h3>Chào mừng đến với viết ghép thẻ</h3>
-            <br></br>
-            <h5>chọn độ khó để bắt đầu</h5>
-            <div className="flash-card-match-level">
-              <div
-                className="flash-card-match-level-item"
-                style={{ "--clr": "#34ff4c" }}
-              >
-                {" "}
-                <Form.Check
-                  type={`radio`}
-                  id={`radio1`}
-                  label={`Dễ`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("easy");
-                  }}
-                />
-              </div>
-              <div
-                className="flash-card-match-level-item"
-                style={{ "--clr": "#f4cc11" }}
-              >
-                <Form.Check
-                  type={`radio`}
-                  id={`radio2`}
-                  label={`Trung Bình`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("normal");
-                  }}
-                />
-              </div>
-              <div
-                className="flash-card-match-level-item"
-                style={{ "--clr": "#ff4234" }}
-              >
-                <Form.Check
-                  type={`radio`}
-                  id={`radio3`}
-                  label={`Khó`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("hard");
-                  }}
-                />
-              </div>
-            </div>
-            <br></br>
-            <Button
-              ref={startButtonRef}
-              variant="primary"
-              onClick={() => {
-                if (level == "") {
-                  toast.error("chọn độ khó để bắt đầu");
-                } else {
-                  setStart(true);
-                  if (level == "easy") {
-                    setTimerMatch(timeEasy);
-                  } else if (level == "normal") {
-                    setTimerMatch(timeNormal);
-                  } else if (level == "hard") {
-                    setTimerMatch(timeHard);
-                  }
+              <ProgressBar
+                striped
+                variant="info"
+                now={
+                  level == "easy"
+                    ? (timerMatch / timeEasy) * 100
+                    : level == "normal"
+                    ? (timerMatch / timeNormal) * 100
+                    : level == "hard"
+                    ? (timerMatch / timeHard) * 100
+                    : 0
                 }
-              }}
-            >
-              Bắt đầu
-            </Button>
-          </>
-        ) : null}
-        {done && start ? (
-          <div className="result-flashcard-match-final">
-            <div className="result-flashcard-match-final-title">Kết quả</div>
-            <div className="result-flashcard-match-final-content">
+                className="timrer-match"
+              />
+            </>
+          ) : null}
+
+          {!start ? (
+            <>
               {" "}
-              <span>
-                Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
-              </span>
-              <ProgressBar
-                now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
-                className="result-progress"
-              />
-              <span>
-                Sai: {totalAnswerFalseMatch}/ {timesFalse}
-              </span>
-              <ProgressBar
-                variant="danger"
-                now={(totalAnswerFalseMatch / timesFalse) * 100}
-                className="result-progress"
-              />
-            </div>
-            <div className="result-flashcard-match-final-footer-title">
-              {totalAnswerTrueMatch == listAnswerMatch.length ? (
-                <>Bạn quá xuất sắc!</>
-              ) : totalAnswerTrueMatch > listAnswerMatch.length - 2 ? (
-                <>Bạn hoàn thành tốt!</>
-              ) : totalAnswerFalseMatch >= totalAnswerTrueMatch ? (
-                <>Cần cố gắn thêm bạn nhé!</>
-              ) : (
-                <>Hoàn thành nhiệm vụ!</>
-              )}
-            </div>
-            <div className="result-flashcard-match-final-footer">
+              <h3>Chào mừng đến với viết ghép thẻ</h3>
+              <br></br>
+              <h5>chọn độ khó để bắt đầu</h5>
+              <div className="flash-card-match-level">
+                <div
+                  className="flash-card-match-level-item"
+                  style={{ "--clr": "#34ff4c" }}
+                >
+                  {" "}
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio1`}
+                    label={`Dễ`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("easy");
+                    }}
+                  />
+                </div>
+                <div
+                  className="flash-card-match-level-item"
+                  style={{ "--clr": "#f4cc11" }}
+                >
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio2`}
+                    label={`Trung Bình`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("normal");
+                    }}
+                  />
+                </div>
+                <div
+                  className="flash-card-match-level-item"
+                  style={{ "--clr": "#ff4234" }}
+                >
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio3`}
+                    label={`Khó`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("hard");
+                    }}
+                  />
+                </div>
+              </div>
+              <br></br>
               <Button
+                ref={startButtonRef}
                 variant="primary"
                 onClick={() => {
-                  resetFlashcardMatch();
+                  if (level == "") {
+                    toast.error("chọn độ khó để bắt đầu");
+                  } else {
+                    setStart(true);
+                    if (level == "easy") {
+                      setTimerMatch(timeEasy);
+                    } else if (level == "normal") {
+                      setTimerMatch(timeNormal);
+                    } else if (level == "hard") {
+                      setTimerMatch(timeHard);
+                    }
+                  }
                 }}
               >
-                {" "}
-                Quay lại{" "}
+                Bắt đầu
               </Button>
+            </>
+          ) : null}
+          {done && start ? (
+            <div className="result-flashcard-match-final">
+              <div className="result-flashcard-match-final-title">Kết quả</div>
+              <div className="result-flashcard-match-final-content">
+                {" "}
+                <span>
+                  Hoàn thành: {totalAnswerTrueMatch}/{listAnswerMatch.length}
+                </span>
+                <ProgressBar
+                  now={(totalAnswerTrueMatch / listAnswerMatch.length) * 100}
+                  className="result-progress"
+                />
+                <span>
+                  Sai: {totalAnswerFalseMatch}/ {timesFalse}
+                </span>
+                <ProgressBar
+                  variant="danger"
+                  now={(totalAnswerFalseMatch / timesFalse) * 100}
+                  className="result-progress"
+                />
+              </div>
+              <div className="result-flashcard-match-final-footer-title">
+                {totalAnswerTrueMatch == listAnswerMatch.length ? (
+                  <>Bạn quá xuất sắc!</>
+                ) : totalAnswerTrueMatch > listAnswerMatch.length - 2 ? (
+                  <>Bạn hoàn thành tốt!</>
+                ) : totalAnswerFalseMatch >= totalAnswerTrueMatch ? (
+                  <>Cần cố gắn thêm bạn nhé!</>
+                ) : (
+                  <>Hoàn thành nhiệm vụ!</>
+                )}
+              </div>
+              <div className="result-flashcard-match-final-footer">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    resetFlashcardMatch();
+                  }}
+                >
+                  {" "}
+                  Quay lại{" "}
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      </Container>
     </Style>
   );
 };

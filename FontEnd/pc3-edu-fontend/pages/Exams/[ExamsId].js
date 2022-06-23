@@ -576,6 +576,15 @@ const Exam = () => {
                       >
                         Nộp bài <ion-icon name="enter-outline"></ion-icon>
                       </Button>
+                      <Button
+                        variant="warning"
+                        onClick={() => {
+                          window.history.back();
+                        }}
+                      >
+                        Quay lại
+                        <ion-icon name="log-out-outline"></ion-icon>
+                      </Button>
                     </div>
                   </div>
                 </div>

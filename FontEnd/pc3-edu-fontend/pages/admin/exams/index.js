@@ -540,6 +540,7 @@ const Exams = () => {
                 />
                 <Form.Label>Hình ảnh</Form.Label>
                 <Form.Control
+                  disabled
                   type="text"
                   placeholder="/google/driver/anh.png"
                   autoFocus

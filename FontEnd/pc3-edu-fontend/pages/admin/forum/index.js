@@ -258,7 +258,9 @@ const Forum = () => {
               <Button
                 className="admin-forum-header-add-user"
                 variant="outline-info"
-                onClick={() => {}}
+                onClick={() => {
+                  //window.location.replace("/admin/forum/blogcontent/create");
+                }}
               >
                 Thêm mới
               </Button>

@@ -34,6 +34,7 @@ const commentRouter = require("./comment");
 const questionLikeRouter = require("./questionlike");
 const commentLikeRouter = require("./commentlike");
 const gradeRouter = require("./grade");
+const bannerRouter = require("./banner");
 const authMiddleware = require("../app/middlewares/authMiddleware");
 function route(app) {
   app.use("/api/user", userRouter);
@@ -71,6 +72,7 @@ function route(app) {
   app.use("/api/question-like", questionLikeRouter);
   app.use("/api/comment-like", commentLikeRouter);
   app.use("/api/grade", gradeRouter);
+  app.use("/api/banner", bannerRouter);
 }
 
 module.exports = route;

@@ -47,6 +47,7 @@ const Topic = () => {
   const [topic, setTopic] = useState({});
   const [showEnglish, setShowEnglish] = useState(true);
   const [showFlashcard, setShowFlashcard] = useState(false);
+  const [readingSpeed, setReadingSpeed] = useState(1);
   const flashcardRef = useRef();
   function handleChangeShow() {
     setShowEnglish((pre) => !pre);
@@ -100,11 +101,16 @@ const Topic = () => {
     }
     const utterance = await speak({
       text: textToSpeak,
-      volume: 1,
-      rate: 1, // tốc độ đọc
+      volume: 1, // âm lượng
+      rate: readingSpeed, // tốc độ đọc
       pitch: 1.5, // cao độ
     });
   };
+
+  const [showExample, setShowExample] = useState(false);
+  function handleShowExample() {
+    setShowExample((pre) => !pre);
+  }
 
   return (
     <div className="flashcard-detail-page-wrap">
@@ -211,6 +217,58 @@ const Topic = () => {
                   }}
                 ></ion-icon>
               </Button>
+              <Button
+                variant="warning"
+                style={{
+                  marginLeft: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: " 16px",
+                }}
+                onClick={getFlashcardByTopicID}
+              >
+                Đảo thứ tự thẻ
+                <ion-icon
+                  name="swap-horizontal-outline"
+                  style={{
+                    fontSize: " 22px",
+                  }}
+                ></ion-icon>
+              </Button>
+              <Button
+                variant="outline-info"
+                style={{
+                  marginLeft: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: " 16px",
+                }}
+                onClick={handleShowExample}
+              >
+                {showExample ? "Ẩn ví dụ" : "Hiển thị ví dụ"}
+
+                <ion-icon
+                  name="sunny-outline"
+                  style={{
+                    fontSize: " 22px",
+                  }}
+                ></ion-icon>
+              </Button>
+              <div style={{ width: "120px", marginLeft: "20px" }}>
+                <lable>Tốc độ đọc</lable>
+                <Form.Range
+                  defaultValue={50}
+                  onChange={(e) => {
+                    if (e.target.value > 50) {
+                      setReadingSpeed(1 + e.target.value / 100);
+                    } else if (e.target.value < 50) {
+                      setReadingSpeed(1 - (100 - e.target.value / 100));
+                    } else if (e.target.value == 50) {
+                      setReadingSpeed(1);
+                    }
+                  }}
+                />
+              </div>
             </div>
             <div className="flashcard-detail-content">
               <Swiper
@@ -237,20 +295,28 @@ const Topic = () => {
                               <>
                                 {flashcardItem.meaningInEnglish + "."}
                                 <br></br>
-                                {flashcardItem.example}
+                                {showExample ? flashcardItem.example : ""}
                               </>
                             ) : (
-                              flashcardItem.meaningInVietnamese
+                              <>
+                                {flashcardItem.meaningInVietnamese}
+                                <br></br>
+                                {showExample ? flashcardItem.explain : ""}
+                              </>
                             )}
                           </div>
                           <div className="flashcard-back">
                             {showEnglish ? (
-                              flashcardItem.meaningInVietnamese
+                              <>
+                                {flashcardItem.meaningInVietnamese}
+                                <br></br>
+                                {showExample ? flashcardItem.explain : ""}
+                              </>
                             ) : (
                               <>
                                 {flashcardItem.meaningInEnglish + "."}
                                 <br></br>
-                                {flashcardItem.example}
+                                {showExample ? flashcardItem.example : ""}
                               </>
                             )}
                           </div>

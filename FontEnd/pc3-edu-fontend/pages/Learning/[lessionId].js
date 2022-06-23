@@ -1,4 +1,4 @@
-import { Row, Col, Accordion } from "react-bootstrap";
+import { Row, Col, Accordion, Button } from "react-bootstrap";
 import Rank from "../../comps/Rank";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const Learning = () => {
         const res = await axiosJWT.get(
           "/api/subjects/content/" + subjectTemp.slug
         );
-        setSubject(res.data.subjectTemp);
+        setSubject(res.data.subject);
         setListUnit(res.data.units);
         setListLession(res.data.lessions);
       }
@@ -131,6 +131,41 @@ const Learning = () => {
             <div className="learning-detail-wrap">
               <div className="learning-detail-title mb-4 pb-2">
                 <h3>{lession.lessionName}</h3>
+                <div>
+                  {!statistical ? (
+                    <Link href={`/Exercises/${lessionID}`}>
+                      <button type="button" className="btn btn-primary">
+                        Bài tập vận dụng
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link href={`/Exercises/Result/${lessionID}`}>
+                      <button type="button" className="btn btn-success">
+                        Xem kết quả
+                      </button>
+                    </Link>
+                  )}
+
+                  <Link href={`/Subjects/${subject?.slug}`}>
+                    <Button
+                      variant="outline-warning"
+                      style={{ marginLeft: "2px" }}
+                    >
+                      Quay lại
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="learning-detail-content-wrap">
+                <div className="learning-detail-content">
+                  <MathJax>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: theory?.content,
+                      }}
+                    />
+                  </MathJax>
+                </div>
                 {!statistical ? (
                   <Link href={`/Exercises/${lessionID}`}>
                     <button type="button" className="btn btn-primary">
@@ -144,22 +179,6 @@ const Learning = () => {
                     </button>
                   </Link>
                 )}
-              </div>
-              <div className="learning-detail-content-wrap">
-                <div className="learning-detail-content">
-                  <MathJax>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: theory?.content,
-                      }}
-                    />
-                  </MathJax>
-                </div>
-                <Link href={`/Exercises/${lessionID}`}>
-                  <button type="button" className="btn btn-primary mt-3">
-                    Bài tập vận dụng
-                  </button>
-                </Link>
               </div>
             </div>
           </Col>

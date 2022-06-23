@@ -11,6 +11,10 @@ import { loginSuccess } from "../../../../../redux/authSlice";
 import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateQuestion = () => {
+  console.log("editer:", typeof Editor);
+  if (typeof Editor !== "function") {
+    window.location.reload();
+  }
   const isTeacher = useTeacherAuth();
   const [editorLoaded, setEditorLoaded] = useState(false);
 
@@ -109,7 +113,6 @@ const CreateQuestion = () => {
   async function getQuestionOfExam() {
     try {
       const res = await axiosJWT.get("/api/exam-question/list/" + examID);
-      console.log("list question:", res);
       setListQuestionInExam(res.data.listExamQuestion);
     } catch (err) {
       const errMessage = err.response.data.message;
@@ -174,7 +177,7 @@ const CreateQuestion = () => {
               option4:
                 quesItem?.option_4 == undefined ? "" : "" + quesItem?.option_4,
               answer:
-                quesItem?.answer > 0 && quesItem?.answer < 4
+                quesItem?.answer > 0 && quesItem?.answer <= 4
                   ? "option" + quesItem?.answer
                   : "" ?? "",
               explain: quesItem?.explain ?? "",
@@ -514,7 +517,7 @@ const CreateQuestion = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}
@@ -595,7 +598,7 @@ const CreateQuestion = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}
@@ -651,7 +654,7 @@ const CreateQuestion = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Col, Container, Row, Accordion } from "react-bootstrap";
+import { Col, Container, Row, Accordion, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Rank from "../../comps/Rank";
 import Link from "next/link";
@@ -55,6 +55,11 @@ const Detail = () => {
               <h2>
                 {subject?.name} - Lớp {subject?.gradeID}
               </h2>
+              <Link href={`/Subjects`}>
+                <Button variant="outline-warning" onClick={() => {}}>
+                  Quay lại
+                </Button>
+              </Link>
             </div>
             <div className="subject-detail-content ">
               <h4 className="mt-4">Nội dung môn học</h4>
@@ -98,7 +103,9 @@ const Detail = () => {
             <h3 className="mt-4">Miễn phí</h3>
             <div className="description-item">
               <ion-icon name="school-outline"></ion-icon>
-              Tổng: 5 Chương - 72 bài học
+              <span>{listUnit.length} chương</span>
+              <span> - </span>
+              <span>{listLession.length} bài học</span>
             </div>
             <div className="btn btn-primary mt-4">Ôn tập miễn phí</div>
             <div className="mt-4">

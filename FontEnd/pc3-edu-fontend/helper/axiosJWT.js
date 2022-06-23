@@ -3,7 +3,6 @@ import jwt_decode from "jwt-decode";
 import { loginReset } from "../redux/authSlice";
 
 export const createAxios = (user, dispatch, loginSuccess) => {
-  console.log("tạo mới ", user);
   const host = process.env.NEXT_PUBLIC_HOST;
   const newInstance = axios.create({ baseURL: host });
 
@@ -14,10 +13,8 @@ export const createAxios = (user, dispatch, loginSuccess) => {
     return accessToken;
   }
   function getLocalRefreshToken() {
-    // const refreshToken = window.localStorage.getItem("refreshtoken");
-    // error in here
+    // const refreshToken = window.localStorage.getItem("refreshtoken")
     const refreshToken = user.refreshtoken;
-    console.log("getLocalRefreshToken to refresh:", user.refreshtoken);
     return refreshToken;
   }
 
@@ -28,8 +25,7 @@ export const createAxios = (user, dispatch, loginSuccess) => {
       axios.interceptors.request.use(
         (config) => {
           config.headers["refreshtoken"] = "Bearer " + refreshtoken;
-          // error in here
-          console.log("data chuyể lên server:", "Bearer " + refreshtoken);
+
           return config;
         },
         (err) => {
@@ -42,7 +38,6 @@ export const createAxios = (user, dispatch, loginSuccess) => {
       window.localStorage.removeItem("accesstoken");
       window.localStorage.removeItem("refreshtoken");
       dispatch(loginReset());
-      console.log("lỗi ở hàm refresh!");
     }
     return temp;
   };
@@ -52,7 +47,6 @@ export const createAxios = (user, dispatch, loginSuccess) => {
     async (config) => {
       const accessToken = getLocalAccessToken();
       const decodedToken = jwt_decode(accessToken);
-      console.log("decode:", decodedToken);
       let date = new Date();
       if (decodedToken.exp < date.getTime() / 1000) {
         console.log(

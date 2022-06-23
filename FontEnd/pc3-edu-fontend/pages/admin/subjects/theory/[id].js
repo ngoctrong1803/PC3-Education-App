@@ -21,6 +21,10 @@ import { loginSuccess } from "../../../../redux/authSlice";
 import useTeacherAuth from "../../../../hooks/authTeacherHook";
 
 const Theory = () => {
+  console.log("editer:", typeof Editor);
+  if (typeof Editor !== "function") {
+    window.location.reload();
+  }
   const isTeacher = useTeacherAuth();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => {

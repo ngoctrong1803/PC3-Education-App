@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import userlayout from "../comps/Layout";
 import NoLayout from "../comps/NoLayout";
 import AdminLayout from "../comps/AdminLayout";
+import TeacherLayout from "../comps/TeacherLayout";
 import "../styles/globals.scss";
 import { AuthProvider } from "../context/AuthProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,6 +19,7 @@ const layouts = {
   userLayout: userlayout,
   noLayout: NoLayout,
   adminLayout: AdminLayout,
+  teacherLayout: TeacherLayout,
 };
 
 function MyApp({ Component, pageProps }) {

@@ -71,7 +71,6 @@ const authController = {
 
   //function hadle login
   loginUser: async (req, res) => {
-    console.log("----------------login---------------------");
     const email = req.body.email;
     const password = req.body.password;
     User.findOne({
@@ -80,7 +79,7 @@ const authController = {
       .then((data) => {
         if (data == null) {
           res.status(400).json({
-            message: "Tài khoảng không tồn tại",
+            message: "Tài khoản không tồn tại",
           });
         } else {
           bcrypt.compare(password, data.password).then((result) => {
@@ -96,7 +95,6 @@ const authController = {
                 address: data.address,
                 phone: data.phone,
               };
-              console.log("data để tạo token", dataSendToClient);
               const accesstoken =
                 authController.createAccessToken(dataSendToClient);
               const refreshToken =

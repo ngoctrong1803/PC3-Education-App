@@ -391,11 +391,20 @@ const Exercise = () => {
                 {Math.floor(statisticalInfor?.statisticalOfExercise?.time) <
                   10 && statisticalInfor?.statisticalOfExercise?.time != -1 ? (
                   <span>
-                    0{Math.floor(statisticalInfor?.statisticalOfExercise?.time)}
+                    0
+                    {Math.floor(statisticalInfor?.statisticalOfExercise?.time) -
+                      Math.floor(
+                        statisticalInfor?.statisticalOfExercise?.time / 60
+                      ) *
+                        60}
                   </span>
                 ) : statisticalInfor?.statisticalOfExercise?.time != -1 ? (
                   <span>
-                    {Math.floor(statisticalInfor?.statisticalOfExercise?.time)}
+                    {Math.floor(statisticalInfor?.statisticalOfExercise?.time) -
+                      Math.floor(
+                        statisticalInfor?.statisticalOfExercise?.time / 60
+                      ) *
+                        60}
                   </span>
                 ) : null}
               </h6>

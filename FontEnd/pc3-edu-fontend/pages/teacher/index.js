@@ -8,7 +8,7 @@ import { createAxios } from "../../helper/axiosJWT";
 import { loginSuccess } from "../../redux/authSlice";
 import Link from "next/link";
 import useAdminAuth from "../../hooks/authAdminHook";
-const Admin = () => {
+const Teacher = () => {
   const [isLoad, setIsLoad] = useState(false);
   const isAdmin = useAdminAuth();
   const dispatch = useDispatch();
@@ -234,5 +234,5 @@ const Admin = () => {
     );
   }
 };
-Admin.layout = "adminLayout";
-export default Admin;
+Teacher.layout = "teacherLayout";
+export default Teacher;

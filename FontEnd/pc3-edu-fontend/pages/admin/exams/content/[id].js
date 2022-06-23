@@ -20,6 +20,7 @@ import { createAxios } from "../../../../helper/axiosJWT";
 import { loginSuccess } from "../../../../redux/authSlice";
 import useTeacherAuth from "../../../../hooks/authTeacherHook";
 const Exams = () => {
+
   const isTeacher = useTeacherAuth();
   const url = window.location.pathname;
   const arrayTemp = url.split("/");
@@ -142,6 +143,9 @@ const Exams = () => {
               <Button
                 className="admin-subjects-header-add-user"
                 variant="outline-info"
+                onClick={() => {
+                  // window.location.replace(`/admin/exams/content/create/${examID}`);
+                }}
               >
                 Thêm mới
               </Button>

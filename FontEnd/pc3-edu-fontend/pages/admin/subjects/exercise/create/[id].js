@@ -12,6 +12,10 @@ import { loginSuccess } from "../../../../../redux/authSlice";
 import useTeacherAuth from "../../../../../hooks/authTeacherHook";
 
 const CreateExercise = () => {
+  console.log("editer:", typeof Editor);
+  if (typeof Editor !== "function") {
+    window.location.reload();
+  }
   const isTeacher = useTeacherAuth();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => {
@@ -186,7 +190,7 @@ const CreateExercise = () => {
               option4:
                 quesItem?.option_4 == undefined ? "" : "" + quesItem?.option_4,
               answer:
-                quesItem?.answer > 0 && quesItem?.answer < 4
+                quesItem?.answer > 0 && quesItem?.answer <= 4
                   ? "option" + quesItem?.answer
                   : "" ?? "",
               explain: quesItem?.explain ?? "",
@@ -532,7 +536,7 @@ const CreateExercise = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}
@@ -613,7 +617,7 @@ const CreateExercise = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}
@@ -669,7 +673,7 @@ const CreateExercise = () => {
                           : quesItem.answer == "option2"
                           ? quesItem.option2
                           : quesItem.answer == "option3"
-                          ? question.option3
+                          ? quesItem.option3
                           : quesItem.answer == "option4"
                           ? quesItem.option4
                           : null}

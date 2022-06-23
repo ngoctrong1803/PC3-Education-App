@@ -41,11 +41,15 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault(); // ngăn chặn hành động mặc định
     e.stopPropagation(); // ngăn chặn lang rộng
-    const userLogin = {
-      email: email,
-      password: pass,
-    };
-    loginUser(userLogin, dispatch, router);
+    if (email != "" && pass != "") {
+      const userLogin = {
+        email: email,
+        password: pass,
+      };
+      loginUser(userLogin, dispatch, router);
+    } else {
+      toast.error("Vui lòng nhập thông tin đăng nhập");
+    }
   };
   return (
     <div className="container-fluid background">

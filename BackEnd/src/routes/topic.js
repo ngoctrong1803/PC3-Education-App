@@ -5,6 +5,7 @@ const authMiddleware = require("../app/middlewares/authMiddleware");
 
 router.get("/list", topicController.getTopic);
 router.post("/list/:page", topicController.getTopicPagination);
+router.post("/list-in-index/:page", topicController.getTopicPaginationIndex);
 router.post(
   "/create",
   authMiddleware.checkTeacher,

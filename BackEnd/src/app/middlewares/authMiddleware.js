@@ -24,7 +24,6 @@ const authMiddleware = {
   checkUserChangeInfor: (req, res, next) => {
     const userID = req.params.id;
     authMiddleware.verifyToken(req, res, () => {
-      console.log("so sánh:", req.data._id, "-", userID);
       if (req.data._id === userID) {
         next();
       } else {

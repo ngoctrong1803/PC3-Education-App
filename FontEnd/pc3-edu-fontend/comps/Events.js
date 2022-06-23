@@ -13,7 +13,7 @@ const Event = () => {
       setListBLog(res.data.listBlog);
       console.log("res blog", res.data.listBlog);
     } catch (error) {
-      const errMessage = error.response.data.message;
+      const errMessage = error?.response?.data?.message;
       toast.error(errMessage);
     }
   }

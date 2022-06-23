@@ -23,10 +23,9 @@ const SubjectList = (props) => {
       const res = await axios.get(
         host + "/api/subjects/list-subject-by-grade/" + grade
       );
-      console.log("subject list:", res.data);
-      setListSubject(res.data.listSubject);
+      setListSubject(res.data?.listSubject);
     } catch (error) {
-      const errMessage = error.response.data.message;
+      const errMessage = error.response?.data?.message;
       toast.error(errMessage);
     }
   }

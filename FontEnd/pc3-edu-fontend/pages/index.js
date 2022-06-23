@@ -29,7 +29,6 @@ const Home = () => {
   const currentUser = useSelector((state) => {
     return state.auth.login.currentUser;
   });
-  console.log("user redux: ", currentUser);
   const changeGrade = (grade) => {
     setGrade(grade);
   };
@@ -115,10 +114,10 @@ const Home = () => {
               <h5>Diễn đàn</h5>
               <Card>
                 <Card.Header style={{ backgroundColor: "#113685" }}>
-                  <Nav variant="tabs" defaultActiveKey="#blog">
+                  <Nav variant="tabs" defaultActiveKey="">
                     <Nav.Item>
-                      <Nav.Link href="#blog">
-                        <span style={{ color: "#113685" }}>
+                      <Nav.Link disabled>
+                        <span style={{ color: "#fff" }}>
                           Các bài viết nổi bậc
                         </span>
                       </Nav.Link>

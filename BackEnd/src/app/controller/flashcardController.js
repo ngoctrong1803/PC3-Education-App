@@ -66,7 +66,6 @@ const flashcardController = {
 
     const users = await User.find({ _id: { $in: userIDArray } });
 
-    console.log("flashcard ở đây:", listFlashcard);
     res.status(200).json({
       message: "lấy Flashcard thành công",
       listFlashcard: listFlashcard,

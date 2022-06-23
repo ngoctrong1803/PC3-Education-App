@@ -38,6 +38,33 @@ const topicController = {
       currentPage: currentPage,
     });
   },
+  //[get]/api/topic/list
+  getTopicPaginationIndex: async (req, res) => {
+    let topicInPage = 10;
+    let currentPage = req.params.page;
+    let topicName = req.body.topicName;
+    const listTotalTopic = await Topic.find({
+      topicName: { $regex: topicName },
+    });
+    const listTopic = await Topic.find({
+      topicName: { $regex: topicName },
+    })
+      // .sort({
+      //   createAt: -1,
+      // })
+      .skip(currentPage * topicInPage - topicInPage)
+      .limit(topicInPage)
+      .sort({
+        createdAt: -1,
+      });
+    let totalTopic = listTotalTopic.length;
+    res.status(200).json({
+      message: "lấy danh sách chủ đề thành công",
+      listTopic: listTopic,
+      totalPage: Math.ceil(totalTopic / topicInPage),
+      currentPage: currentPage,
+    });
+  },
   //[post]/api/topic/create
   createTopic: async (req, res) => {
     const { topicName, description, image } = req.body;

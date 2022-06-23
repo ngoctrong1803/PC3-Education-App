@@ -254,17 +254,20 @@ const Exercise = () => {
                           </ul>
                           {exerciseGuideNav == "description" ? (
                             <div className="exercise-guide-description p-2">
-                              đây là phần mô tả bài tập
+                              1. Đọc đề và chọn đáp án đúng <br></br>
+                              2. Chọn câu tiếp theo để trả lời và sang câu hỏi
+                              tiếp theo<br></br>* Lưu ý: Đáp án không được bỏ
+                              trống
                             </div>
                           ) : null}
                           {exerciseGuideNav == "rank" ? (
                             <div className="exercise-guide-rank p-2">
-                              đây là phần bảng xếp hạng
+                              Đang cập nhật...
                             </div>
                           ) : null}
                           {exerciseGuideNav == "help" ? (
                             <div className="exercise-guide-help p-2">
-                              đây là phần trợ giúp
+                              Đang cập nhật...
                             </div>
                           ) : null}
                         </div>

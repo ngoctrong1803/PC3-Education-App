@@ -1,4 +1,12 @@
-import { Button, Col, Row, Spinner, Form, ProgressBar } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Row,
+  Spinner,
+  Form,
+  ProgressBar,
+  Container,
+} from "react-bootstrap";
 import { useState, useEffect, useRef } from "react";
 import { Pagination, Navigation } from "swiper";
 import axios from "axios";
@@ -229,244 +237,247 @@ const FlashcardQuiz = ({ listFlashcard }) => {
   }
   return (
     <Style>
-      <div className="flashcard-quiz-wrap">
-        {listFlashcard.map((flashcardItem, index) => {
-          if (currentQuestionQuizIndex == index)
-            return (
-              <>
-                <div className="result-flashcard-quiz">
-                  <h4>Kết quả</h4>
-                  <span>
-                    Đã làm: {totalAnswerTrueQuiz + totalAnswerFalseQuiz}/
-                    {listFlashcard.length}
-                  </span>
-                  <ProgressBar
-                    now={
-                      ((totalAnswerTrueQuiz + totalAnswerFalseQuiz) /
-                        listFlashcard.length) *
-                      100
-                    }
-                    className="result-progress"
-                  />
+      <Container>
+        {" "}
+        <div className="flashcard-quiz-wrap">
+          {listFlashcard.map((flashcardItem, index) => {
+            if (currentQuestionQuizIndex == index)
+              return (
+                <>
+                  <div className="result-flashcard-quiz">
+                    <h4>Kết quả</h4>
+                    <span>
+                      Đã làm: {totalAnswerTrueQuiz + totalAnswerFalseQuiz}/
+                      {listFlashcard.length}
+                    </span>
+                    <ProgressBar
+                      now={
+                        ((totalAnswerTrueQuiz + totalAnswerFalseQuiz) /
+                          listFlashcard.length) *
+                        100
+                      }
+                      className="result-progress"
+                    />
 
-                  <span>Đúng: {totalAnswerTrueQuiz}</span>
-                  <ProgressBar
-                    variant="success"
-                    now={(totalAnswerTrueQuiz / listFlashcard.length) * 100}
-                    className="result-progress"
+                    <span>Đúng: {totalAnswerTrueQuiz}</span>
+                    <ProgressBar
+                      variant="success"
+                      now={(totalAnswerTrueQuiz / listFlashcard.length) * 100}
+                      className="result-progress"
+                    />
+                    <span>Sai: {totalAnswerFalseQuiz}</span>
+                    <ProgressBar
+                      variant="danger"
+                      now={(totalAnswerFalseQuiz / listFlashcard.length) * 100}
+                      className="result-progress"
+                    />
+                  </div>
+                  <div className="timer-flashcard-quiz">
+                    {timerQuiz == -1 ? (
+                      <>
+                        <Spinner size="sm" animation="grow" variant="success" />
+                        <Spinner size="sm" animation="grow" variant="success" />
+                        <Spinner size="sm" animation="grow" variant="success" />
+                      </>
+                    ) : (
+                      <span>{timerQuiz}</span>
+                    )}
+                  </div>
+                  <div className="question-flashcard-quiz-wrap">
+                    <h4>{currentQuestionQuiz.question}</h4>
+                  </div>
+                  <div>
+                    <ProgressBar
+                      animated
+                      min={0}
+                      max={level == "easy" ? 5 : level == "normal" ? 4 : 3}
+                      now={timerQuiz}
+                    />
+                    <Row style={{ marginTop: "15px" }}>
+                      <Col xs={6} ms={6}>
+                        <button
+                          className="answer-quiz-flashcard"
+                          onClick={(e) => {
+                            handleAnswerQuiz(e, currentQuestionQuiz.option1);
+                          }}
+                        >
+                          {currentQuestionQuiz.option1}
+                        </button>
+                      </Col>
+                      <Col xs={6} ms={6}>
+                        <button
+                          className="answer-quiz-flashcard"
+                          onClick={(e) => {
+                            handleAnswerQuiz(e, currentQuestionQuiz.option2);
+                          }}
+                        >
+                          {currentQuestionQuiz.option2}
+                        </button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={6} ms={6}>
+                        <button
+                          className="answer-quiz-flashcard"
+                          onClick={(e) => {
+                            handleAnswerQuiz(e, currentQuestionQuiz.option3);
+                          }}
+                        >
+                          {currentQuestionQuiz.option3}
+                        </button>
+                      </Col>
+                      <Col xs={6} ms={6}>
+                        <button
+                          className="answer-quiz-flashcard"
+                          onClick={(e) => {
+                            handleAnswerQuiz(e, currentQuestionQuiz.option4);
+                          }}
+                        >
+                          {currentQuestionQuiz.option4}
+                        </button>
+                      </Col>
+                    </Row>
+                  </div>
+                  <Button
+                    variant="primary"
+                    id="btn-next"
+                    onClick={() => {
+                      handleLoadQuestion(index + 1);
+                    }}
+                  ></Button>
+                </>
+              );
+          })}
+          {currentQuestionQuizIndex == -1 ? (
+            <>
+              <h3>chào mừng đến với trắc nghiệm flashcard</h3>
+              <br></br>
+              <h5>chọn độ khó để bắt đầu</h5>
+              <div className="flash-card-quiz-level">
+                <div
+                  className="flash-card-quiz-level-item"
+                  style={{ "--clr": "#34ff4c" }}
+                >
+                  {" "}
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio1`}
+                    label={`Dễ`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("easy");
+                    }}
                   />
-                  <span>Sai: {totalAnswerFalseQuiz}</span>
-                  <ProgressBar
-                    variant="danger"
-                    now={(totalAnswerFalseQuiz / listFlashcard.length) * 100}
-                    className="result-progress"
+                </div>
+                <div
+                  className="flash-card-quiz-level-item"
+                  style={{ "--clr": "#f4cc11" }}
+                >
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio2`}
+                    label={`Trung Bình`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("normal");
+                    }}
                   />
                 </div>
-                <div className="timer-flashcard-quiz">
-                  {timerQuiz == -1 ? (
-                    <>
-                      <Spinner size="sm" animation="grow" variant="success" />
-                      <Spinner size="sm" animation="grow" variant="success" />
-                      <Spinner size="sm" animation="grow" variant="success" />
-                    </>
-                  ) : (
-                    <span>{timerQuiz}</span>
-                  )}
-                </div>
-                <div className="question-flashcard-quiz-wrap">
-                  <h4>{currentQuestionQuiz.question}</h4>
-                </div>
-                <div>
-                  <ProgressBar
-                    animated
-                    min={0}
-                    max={level == "easy" ? 5 : level == "normal" ? 4 : 3}
-                    now={timerQuiz}
+                <div
+                  className="flash-card-quiz-level-item"
+                  style={{ "--clr": "#ff4234" }}
+                >
+                  <Form.Check
+                    type={`radio`}
+                    id={`radio3`}
+                    label={`Khó`}
+                    name={`level`}
+                    onClick={() => {
+                      setLevel("hard");
+                    }}
                   />
-                  <Row style={{ marginTop: "15px" }}>
-                    <Col xs={6} ms={6}>
-                      <button
-                        className="answer-quiz-flashcard"
-                        onClick={(e) => {
-                          handleAnswerQuiz(e, currentQuestionQuiz.option1);
-                        }}
-                      >
-                        {currentQuestionQuiz.option1}
-                      </button>
-                    </Col>
-                    <Col xs={6} ms={6}>
-                      <button
-                        className="answer-quiz-flashcard"
-                        onClick={(e) => {
-                          handleAnswerQuiz(e, currentQuestionQuiz.option2);
-                        }}
-                      >
-                        {currentQuestionQuiz.option2}
-                      </button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={6} ms={6}>
-                      <button
-                        className="answer-quiz-flashcard"
-                        onClick={(e) => {
-                          handleAnswerQuiz(e, currentQuestionQuiz.option3);
-                        }}
-                      >
-                        {currentQuestionQuiz.option3}
-                      </button>
-                    </Col>
-                    <Col xs={6} ms={6}>
-                      <button
-                        className="answer-quiz-flashcard"
-                        onClick={(e) => {
-                          handleAnswerQuiz(e, currentQuestionQuiz.option4);
-                        }}
-                      >
-                        {currentQuestionQuiz.option4}
-                      </button>
-                    </Col>
-                  </Row>
                 </div>
-                <Button
-                  variant="primary"
-                  id="btn-next"
-                  onClick={() => {
-                    handleLoadQuestion(index + 1);
-                  }}
-                ></Button>
-              </>
-            );
-        })}
-        {currentQuestionQuizIndex == -1 ? (
-          <>
-            <h3>chào mừng đến với trắc nghiệm flashcard</h3>
-            <br></br>
-            <h5>chọn độ khó để bắt đầu</h5>
-            <div className="flash-card-quiz-level">
-              <div
-                className="flash-card-quiz-level-item"
-                style={{ "--clr": "#34ff4c" }}
-              >
-                {" "}
-                <Form.Check
-                  type={`radio`}
-                  id={`radio1`}
-                  label={`Dễ`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("easy");
-                  }}
-                />
               </div>
-              <div
-                className="flash-card-quiz-level-item"
-                style={{ "--clr": "#f4cc11" }}
-              >
-                <Form.Check
-                  type={`radio`}
-                  id={`radio2`}
-                  label={`Trung Bình`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("normal");
-                  }}
-                />
-              </div>
-              <div
-                className="flash-card-quiz-level-item"
-                style={{ "--clr": "#ff4234" }}
-              >
-                <Form.Check
-                  type={`radio`}
-                  id={`radio3`}
-                  label={`Khó`}
-                  name={`level`}
-                  onClick={() => {
-                    setLevel("hard");
-                  }}
-                />
-              </div>
-            </div>
 
-            <br></br>
-            <Button
-              ref={startButtonRef}
-              variant="primary"
-              onClick={() => {
-                if (level == "") {
-                  toast.error("chọn độ khó để bắt đầu");
-                } else {
-                  handleLoadQuestion(0);
-                  if (level == "easy") {
-                    setTimerQuiz(timeEasy);
-                  } else if (level == "normal") {
-                    setTimerQuiz(timeNormal);
-                  } else if (level == "hard") {
-                    setTimerQuiz(timeHard);
-                  }
-                }
-              }}
-            >
-              Bắt đầu
-            </Button>
-          </>
-        ) : null}
-        {currentQuestionQuizIndex == listFlashcard.length ? (
-          <div className="result-flashcard-quiz-final">
-            <div className="result-flashcard-quiz-final-title">Kết quả</div>
-            <div className="result-flashcard-quiz-final-content">
-              {" "}
-              <span>
-                Đã làm: {totalAnswerTrueQuiz + totalAnswerFalseQuiz}/
-                {listFlashcard.length}
-              </span>
-              <ProgressBar
-                now={
-                  ((totalAnswerTrueQuiz + totalAnswerFalseQuiz) /
-                    listFlashcard.length) *
-                  100
-                }
-                className="result-progress"
-              />
-              <span>Đúng: {totalAnswerTrueQuiz}</span>
-              <ProgressBar
-                variant="success"
-                now={(totalAnswerTrueQuiz / listFlashcard.length) * 100}
-                className="result-progress"
-              />
-              <span>Sai: {totalAnswerFalseQuiz}</span>
-              <ProgressBar
-                variant="danger"
-                now={(totalAnswerFalseQuiz / listFlashcard.length) * 100}
-                className="result-progress"
-              />
-            </div>
-            <div className="result-flashcard-quiz-final-footer-title">
-              {totalAnswerTrueQuiz == listFlashcard.length ? (
-                <>Bạn quá xuất sắc!</>
-              ) : totalAnswerTrueQuiz > listFlashcard.length - 2 ? (
-                <>Bạn hoàn thành tốt!</>
-              ) : totalAnswerFalseQuiz >= totalAnswerTrueQuiz ? (
-                <>Cần cố gắn thêm bạn nhé!</>
-              ) : (
-                <>Hoàn thành nhiệm vụ!</>
-              )}
-            </div>
-            <div className="result-flashcard-quiz-final-footer">
+              <br></br>
               <Button
+                ref={startButtonRef}
                 variant="primary"
                 onClick={() => {
-                  resetFlashcardQuiz();
+                  if (level == "") {
+                    toast.error("chọn độ khó để bắt đầu");
+                  } else {
+                    handleLoadQuestion(0);
+                    if (level == "easy") {
+                      setTimerQuiz(timeEasy);
+                    } else if (level == "normal") {
+                      setTimerQuiz(timeNormal);
+                    } else if (level == "hard") {
+                      setTimerQuiz(timeHard);
+                    }
+                  }
                 }}
               >
-                {" "}
-                Quay lại{" "}
+                Bắt đầu
               </Button>
+            </>
+          ) : null}
+          {currentQuestionQuizIndex == listFlashcard.length ? (
+            <div className="result-flashcard-quiz-final">
+              <div className="result-flashcard-quiz-final-title">Kết quả</div>
+              <div className="result-flashcard-quiz-final-content">
+                {" "}
+                <span>
+                  Đã làm: {totalAnswerTrueQuiz + totalAnswerFalseQuiz}/
+                  {listFlashcard.length}
+                </span>
+                <ProgressBar
+                  now={
+                    ((totalAnswerTrueQuiz + totalAnswerFalseQuiz) /
+                      listFlashcard.length) *
+                    100
+                  }
+                  className="result-progress"
+                />
+                <span>Đúng: {totalAnswerTrueQuiz}</span>
+                <ProgressBar
+                  variant="success"
+                  now={(totalAnswerTrueQuiz / listFlashcard.length) * 100}
+                  className="result-progress"
+                />
+                <span>Sai: {totalAnswerFalseQuiz}</span>
+                <ProgressBar
+                  variant="danger"
+                  now={(totalAnswerFalseQuiz / listFlashcard.length) * 100}
+                  className="result-progress"
+                />
+              </div>
+              <div className="result-flashcard-quiz-final-footer-title">
+                {totalAnswerTrueQuiz == listFlashcard.length ? (
+                  <>Bạn quá xuất sắc!</>
+                ) : totalAnswerTrueQuiz > listFlashcard.length - 2 ? (
+                  <>Bạn hoàn thành tốt!</>
+                ) : totalAnswerFalseQuiz >= totalAnswerTrueQuiz ? (
+                  <>Cần cố gắn thêm bạn nhé!</>
+                ) : (
+                  <>Hoàn thành nhiệm vụ!</>
+                )}
+              </div>
+              <div className="result-flashcard-quiz-final-footer">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    resetFlashcardQuiz();
+                  }}
+                >
+                  {" "}
+                  Quay lại{" "}
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      </Container>
     </Style>
   );
 };

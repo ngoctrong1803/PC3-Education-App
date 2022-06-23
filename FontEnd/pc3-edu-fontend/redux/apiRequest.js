@@ -1,5 +1,4 @@
 // this file is handle all Call Api
-
 import axios from "axios";
 import {
   loginFailed,
@@ -15,7 +14,6 @@ export const loginUser = async (user, dispatch, router) => {
   dispatch(loginStart());
   try {
     const res = await axios.post(host + "/api/auth/login", user);
-    console.log("data of user login:", res.data);
     dispatch(loginSuccess(res.data));
     router.push("/");
   } catch (err) {

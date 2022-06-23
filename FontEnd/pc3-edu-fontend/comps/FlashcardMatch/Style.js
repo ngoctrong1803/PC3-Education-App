@@ -32,7 +32,7 @@ const Style = styled.div`
       padding: 25px;
       .content-flashcard-match-item-wrap {
         border-radius: 1px;
-        width: 190px;
+        width: 173px;
         height: 100px;
         padding: 0px;
         background-color: rgba(18, 14, 14, 0.1);
